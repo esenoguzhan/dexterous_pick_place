@@ -47,7 +47,7 @@ Clone this branch and install the workspace dependencies. If rosdep has never
 been initialized on your machine, run `sudo rosdep init` once before `rosdep update`.
 
 ```bash
-git clone --branch multi-camera-config git@github.com:arasf/neurahackathon.git
+git clone --branch main git@github.com:arasf/neurahackathon.git
 cd neurahackathon/ws
 source /opt/ros/jazzy/setup.bash
 rosdep update
