@@ -1,4 +1,20 @@
-# Neurahackathon multi-camera workspace
+# Neurahackathon
+
+This repository contains the robot code from `main` and the two-camera workspace:
+
+- [`src/`](src/README.md): LARA5 arm, Inspire hand, robot descriptions, and MuJoCo
+  simulation. Follow its README for the supported **Ubuntu 22.04 / ROS 2 Humble**
+  environment and robot build instructions.
+- [`ws/`](ws/src/neurahackathon_cameras): standalone camera workspace, built here
+  with **Ubuntu 24.04 / ROS 2 Jazzy**. Its setup is documented below.
+
+The merge preserves the existing robot source layout. The camera build below
+does not build or validate the robot stack on Jazzy.
+Robot meshes and the NEURA dependency archive use Git LFS. Install Git LFS on a
+new machine, run `git lfs install`, and run `git lfs pull` after cloning this branch
+to download those assets. The vendored RealSense models remain ordinary Git files.
+
+## Multi-camera workspace
 
 ROS 2 Jazzy workspace for two USB RealSense D435 cameras. Each camera publishes
 color, depth, left infrared (`infra1`), and right infrared (`infra2`) images.

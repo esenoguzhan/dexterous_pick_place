@@ -1,9 +1,14 @@
-ws/build/
-ws/install/
-ws/log/
+# Python
 __pycache__/
 *.py[cod]
 .pytest_cache/
+
+# colcon / ROS 2 build output, at any workspace depth
+build/
+install/
+log/
+
+# Local editor settings and recordings
 .vscode/
 *.bag
 *.db3
