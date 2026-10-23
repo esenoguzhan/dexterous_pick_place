@@ -1,0 +1,10 @@
+ws/build/
+ws/install/
+ws/log/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.vscode/
+*.bag
+*.db3
+*.mcap

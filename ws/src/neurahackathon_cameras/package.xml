@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+<package format="3">
+  <name>neurahackathon_cameras</name>
+  <version>0.1.0</version>
+  <description>Two D435 cameras with color, depth, and left/right infrared streams.</description>
+  <maintainer email="aliarasfirat@gmail.com">Ali Aras Firat</maintainer>
+  <license>Apache-2.0</license>
+  <buildtool_depend>ament_cmake</buildtool_depend>
+  <exec_depend>ament_index_python</exec_depend>
+  <exec_depend>launch</exec_depend>
+  <exec_depend>launch_ros</exec_depend>
+  <exec_depend>realsense2_camera</exec_depend>
+  <export>
+    <build_type>ament_cmake</build_type>
+  </export>
+</package>
