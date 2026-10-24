@@ -49,7 +49,7 @@ stages:
         dest: /models/dinov2-small/model.safetensors
     copy:
       - from: local
-        paths: [app.py, cameras.py, vision.py]
+        paths: [app.py, cameras.py, vision.py, calibration.py]
         dest: /app/
       - from: local
         paths: [static]

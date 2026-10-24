@@ -310,3 +310,8 @@ class CameraManager:
     def first_online(self):
         with self._lock:
             return next((c for c in self._cameras.values() if c.online), None)
+
+    def online_with_intrinsics(self):
+        """RealSense cameras that are streaming; only they can locate the calibration board."""
+        with self._lock:
+            return [c for c in self._cameras.values() if c.online and c.intrinsics]

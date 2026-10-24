@@ -45,15 +45,18 @@ The rest of the system only consumes snapshots:
 
 ### 3.1 Cameras
 
-Two fixed D435 cameras looking at the table (eye-to-hand). Mounting guidelines:
+One D435 is fixed and sees the whole workspace; the other rides on the hand. Both plug into the
+Jetson's USB 3 ports; the hand camera's cable runs along the arm.
 
-- Angle both cameras roughly 30 to 60 degrees from vertical. Looking straight down at a can lid
-  reflects the camera's own infrared pattern back and destroys the depth on metal.
-- Keep every object at least 0.3 m from the camera (D435 minimum range at 848x480). About 0.6 to
+- **Fixed camera:** angle it roughly 30 to 60 degrees from vertical. Looking straight down at a can
+  lid reflects the camera's own infrared pattern back and destroys the depth on metal. About 0.6 to
   1.0 m from the table centre works well.
-- Place the cameras on different sides of the table so each one sees what the other cannot.
-- Use rigid mounts. A bumped camera invalidates the calibration (the change mask in section 6 detects it).
-- Plug both cameras into the Jetson's USB 3 ports.
+- **Hand camera:** it captures from the observe pose (5.0), so it sees the scene from the same
+  viewpoint every time. The hand covers part of its view; keep the objects in the free part.
+- Keep every object at least 0.3 m from each camera (D435 minimum depth range at 848x480).
+- Use rigid mounts. A camera that shifts invalidates its calibration (the change mask in section 6
+  detects it).
+- Add the hand camera to the hand's collision geometry: the safety filter does not know about it.
 
 ### 3.2 Frame sources
 
@@ -98,14 +101,49 @@ is not used by perception.
 
 ### 3.4 Calibration
 
-The camera poses are stored on the Jetson in `/data/calibration/extrinsics.yaml`: one transform from
-`world` to `camera_N_color_optical_frame` per camera, keyed by serial number so that swapping USB
-ports cannot swap calibrations. The perception node loads the file at start-up, uses it for
-back-projection and publishes it as static TF, so Foxglove shows the cameras.
+The camera poses are stored on the Jetson in `/data/calibration/extrinsics.yaml`, keyed by serial
+number so that swapping USB ports cannot swap calibrations: the fixed camera as `world` to
+`camera_N_color_optical_frame`, the hand camera as `lara5_flange` to `camera_N_color_optical_frame`.
+The perception node loads the file at start-up and publishes both as static TF, so TF gives the hand
+camera's world pose at any moment and Foxglove shows both cameras.
 
-A calibration script on the Jetson produces the file: a ChArUco board on the hand, OpenCV
-`calibrateRobotWorldHandEye`, and flange poses read from the TF that the Ubuntu PC publishes. It is a
-separate module.
+**Method.** A ChArUco board lies flat on the table where the fixed camera sees it, and the robot moves
+the hand camera over it. Each pose gives the flange pose from TF and the board's pose in each camera:
+
+- The hand camera's poses give, in closed form (OpenCV `calibrateRobotWorldHandEye`, Shah's method),
+  both the camera's pose on the flange and the board's pose in `world`.
+- The fixed camera's pose follows from its view of the same board.
+- All unknowns are then refined together by minimising the corner reprojection error in every camera.
+  Samples above max(2 px, 3 times the median) are dropped once.
+- A partly covered board is fine: every ChArUco corner is identified by its neighbouring markers, and a
+  view needs 8 of the 24 corners.
+
+The board can instead be fixed to the hand, which calibrates fixed cameras only.
+
+**Two halves** (how to run it: [the test bench README](../wendy/perception_test/README.md#camera-calibration)):
+
+- **Jetson:** the test bench's calibration page (`/calibration`,
+  [`calibration.py`](../wendy/perception_test/calibration.py)) sets the board location and each
+  camera's mount, shows live board detection, keeps the samples in `/data/calibration/session.json`,
+  solves, and saves the file.
+- **Ubuntu PC:** `ros2 run lara5_controller_manager calibrate_cameras.py` reads the flange pose from TF
+  at every pose and sends it to the Jetson over HTTP (port 8090). It records while you move the arm, or
+  visits poses around a start pose through the safety filter's `MoveToPose`, tilting about a point in
+  front of the hand so the hand camera keeps the board in view. Until the Jetson runs ROS, this HTTP
+  call is the only link the calibration needs.
+
+**Accuracy on synthetic renders** (D435 intrinsics, the hand covering part of the hand camera's view,
+22 poses, one of them corrupted and dropped):
+
+| Estimated | Position error | Rotation error |
+|---|---|---|
+| Hand camera on the flange | 0.6 mm | 0.13° |
+| Board in `world` | 0.2 mm | 0.06° |
+| Fixed camera in `world` | 2.3 mm | 0.1° |
+
+The fixed camera inherits the board's orientation error, so spread the hand camera's poses widely,
+with tilts up to 25 to 30 degrees. With half that spread its rotation error was 0.24 degrees, about
+6 mm at 1.4 m.
 
 ## 4. Pipeline overview
 
@@ -146,7 +184,9 @@ flowchart TD
   capture when the arm is not at the observe pose (parameter `require_observe_pose`). It judges
   freshness by when a message arrives on the Jetson, not by its header stamp, so a clock offset
   between the two machines cannot block captures.
-- **Why:** the arm would otherwise be clustered as an object and would hide objects behind it.
+- **Why:** the arm would otherwise be clustered as an object and would hide objects behind it. The
+  observe pose also places the hand camera; the arm returns to it precisely, so the hand camera sees
+  the scene from the same viewpoint at every capture.
 - **Later option:** a robot self-filter that renders the URDF into each depth image and masks the
   arm, so captures work with the arm in view.
 
@@ -165,7 +205,8 @@ flowchart TD
 
 - **Method:** for each valid pixel `(u, v)` with depth `Z`:
   `X = (u - cx) * Z / fx`, `Y = (v - cy) * Z / fy`. Transform the points to `world` with the
-  camera's pose from the calibration file (3.4), then crop to the workspace box.
+  camera's pose from the calibration file (3.4), then crop to the workspace box. For the hand camera
+  that pose is the flange pose from TF at capture time times its calibrated pose on the flange.
 - **Keep:** the source `(camera, v, u)` of every point, so 2D masks can select 3D points and 3D
   blobs can be projected back into the images.
 - **Workspace box (simulation):** x from -0.6 to 0.6, y from -0.4 to 0.4, z from 0.88 to 1.30 m
@@ -259,7 +300,8 @@ flowchart TD
 
 ## 6. Change mask
 
-The cameras do not move, so the reference and current images can be compared pixel by pixel.
+The fixed camera does not move and the hand camera always captures from the same observe pose, so
+the reference and current images can be compared pixel by pixel.
 
 - **Method:** a pixel has changed when its depth differs by more than 0.01 m, or its colour differs
   by more than a threshold in Lab space. Clean up with a morphological opening and drop regions

@@ -13,7 +13,7 @@ import threading
 import time
 import zipfile
 from collections import OrderedDict
-from dataclasses import dataclass, field
+from dataclasses import asdict, dataclass, field
 from pathlib import Path
 
 import cv2
@@ -23,6 +23,7 @@ from fastapi import FastAPI, HTTPException, Request
 from fastapi.responses import FileResponse, Response, StreamingResponse
 from pydantic import BaseModel
 
+import calibration
 from cameras import MIN_VALID_FRACTION, CameraManager, median_depth
 from vision import Gallery, Models, mask_bbox
 
@@ -45,6 +46,8 @@ app = FastAPI(title="Perception test")
 models = Models()
 cameras = CameraManager()
 gallery = Gallery(DATA_DIR / "gallery")
+calib = calibration.Session(DATA_DIR / "calibration")
+_board_pdf = {}  # printable board per board config
 
 
 @dataclass
@@ -416,6 +419,190 @@ def gallery_delete(name: str):
     if not gallery.remove(name):
         raise HTTPException(404, "No such object")
     return {"gallery": gallery.list()}
+
+
+# ---------- camera calibration (docs/perception_architecture.md, section 3.4) ----------
+
+class BoardRequest(BaseModel):
+    squares_x: int = 5
+    squares_y: int = 7
+    square_mm: float = 36.0
+    marker_mm: float = 27.0
+    dictionary: str = "DICT_4X4_50"
+
+
+class SetupRequest(BaseModel):
+    board_location: str = "table"  # "table" or "hand"
+    mounts: dict[str, str] = {}  # camera serial -> "fixed" or "hand"
+
+
+class RobotPose(BaseModel):
+    parent: str = "world"
+    child: str = "lara5_flange"
+    translation: list[float]  # flange position in parent [m]
+    rotation_xyzw: list[float]
+    joints: dict[str, float] = {}
+
+
+class SampleRequest(BaseModel):
+    robot: RobotPose
+    frames: int = 3  # fresh frames to wait for, so the image is from after the robot stopped
+
+
+@app.get("/calibration")
+def calibration_page():
+    return FileResponse(STATIC_DIR / "calibration.html")
+
+
+@app.get("/api/calib/status")
+def calib_status():
+    saved = calib.root / "extrinsics.yaml"
+    board = calib.board
+    samples = calib.summary()
+    online = {c.id for c in cameras.online_with_intrinsics()}
+    known = sorted(online | {serial for s in samples for serial in s["cameras"]} | set(calib.mounts))
+    return {
+        "board": asdict(board),
+        "board_size_mm": [board.squares_x * board.square_mm, board.squares_y * board.square_mm],
+        "setup": {"board_location": calib.board_location, "mounts": calib.mounts},
+        "samples": samples,
+        "cameras": [{"id": serial, "name": calibration.CAMERA_NAMES.get(serial, serial),
+                     "mount": calib.mount(serial), "online": serial in online} for serial in known],
+        "result": calib.result,
+        "saved": {"exists": saved.exists(), "modified": saved.stat().st_mtime if saved.exists() else None},
+        "min_samples": calibration.MIN_SAMPLES,
+    }
+
+
+@app.post("/api/calib/board")
+def calib_board(req: BoardRequest):
+    try:
+        calib.set_board(calibration.BoardConfig(**req.model_dump()))
+    except (ValueError, AttributeError) as exc:
+        raise HTTPException(409, str(exc))
+    return calib_status()
+
+
+@app.post("/api/calib/setup")
+def calib_setup(req: SetupRequest):
+    """Where the board is and which cameras ride on the hand. Used at solve time only."""
+    try:
+        calib.set_setup(req.board_location, req.mounts)
+    except ValueError as exc:
+        raise HTTPException(400, str(exc))
+    return calib_status()
+
+
+@app.get("/api/calib/board.pdf")
+def calib_board_pdf():
+    board = calib.board
+    key = tuple(asdict(board).values())
+    if key not in _board_pdf:
+        try:
+            _board_pdf[key] = calibration.printable_pdf(board)
+        except ValueError as exc:
+            raise HTTPException(409, str(exc))
+    name = f"charuco_{board.squares_x}x{board.squares_y}_{board.square_mm:g}mm.pdf"
+    return Response(_board_pdf[key], media_type="application/pdf",
+                    headers={"Content-Disposition": f'attachment; filename="{name}"'})
+
+
+@app.get("/api/calib/overlay/{cam_id}.jpg")
+def calib_overlay(cam_id: str):
+    camera = cameras.get(cam_id)
+    frame = camera.latest() if camera else None
+    if frame is None or not camera.intrinsics:
+        raise HTTPException(404, f"No RealSense frame from {cam_id}")
+    data, _ = calib.detector.overlay(frame.color, camera.intrinsics)
+    return Response(data, media_type="image/jpeg", headers={"Cache-Control": "no-store"})
+
+
+@app.post("/api/calib/sample")
+def calib_sample(req: SampleRequest):
+    """Record the board in every camera at the robot pose the robot side sends."""
+    robot = req.robot.model_dump()
+    if len(robot["translation"]) != 3 or len(robot["rotation_xyzw"]) != 4:
+        raise HTTPException(400, "translation needs 3 values and rotation_xyzw 4")
+    norm = float(np.linalg.norm(robot["rotation_xyzw"]))
+    if not 0.9 < norm < 1.1:
+        raise HTTPException(400, f"rotation_xyzw is not a unit quaternion (norm {norm:.3f})")
+    robot["rotation_xyzw"] = [v / norm for v in robot["rotation_xyzw"]]
+    online = cameras.online_with_intrinsics()
+    if not online:
+        raise HTTPException(503, "No RealSense camera is streaming")
+
+    detections, report = {}, {}
+    for camera in online:
+        try:
+            frame, _ = camera.collect(req.frames)
+        except (TimeoutError, ValueError) as exc:
+            report[camera.id] = {"found": False, "error": str(exc)}
+            continue
+        det, raw = calib.detector.detect(frame.color, camera.intrinsics)
+        if det:
+            detections[camera.id] = det
+            report[camera.id] = {"found": True, "corners": len(det["ids"]), "reproj_px": det["reproj_px"],
+                                 "distance_m": round(float(np.linalg.norm(det["tvec"])), 3)}
+        else:
+            report[camera.id] = {"found": False, "corners": 0 if raw[1] is None else len(raw[1])}
+    if not detections:
+        raise HTTPException(422, {"message": "No camera sees the board; sample not recorded", "cameras": report})
+    sample = calib.add(robot, detections)
+    return {"id": sample["id"], "cameras": report, "samples": len(calib.samples)}
+
+
+@app.delete("/api/calib/samples/{sample_id}")
+def calib_delete_sample(sample_id: int):
+    if not calib.remove(sample_id):
+        raise HTTPException(404, f"No sample {sample_id}")
+    return {"samples": calib.summary()}
+
+
+@app.delete("/api/calib/samples")
+def calib_clear():
+    calib.clear()
+    return {"samples": []}
+
+
+@app.get("/api/calib/session.json")
+def calib_export():
+    return Response(json.dumps(calib.export(), indent=1), media_type="application/json",
+                    headers={"Content-Disposition": 'attachment; filename="calibration_session.json"'})
+
+
+@app.post("/api/calib/session")
+def calib_import(data: dict):
+    """Replace the samples with an exported session, for example to solve again after a restart."""
+    try:
+        calib.replace(data)
+    except (ValueError, TypeError, KeyError, AttributeError) as exc:
+        raise HTTPException(400, f"Not a calibration session: {exc}")
+    return {"samples": calib.summary()}
+
+
+@app.post("/api/calib/solve")
+def calib_solve():
+    try:
+        return calib.solve()
+    except ValueError as exc:
+        raise HTTPException(409, str(exc))
+
+
+@app.post("/api/calib/save")
+def calib_save():
+    try:
+        text = calib.save_extrinsics()
+    except ValueError as exc:
+        raise HTTPException(409, str(exc))
+    return {"path": str(calib.root / "extrinsics.yaml"), "yaml": text}
+
+
+@app.get("/api/calib/extrinsics.yaml")
+def calib_extrinsics():
+    path = calib.root / "extrinsics.yaml"
+    if not path.exists():
+        raise HTTPException(404, "No calibration saved yet")
+    return FileResponse(path, media_type="application/x-yaml", filename="extrinsics.yaml")
 
 
 if __name__ == "__main__":

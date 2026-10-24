@@ -12,6 +12,7 @@ table-plane fit, clustering, view fusion or 3D size check.
 | 5.5 | `SAM2ImagePredictor` with point and box prompts, three candidates, best score first |
 | 5.5 | `SAM2AutomaticMaskGenerator` over the whole image, masks above a chosen area dropped |
 | 5.7 | Masked crop (10 % padding, grey 127 background, padded to a grey square, 224x224), DINOv2-small CLS, L2-normalised |
+| 3.4 | Camera calibration page: ChArUco board on the hand, samples from the robot side, hand-eye solve, `extrinsics.yaml` |
 | 5.7 | Gallery score = best cosine over an object's views; accepted at >= 0.6 with margin >= 0.05; auto masks use Hungarian assignment |
 | 7.1, 8.3 | Gallery stored as `gallery/<name>/view_XX.png`, `embeddings.npy`, `meta.json` |
 
@@ -66,6 +67,38 @@ Measured on the Orin Nano (25 W mode, 1280x720): SAM image embedding 0.33 s, SAM
 Each capture can be downloaded as `colour.png`, a 16-bit millimetre `depth.png`, `intrinsics.json`
 (camera serial, `fx`, `fy`, `cx`, `cy`, distortion, depth units and median settings), or all three in
 one zip for offline tests. File names start with the capture time and the camera serial.
+
+## Camera calibration
+
+Gives the fixed camera's pose in the robot's `world` frame and the hand camera's pose on the flange
+(section 3.4). Calibrate with the cameras in their final positions, and again whenever one moves.
+
+1. **Board:** open `http://<device>.local:8090/calibration` and download `board.pdf` (5 x 7 ChArUco,
+   36 mm squares, `DICT_4X4_50`, fits A4). Print it at 100 % (actual size) and glue it flat on a rigid
+   plate. Measure one square with a ruler, enter the measured size (and the marker size, three quarters
+   of it) and press **Apply**.
+2. **Setup:** on the page, choose **board on the table** and mark the camera on the hand as
+   **on the hand**. Lay the board flat where the fixed camera sees it well, and do not touch it until
+   the recording is done. The page shows live detection for each camera; a partly covered board is fine.
+3. **Record** on the Ubuntu PC, inside the robot container with the controller launch running
+   (`safety:=on`). Rebuild `lara5_controller_manager` once so the script is installed. Move the arm so
+   the hand camera looks at the board from about 0.4 m with room around the hand, then:
+
+   ```bash
+   ros2 run lara5_controller_manager calibrate_cameras.py --jetson http://<jetson>:8090 auto --pivot 0.4
+   ```
+
+   `auto` visits 20 poses within 8 cm and 8 to 25 degrees of tilt around the start pose through the
+   safety filter, records each one and returns to the start. `--pivot 0.4` tilts the hand about a point
+   0.4 m along the flange's z axis, so the hand camera keeps looking at the board; use your camera's
+   distance to the board, and `--pivot-axis` if another flange axis points at it. `manual` records
+   whenever you press Enter, while you move the arm yourself. **The safety filter knows neither the
+   board nor the hand camera**, so start with plenty of room and keep the e-stop in reach.
+4. **Solve** on the page (or `calibrate_cameras.py ... solve`). Good results: reprojection under
+   0.5 px and board error under 2 mm (green). Delete bad samples with **×** and solve again. Widely
+   spread poses matter most for the fixed camera, which inherits the board's orientation error.
+5. **Save** writes `/data/calibration/extrinsics.yaml`, the file perception loads, plus a timestamped
+   copy. **Export session** downloads all samples, so a solve can be repeated later.
 
 ## Questions it answers (section 11.1)
 
