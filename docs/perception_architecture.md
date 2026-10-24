@@ -1,7 +1,11 @@
 # Perception architecture
 
-> **Status: proposal.** Nothing in this document is implemented yet. All parameter values are
-> starting points to tune in simulation and on the real cameras.
+> **Status: proposal.** Nothing in this document is implemented yet, apart from the SAM 2.1 and
+> DINOv2 test bench in [`wendy/perception_test`](../wendy/perception_test/README.md). All parameter
+> values are starting points to tune in simulation and on the real cameras.
+>
+> Perception runs on the Jetson Orin Nano, with both cameras plugged into it. See
+> [`deployment.md`](deployment.md) for which machine runs what.
 
 ## 1. Purpose
 
@@ -31,8 +35,9 @@ The rest of the system only consumes snapshots:
    fingerprint and goes through the generic path.
 4. **Relative measurement.** The same cameras measure the reference and the current scene, so a
    constant calibration offset largely cancels out in the displacement the robot executes.
-5. **Same interface in simulation and on the robot.** Simulated MuJoCo cameras publish the same
-   topics and frame names as the real D435s.
+5. **Same code in simulation and on the robot.** The pipeline reads frames through one
+   frame-source interface (section 3.2): the real D435s on the robot, the simulated MuJoCo cameras in
+   simulation, saved captures in offline tests.
 6. **ROS-free core.** The algorithms live in plain Python modules with a thin ROS 2 node on top, so
    the same code runs offline on saved captures and in tests.
 
@@ -48,40 +53,59 @@ Two fixed D435 cameras looking at the table (eye-to-hand). Mounting guidelines:
   1.0 m from the table centre works well.
 - Place the cameras on different sides of the table so each one sees what the other cannot.
 - Use rigid mounts. A bumped camera invalidates the calibration (the change mask in section 6 detects it).
+- Plug both cameras into the Jetson's USB 3 ports.
 
-### 3.2 Topics
+### 3.2 Frame sources
 
-Per camera `N` in {1, 2}, from [`dual_realsense.launch.py`](../ws/src/neurahackathon_cameras/launch/dual_realsense.launch.py):
+The pipeline reads frames through one interface with three implementations:
+
+| Source | Used | Reads |
+|---|---|---|
+| `RealSenseSource` | On the robot | Both D435s directly with `pyrealsense2`, on the Jetson |
+| `RosTopicSource` | In simulation | The MuJoCo cameras, published by the Ubuntu PC on the topics below |
+| `FileSource` | Offline tests | Captures saved by the test bench or by the pipeline (section 8.3) |
+
+Simulated camera topics, per camera `N` in {1, 2}. They use the RealSense driver's names, so the
+vendored ROS driver could also feed `RosTopicSource` if a camera ever moved to a ROS machine.
 
 | Topic | Type | Notes |
 |---|---|---|
 | `/cameras/camera_N/color/image_raw` | `sensor_msgs/Image` | `rgb8` |
 | `/cameras/camera_N/aligned_depth_to_color/image_raw` | `sensor_msgs/Image` | `16UC1`, millimetres, on the colour pixel grid |
 | `/cameras/camera_N/color/camera_info` | `sensor_msgs/CameraInfo` | Intrinsics `fx, fy, cx, cy` |
-| `/tf_static` | `tf2_msgs/TFMessage` | `world` to `camera_N_link`, from calibration |
 
-### 3.3 Driver settings
+The real cameras are not published as ROS image streams. Two colour and depth streams at 1280x720
+would load the network with no consumer; the perception node publishes debug overlays only when it
+captures (section 8.2).
 
-Changes to [`streams.yaml`](../ws/src/neurahackathon_cameras/config/streams.yaml) for perception:
+### 3.3 Camera settings
 
-```yaml
-rgb_camera.color_profile: "1280x720x30"  # was 640x480: more pixels on small objects
-align_depth.enable: true                 # was false: one depth value per colour pixel
-enable_sync: true                        # was false
-spatial_filter.enable: true              # edge-preserving smoothing
-temporal_filter.enable: true             # averages depth over frames
-depth_module.laser_power: 250.0          # raise towards the D435 maximum (360) if the black mouse has holes
-enable_infra1: false                     # perception does not use the infrared images;
-enable_infra2: false                     # disabling them saves USB bandwidth
-```
+Set in `RealSenseSource`, as [`cameras.py`](../wendy/perception_test/cameras.py) in the test bench
+already does:
 
-Depth stays at 848x480, the D435's most accurate depth resolution, and is upsampled onto the colour
-grid by the alignment.
+| Setting | Value | Why |
+|---|---|---|
+| Colour | 1280x720, RGB8, 15 fps | More pixels on small objects; 15 fps spares the Jetson's CPU |
+| Depth | 848x480, Z16, 15 fps | The D435's most accurate depth resolution |
+| Laser power | 250 (D435 maximum: 360) | Raise it if the black mouse has holes in its depth |
+| Infrared streams | Off | Not used; saves USB bandwidth |
+| Depth-to-colour alignment | Only for the frames a capture uses | `rs.align` on every frame costs CPU. On request, align the next 10 framesets. |
+| Spatial filter | Optional; try it in the test bench | Edge-preserving smoothing |
+
+No temporal filter: the 10-frame median in 5.1 does that job. The
+[`streams.yaml`](../ws/src/neurahackathon_cameras/config/streams.yaml) of the ROS camera workspace
+is not used by perception.
 
 ### 3.4 Calibration
 
-Perception only looks up `world` to `camera_N_color_optical_frame` through TF. Producing that
-transform (hand-eye calibration with `easy_handeye2` and `aruco_ros`) is a separate module.
+The camera poses are stored on the Jetson in `/data/calibration/extrinsics.yaml`: one transform from
+`world` to `camera_N_color_optical_frame` per camera, keyed by serial number so that swapping USB
+ports cannot swap calibrations. The perception node loads the file at start-up, uses it for
+back-projection and publishes it as static TF, so Foxglove shows the cameras.
+
+A calibration script on the Jetson produces the file: a ChArUco board on the hand, OpenCV
+`calibrateRobotWorldHandEye`, and flange poses read from the TF that the Ubuntu PC publishes. It is a
+separate module.
 
 ## 4. Pipeline overview
 
@@ -102,9 +126,9 @@ flowchart TD
 
 | Stage | Technique | Main package | Needs training |
 |---|---|---|---|
-| Observe pose | Fixed joint configuration | Supervisor + `ros2_control` | No |
-| Capture | Synchronised frames, per-pixel median | `message_filters`, NumPy | No |
-| Back-project | Pinhole model + TF | NumPy, `tf2_ros` | No |
+| Observe pose | Fixed joint configuration | Supervisor (Jetson), controllers (Ubuntu PC) | No |
+| Capture | Aligned framesets, per-pixel median | `pyrealsense2`, NumPy | No |
+| Back-project | Pinhole model + calibration file | NumPy | No |
 | Remove table | RANSAC plane fit | Open3D | No |
 | Cluster | DBSCAN | Open3D | No |
 | Refine masks | Box- and point-prompted segmentation | SAM 2.1 (`facebook/sam2.1-hiera-small`) | No |
@@ -118,27 +142,30 @@ flowchart TD
 
 - **Method:** the supervisor moves the arm to a fixed `observe` joint configuration, chosen once so
   the arm is outside both camera views, and waits until joint speeds are near zero plus 0.5 s.
-- **Guard:** the capture service checks `/joint_states` and refuses to capture when the arm is not
-  at the observe pose (parameter `require_observe_pose`).
+- **Guard:** the capture service checks `/joint_states`, published by the Ubuntu PC, and refuses to
+  capture when the arm is not at the observe pose (parameter `require_observe_pose`). It judges
+  freshness by when a message arrives on the Jetson, not by its header stamp, so a clock offset
+  between the two machines cannot block captures.
 - **Why:** the arm would otherwise be clustered as an object and would hide objects behind it.
 - **Later option:** a robot self-filter that renders the URDF into each depth image and masks the
   arm, so captures work with the arm in view.
 
 ### 5.1 Capture
 
-- **Method:** keep a ring buffer of the last synchronised frames per camera
-  (`ApproximateTimeSynchronizer` on colour, aligned depth and camera info). On request, take the
-  last 10 frames and compute the per-pixel median depth, ignoring zeros. A pixel is valid when at
-  least half of its samples are valid. Colour is the newest frame.
-- **Output per camera:** colour image, depth in metres, intrinsics, frame id, timestamp.
+- **Method:** on request, `RealSenseSource` aligns the next 10 framesets of each camera to colour,
+  both cameras in parallel (about 0.7 s at 15 fps). Per pixel, take the median depth, ignoring
+  zeros. A pixel is valid when at least half of its samples are valid. Colour is the newest frame,
+  and the intrinsics come from the colour stream profile. In simulation, `RosTopicSource` collects 10
+  messages per camera instead.
+- **Output per camera:** colour image, depth in metres, intrinsics, camera serial, timestamp.
 - **Why:** D435 depth flickers at object edges and drops pixels. The median removes most of that,
   which keeps object centres stable between captures.
 
 ### 5.2 Back-project to the world frame
 
 - **Method:** for each valid pixel `(u, v)` with depth `Z`:
-  `X = (u - cx) * Z / fx`, `Y = (v - cy) * Z / fy`. Transform the points with the TF from the
-  camera optical frame to `world`, then crop to the workspace box.
+  `X = (u - cx) * Z / fx`, `Y = (v - cy) * Z / fy`. Transform the points to `world` with the
+  camera's pose from the calibration file (3.4), then crop to the workspace box.
 - **Keep:** the source `(camera, v, u)` of every point, so 2D masks can select 3D points and 3D
   blobs can be projected back into the images.
 - **Workspace box (simulation):** x from -0.6 to 0.6, y from -0.4 to 0.4, z from 0.88 to 1.30 m
@@ -398,18 +425,24 @@ uint32 views_stored
 
 ### 8.2 Node `scene_perception_node`
 
+Runs on the Jetson, in the `restore` container ([`deployment.md`](deployment.md), section 5.2).
+
 | Kind | Name | Type |
 |---|---|---|
-| Subscribes | `/cameras/camera_N/color/image_raw`, `.../aligned_depth_to_color/image_raw`, `.../color/camera_info` | Images and camera info |
-| Subscribes | `/joint_states` | Observe-pose guard |
+| Reads | Both D435s through `RealSenseSource`; in simulation, the camera topics in 3.2 | Frames |
+| Subscribes | `/joint_states` (from the Ubuntu PC) | Observe-pose guard |
 | Service | `/perception/capture_scene` | `CaptureScene` |
 | Service | `/perception/register_object` | `RegisterObject` |
+| Publishes | `/tf_static` | `world` to `camera_N_color_optical_frame`, from the calibration file |
 | Publishes | `/perception/snapshot` | `SceneSnapshot`, transient local |
 | Publishes | `/perception/markers` | `visualization_msgs/MarkerArray`: boxes, labels, footprints |
-| Publishes | `/perception/debug/camera_N/overlay` | `sensor_msgs/Image`: masks and labels drawn on colour |
+| Publishes | `/perception/debug/camera_N/overlay` | `sensor_msgs/Image`: masks and labels drawn on colour, once per capture |
 
 Models are loaded once at start-up and warmed up with one dummy inference, so the first capture is
 not slow.
+
+Only one program can open a camera: the test bench (`wendy/perception_test`) and this node cannot
+run at the same time.
 
 ### 8.3 On-disk format
 
@@ -441,6 +474,7 @@ src/restore/restore_perception/          # ament_python package
   restore_perception/
     core/                                 # no ROS imports
       types.py                            # dataclasses: Frame, Candidate, ObjectState
+      sources.py                          # RealSenseSource, FileSource (RosTopicSource lives in node.py)
       capture.py                          # median depth
       geometry.py                         # back-projection, plane, clustering, footprint
       segment.py                          # SAM 2.1 wrapper, splitting, depth-poor objects
@@ -452,53 +486,62 @@ src/restore/restore_perception/          # ament_python package
       snapshot_io.py                      # read and write data/
     node.py                               # ROS 2 wrapper
   scripts/
-    record_captures.py                    # save synchronised RGB-D from both cameras
+    record_captures.py                    # save captures from both cameras in the 8.3 format
     offline_eval.py                       # run core on saved captures, write overlays and a report
   test/
+
+wendy/restore/                           # Wendy app that runs all our code on the Jetson
+  build.stagefile.yaml                    # ubuntu:22.04 + ROS 2 Humble + Jetson PyTorch; builds src/restore
+  wendy.json                              # entitlements: host network, GPU, USB, camera, /data, ports
 ```
+
+`core/` imports neither ROS nor `pyrealsense2` at module level, so `offline_eval.py` also runs on a
+PC with saved captures.
 
 ## 10. Software stack
 
-| Package | Install | Used for |
+Everything below goes into the `restore` image on the Jetson. The versions are the ones the test
+bench's [`build.stagefile.yaml`](../wendy/perception_test/build.stagefile.yaml) already builds and
+runs, except where marked.
+
+| Package | Version and source | Used for |
 |---|---|---|
-| ROS 2 Humble | apt `ros-humble-desktop` | `rclpy`, `message_filters`, `cv_bridge`, `tf2_ros`, `sensor_msgs_py` |
-| `realsense2_camera` 4.58.4 | Vendored in `ws/`, rebuilt on Humble | D435 driver |
-| Open3D | pip `open3d` | Downsampling, plane fit, DBSCAN, outlier removal |
-| SAM 2.1 | pip from `github.com/facebookresearch/sam2` | Masks |
-| DINOv2 | pip `transformers` | Embeddings |
-| PyTorch | pip `torch torchvision` | Runs SAM 2.1 and DINOv2 on the GPU |
-| OpenCV | apt `python3-opencv` | `minAreaRect`, morphology, drawing |
-| SciPy | apt `python3-scipy` | Hungarian assignment |
-| Shapely | apt `python3-shapely` | Footprint polygons |
-
-Install into a virtual environment that can still see the ROS packages:
-
-```bash
-python3 -m venv --system-site-packages ~/restore_venv
-```
-
-```bash
-~/restore_venv/bin/pip install "numpy<2" open3d torch torchvision transformers "git+https://github.com/facebookresearch/sam2.git"
-```
+| Base image | `ubuntu:22.04`, arm64 | Matches ROS 2 Humble and the Jetson wheels |
+| ROS 2 Humble | apt `ros-humble-ros-base` (new) | `rclpy`, `tf2_ros`, `sensor_msgs_py` |
+| `foxglove_bridge` | apt `ros-humble-foxglove-bridge` (new) | Visualisation from the Windows PC |
+| PyTorch | `torch==2.8.0`, `torchvision==0.23.0` from the Jetson wheel index (CUDA 12.6) | Runs SAM 2.1 and DINOv2 on the GPU |
+| `pyrealsense2` | `2.59.1.11053`, aarch64 wheel | Reads the cameras |
+| SAM 2.1 | Source at a pinned commit, checkpoint `sam2.1_hiera_small.pt` | Masks |
+| DINOv2 | `transformers==4.56.2`, `facebook/dinov2-small` baked into the image | Embeddings |
+| OpenCV | `opencv-python-headless==4.10.0.84` | `minAreaRect`, morphology, drawing |
+| NumPy | `1.26.4` | Everything |
+| SciPy | pip | Hungarian assignment |
+| Shapely | pip (new) | Footprint polygons |
+| Open3D | pip (new; aarch64 wheel to be confirmed) | Downsampling, plane fit, DBSCAN, outlier removal |
 
 Pitfalls:
 
-- **Keep NumPy below 2.** Humble's compiled Python packages, such as `cv_bridge`, are built
-  against NumPy 1.x.
-- **Check the librealsense version.** The vendored driver needs 2.58 or newer
-  (`apt show ros-humble-librealsense2`). If apt is older, install `librealsense2-dev` from Intel's
-  repository or use apt's `ros-humble-realsense2-camera`.
-- **Use a GPU.** Both models fit in a few GB of VRAM. SAM 2.1 on a CPU is too slow for comfortable
-  iteration.
-- **Run one ROS distribution.** Build the camera workspace on Humble instead of bridging to Jazzy.
+- **Pin NumPy 1.26.4 in every pip group.** The groups install into the same tree, so an unpinned
+  group pulls NumPy 2 underneath and breaks OpenCV and SciPy (found while building the test bench).
+- **Confirm Open3D on aarch64.** Check that a wheel exists for Python 3.10 and works with NumPy
+  1.26.4. Fallback: the plane fit in NumPy, DBSCAN from `scikit-learn`, and a small ICP on a SciPy
+  KD-tree for the scene diff.
+- **Skip `cv_bridge`.** Convert `sensor_msgs/Image` to and from NumPy directly (`rgb8` and `16UC1`
+  are simple), so pip's OpenCV is never mixed with the OpenCV that ROS installs from apt.
+- **Mind the shared memory.** The Orin Nano shares 8 GB between CPU and GPU. Keep SAM's automatic
+  mask generator at 32 points per batch, as the test bench does.
+- **Expect slow builds.** Images are built on the Windows PC under ARM emulation; see the test
+  bench README for two workarounds.
 
 ## 11. Validation
 
 ### 11.1 Offline test on real captures (first)
 
-Record about 20 captures with `record_captures.py`: each object alone, and groups arranged like the
-real task, including the touching pairs. Run `offline_eval.py` and inspect the overlays. This
-answers three questions before any ROS integration:
+Record about 20 captures from both cameras with the test bench (colour and 16-bit depth downloads)
+or with `record_captures.py`: each object alone, and groups arranged like the real task, including
+the touching pairs. Run `offline_eval.py` and inspect the overlays. The test bench answers the
+three questions below directly on the Jetson, and `offline_eval.py` answers them with the geometry
+stages added, before any ROS integration:
 
 1. Does SAM give a clean mask for the steel mug?
 2. Does SAM split the touching pairs?
@@ -506,8 +549,9 @@ answers three questions before any ROS integration:
 
 ### 11.2 Simulation against ground truth
 
-The simulated cameras publish the same topics, and MuJoCo knows every object's true pose. Run the
-pipeline over randomised scenes and measure position and yaw errors per object.
+The simulated cameras on the Ubuntu PC publish the topics in 3.2, which `RosTopicSource` reads on
+the Jetson, and MuJoCo knows every object's true pose. Run the pipeline over randomised scenes and
+measure position and yaw errors per object.
 
 ### 11.3 Real repeatability
 
@@ -534,8 +578,7 @@ names. DINOv2 and the gallery stay in place for identity and for unknown objects
 
 ## 13. Open questions
 
-- Where can the cameras be mounted at the venue, and does the robot PC have a GPU, or does
-  perception run on a separate machine?
+- Where can the cameras be mounted at the venue? Both cables must reach the Jetson's USB 3 ports.
 - Will the judges stand lying objects upright (or the reverse)? That needs reorientation, which is
   outside this design.
 - Will the judges add objects that are not in the gallery? The generic path handles them, but
