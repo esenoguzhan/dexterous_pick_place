@@ -1,0 +1,34 @@
+services:
+  cameras:
+    image: lara5_hackathon:realsense
+    build:
+      context: .
+      dockerfile: src/docker/Dockerfile.realsense
+      args:
+        ROBOT_IMAGE: ${ROBOT_IMAGE:-lara5_hackathon:latest}
+        BUILD_JOBS: ${BUILD_JOBS:-2}
+    network_mode: host
+    ipc: host
+    stdin_open: true
+    tty: true
+    environment:
+      ROS_DOMAIN_ID: ${ROS_DOMAIN_ID:-42}
+      ROS_LOCALHOST_ONLY: "0"
+      CAMERA_1_SERIAL: ${CAMERA_1_SERIAL:-263522073705}
+      CAMERA_2_SERIAL: ${CAMERA_2_SERIAL:-262722075125}
+      CAMERA_CONFIG_FILE: /camera_config/streams.yaml
+    # USB device nodes can change when a camera reconnects. Mount the USB bus
+    # and allow its character-device major, without privileged mode.
+    volumes:
+      - type: bind
+        source: /dev/bus/usb
+        target: /dev/bus/usb
+        bind:
+          create_host_path: false
+      - type: bind
+        source: ./ws/src/neurahackathon_cameras/config/streams.yaml
+        target: /camera_config/streams.yaml
+        read_only: true
+    device_cgroup_rules:
+      - 'c 189:* rwm'
+    command: ["bash"]

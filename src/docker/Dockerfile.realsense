@@ -1,0 +1,54 @@
+# Build the existing robot image first, then build this file from the repo root:
+# docker build -f src/docker/Dockerfile -t lara5_hackathon src
+# docker build -f src/docker/Dockerfile.realsense -t lara5_hackathon:realsense .
+ARG ROBOT_IMAGE=lara5_hackathon:latest
+FROM ${ROBOT_IMAGE}
+
+ARG DEBIAN_FRONTEND=noninteractive
+ARG LIBREALSENSE_VERSION=2.58.4
+ARG BUILD_JOBS=2
+
+# Use the userspace USB backend: no DKMS/kernel installation in the container.
+# Pin the SDK to the version used by the original Jazzy camera workspace.
+RUN apt-get update && apt-get install -y --no-install-recommends \
+        ca-certificates git cmake build-essential pkg-config \
+        libusb-1.0-0-dev libudev-dev libssl-dev \
+        ros-humble-rqt-image-view \
+    && git clone --depth 1 --branch "v${LIBREALSENSE_VERSION}" \
+        https://github.com/realsenseai/librealsense.git /tmp/librealsense \
+    && cmake -S /tmp/librealsense -B /tmp/librealsense/build \
+        -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/usr/local \
+        -DFORCE_RSUSB_BACKEND=ON -DBUILD_WITH_DDS=OFF -DBUILD_ROSBAG2=OFF \
+        -DBUILD_EXAMPLES=OFF -DBUILD_GRAPHICAL_EXAMPLES=OFF \
+        -DBUILD_TOOLS=ON -DBUILD_UNIT_TESTS=OFF \
+    && cmake --build /tmp/librealsense/build --parallel "${BUILD_JOBS}" \
+    && cmake --install /tmp/librealsense/build \
+    && ldconfig \
+    && rm -rf /tmp/librealsense /var/lib/apt/lists/*
+
+# Copy sources only; never reuse Ubuntu 24.04/Jazzy build/install artifacts.
+COPY ws/src/ /camera_ws/src/
+RUN apt-get update \
+    && rosdep update --rosdistro humble \
+    && rosdep install --from-paths \
+        /camera_ws/src/realsense-ros/realsense2_camera_msgs \
+        /camera_ws/src/realsense-ros/realsense2_camera \
+        /camera_ws/src/neurahackathon_cameras \
+        --ignore-src --rosdistro humble --skip-keys=librealsense2 \
+        --dependency-types=build --dependency-types=buildtool \
+        --dependency-types=build_export --dependency-types=exec -y \
+    && rm -rf /var/lib/apt/lists/*
+
+WORKDIR /camera_ws
+RUN source /ws/install/setup.bash \
+    && CMAKE_BUILD_PARALLEL_LEVEL="${BUILD_JOBS}" MAKEFLAGS="-j${BUILD_JOBS}" \
+        colcon build --packages-up-to neurahackathon_cameras \
+        --parallel-workers "${BUILD_JOBS}" \
+        --cmake-args -DBUILD_TESTING=OFF -DCMAKE_BUILD_TYPE=Release
+
+COPY src/docker/realsense-entrypoint.sh /realsense-entrypoint.sh
+RUN chmod +x /realsense-entrypoint.sh \
+    && echo 'source /camera_ws/install/setup.bash' >> /root/.bashrc
+
+ENTRYPOINT ["/realsense-entrypoint.sh"]
+CMD ["bash"]

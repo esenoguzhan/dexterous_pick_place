@@ -5,7 +5,7 @@ from pathlib import Path
 from ament_index_python.packages import get_package_share_directory
 from launch import LaunchDescription
 from launch.actions import DeclareLaunchArgument
-from launch.substitutions import LaunchConfiguration
+from launch.substitutions import EnvironmentVariable, LaunchConfiguration
 from launch_ros.actions import Node
 from launch_ros.parameter_descriptions import ParameterValue
 
@@ -16,12 +16,15 @@ def generate_launch_description():
         / 'config' / 'streams.yaml'
     )
     declarations = [
-        DeclareLaunchArgument('camera_1_serial', default_value='263522073705',
+        DeclareLaunchArgument('camera_1_serial', default_value=EnvironmentVariable(
+                                  'CAMERA_1_SERIAL', default_value='263522073705'),
                               description='Serial number of camera_1'),
-        DeclareLaunchArgument('camera_2_serial', default_value='262722075125',
+        DeclareLaunchArgument('camera_2_serial', default_value=EnvironmentVariable(
+                                  'CAMERA_2_SERIAL', default_value='262722075125'),
                               description='Serial number of camera_2'),
         DeclareLaunchArgument('camera_namespace', default_value='cameras'),
-        DeclareLaunchArgument('config_file', default_value=config,
+        DeclareLaunchArgument('config_file', default_value=EnvironmentVariable(
+                                  'CAMERA_CONFIG_FILE', default_value=config),
                               description='Shared ROS parameter YAML file'),
     ]
     cameras = [
