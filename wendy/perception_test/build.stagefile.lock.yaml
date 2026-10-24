@@ -1,0 +1,30 @@
+version: 1
+sourceHash: sha256:6d4c9a425d56c8efd88607531e1e81a815610fd51002a538846730ace30e228d
+images:
+    ubuntu:22.04: sha256:0a9887931b0e38af2e3487ed39e29436b0535c4f3f52e57745baaf79d1898956
+downloads:
+    https://dl.fbaipublicfiles.com/segment_anything_2/092824/sam2.1_hiera_small.pt: sha256:6d1aa6f30de5c92224f8172114de081d104bbd23dd9dc5c58996f0cad5dc4d38
+    https://github.com/facebookresearch/sam2/archive/2b90b9f5ceec907a1c18123530e92e794ad901a4.tar.gz: sha256:1f2fbfad3ffa38110368abac76c6ef9df9c282a66d5c2807bc94abf4d2fb30f8
+    https://huggingface.co/facebook/dinov2-small/resolve/main/config.json: sha256:1809f83e3bdb1609a501a610ad4a742f4fd8ae44d72ca4aa0df52d1f2ac8628d
+    https://huggingface.co/facebook/dinov2-small/resolve/main/model.safetensors: sha256:ae1e99fcefd534ed978cdeb8326f08030c96e28b7a81ffcbc98a857c84d14be1
+cuda:
+    sm_87:
+        board: NVIDIA Jetson Orin
+        cudaVersion: "12.6"
+        index: https://pypi.jetson-ai-lab.io/jp6/cu126/
+        runtime:
+            - nvidia-cuda-runtime-cu12
+            - nvidia-cuda-nvrtc-cu12
+            - nvidia-cuda-cupti-cu12
+            - nvidia-cublas-cu12
+            - nvidia-cudnn-cu12
+            - nvidia-cufft-cu12
+            - nvidia-curand-cu12
+            - nvidia-cusolver-cu12
+            - nvidia-cusparse-cu12
+            - nvidia-cusparselt-cu12
+            - nvidia-cufile-cu12
+            - nvidia-nccl-cu12
+            - nvidia-nvtx-cu12
+            - nvidia-nvjitlink-cu12
+        libDir: /opt/cuda12/lib

@@ -1,0 +1,578 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Perception test</title>
+<style>
+  :root {
+    --bg: #0f1115; --panel: #171a21; --line: #2a2f3a; --text: #e6e8ee; --muted: #9aa3b2;
+    --accent: #4f9dff; --ok: #3ecf8e; --warn: #f5a524; --bad: #f45b69; --field: #222733;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; font: 14px/1.45 system-ui, -apple-system, Segoe UI, sans-serif; background: var(--bg); color: var(--text); }
+  header { display: flex; gap: 8px; align-items: center; padding: 10px 16px; border-bottom: 1px solid var(--line); flex-wrap: wrap; }
+  h1 { font-size: 16px; margin: 0 12px 0 0; font-weight: 600; }
+  h2 { font-size: 12px; text-transform: uppercase; letter-spacing: .05em; color: var(--muted); margin: 0 0 8px; font-weight: 600; }
+  .pill { padding: 2px 10px; border-radius: 999px; background: var(--field); color: var(--muted); font-size: 12px; }
+  .pill.ok { color: var(--ok); } .pill.warn { color: var(--warn); } .pill.bad { color: var(--bad); }
+  main { display: grid; grid-template-columns: minmax(280px, 360px) minmax(0, 1fr) minmax(300px, 380px); gap: 12px; padding: 12px; }
+  @media (max-width: 1150px) { main { grid-template-columns: minmax(0, 1fr); } }
+  section { background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 12px; min-width: 0; }
+  section + h2, .gap { margin-top: 16px; }
+  button, select, input { font: inherit; color: var(--text); background: var(--field); border: 1px solid var(--line); border-radius: 6px; padding: 5px 10px; }
+  button { cursor: pointer; }
+  button.primary { background: var(--accent); border-color: var(--accent); color: #fff; }
+  button:disabled { opacity: .45; cursor: default; }
+  a { color: var(--accent); }
+  .row { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; margin-bottom: 8px; }
+  .tabs button.active { border-color: var(--accent); color: var(--accent); }
+  #live { width: 100%; aspect-ratio: 16 / 9; object-fit: contain; border-radius: 6px; background: #000; display: block; }
+  #canvas { width: 100%; display: block; border-radius: 6px; background: #000; cursor: crosshair; }
+  .hint, .muted { color: var(--muted); font-size: 12px; }
+  .timing { font: 12px ui-monospace, Consolas, monospace; color: var(--muted); min-height: 1.5em; margin-top: 6px; }
+  .timing.error { color: var(--bad); }
+  table { width: 100%; border-collapse: collapse; font-size: 12.5px; }
+  th, td { padding: 4px 6px; border-bottom: 1px solid var(--line); text-align: left; white-space: nowrap; }
+  th { color: var(--muted); font-weight: 500; }
+  tbody tr { cursor: pointer; }
+  tbody tr:hover { background: #1c2029; }
+  tbody tr.sel { background: #1f2a3d; }
+  .swatch { display: inline-block; width: 10px; height: 10px; border-radius: 2px; margin-right: 6px; vertical-align: -1px; }
+  .unknown { color: var(--muted); }
+  .known { color: var(--ok); font-weight: 600; }
+  .gallery-item { display: flex; gap: 10px; align-items: center; padding: 6px 0; border-bottom: 1px solid var(--line); }
+  .gallery-item img { width: 44px; height: 44px; border-radius: 4px; object-fit: cover; background: #000; }
+  .gallery-item .grow { flex: 1; min-width: 0; }
+  .detail { margin-top: 10px; font-size: 12.5px; }
+  .table-wrap { max-height: 360px; overflow: auto; }
+</style>
+</head>
+<body>
+<header>
+  <h1>Perception test · SAM 2.1 + DINOv2</h1>
+  <span id="pill-models" class="pill">models: …</span>
+  <span id="pill-gpu" class="pill">gpu: …</span>
+  <span id="pill-cams" class="pill">cameras: …</span>
+  <span id="pill-gallery" class="pill">gallery: …</span>
+</header>
+<main>
+  <section>
+    <h2>Live</h2>
+    <div class="row tabs" id="cam-tabs"><span class="hint">Looking for cameras…</span></div>
+    <div class="row">
+      <select id="view" aria-label="Stream">
+        <option value="color">Colour</option>
+        <option value="depth">Depth, aligned to colour</option>
+      </select>
+      <button id="rescan">Rescan cameras</button>
+    </div>
+    <img id="live" alt="Live camera stream">
+    <div class="row gap">
+      <button id="capture" class="primary" disabled>Capture</button>
+      <span id="cam-info" class="hint"></span>
+    </div>
+    <h2 class="gap">Gallery</h2>
+    <div id="gallery" class="hint">Empty. Segment an object and add it.</div>
+  </section>
+
+  <section>
+    <h2>Capture</h2>
+    <div class="row">
+      <label><input type="radio" name="tool" value="point" checked> Points</label>
+      <label><input type="radio" name="tool" value="box"> Box</label>
+      <label><input type="checkbox" id="multimask" checked> 3 candidates</label>
+      <button id="clear">Clear prompts</button>
+      <span class="hint">Left click: object · right click: background · Box: drag</span>
+    </div>
+    <div class="row">
+      <button id="automask" disabled>Auto masks</button>
+      <label class="hint">points per side
+        <select id="pps"><option>16</option><option selected>24</option><option>32</option></select>
+      </label>
+      <label class="hint">max area
+        <select id="maxarea">
+          <option value="0.1">10 %</option><option value="0.2" selected>20 %</option><option value="0.5">50 %</option>
+        </select>
+      </label>
+      <a id="dl-color" class="hint" hidden>colour.png</a>
+      <a id="dl-depth" class="hint" hidden>depth.png</a>
+    </div>
+    <canvas id="canvas" width="1280" height="720"></canvas>
+    <div id="timing" class="timing">Capture a frame to start.</div>
+  </section>
+
+  <section>
+    <h2>Masks</h2>
+    <div id="masks" class="hint">Click an object in the capture, drag a box, or run Auto masks.</div>
+    <div id="detail" class="detail"></div>
+    <h2 class="gap">Add selected mask to gallery</h2>
+    <div class="row">
+      <input id="obj-name" placeholder="name, e.g. steel_mug" size="16" aria-label="Object name">
+      <input id="obj-side" placeholder="up side (optional)" size="13" aria-label="Up side">
+      <button id="add">Add view</button>
+    </div>
+    <div id="add-msg" class="hint">Register 10 to 20 views per object, rotating it about 30° each time (§7.1).</div>
+  </section>
+</main>
+
+<script>
+const $ = (id) => document.getElementById(id);
+const canvas = $("canvas");
+const ctx = canvas.getContext("2d");
+const state = {
+  cams: [], cam: null, models: null,
+  capture: null, img: null,
+  points: [], box: null, drag: null,
+  mode: null,          // "prompt" or "auto": which result set is shown
+  prompt: [], promptImgs: [],
+  auto: [], autoImg: null,
+  selected: null,
+};
+
+async function api(path, options = {}) {
+  const res = await fetch(path, { headers: { "Content-Type": "application/json" }, ...options });
+  const body = await res.json().catch(() => ({}));
+  if (!res.ok) throw new Error(body.detail || `${res.status} ${res.statusText}`);
+  return body;
+}
+
+function loadImage(src) {
+  return new Promise((resolve, reject) => {
+    const img = new Image();
+    img.onload = () => resolve(img);
+    img.onerror = reject;
+    img.src = src;
+  });
+}
+
+function esc(text) {
+  return String(text ?? "").replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+}
+
+function setPill(id, text, level, title = "") {
+  const el = $(id);
+  el.textContent = text;
+  el.className = `pill ${level || ""}`;
+  el.title = title || "";
+}
+
+function showTiming(text, isError = false) {
+  const el = $("timing");
+  el.textContent = text;
+  el.classList.toggle("error", isError);
+}
+
+const ms = (v) => (v == null ? "–" : `${Math.round(v)} ms`);
+const tool = () => document.querySelector('input[name="tool"]:checked').value;
+
+// ---------- status, cameras, gallery ----------
+
+let lastCamsJson = "";
+let lastGalleryJson = "";
+
+async function refreshStatus() {
+  try {
+    const s = await api("/api/status");
+    const m = s.models;
+    state.models = m;
+    const modelText = m.state === "ready" ? `models: ready in ${m.load_seconds} s` : `models: ${m.state}`;
+    setPill("pill-models", modelText, { ready: "ok", error: "bad" }[m.state] || "warn", m.error || "");
+    if (m.device === "cuda") {
+      const mem = m.gpu_mem_free_gb != null ? ` · ${m.gpu_mem_free_gb}/${m.gpu_mem_total_gb} GB free` : "";
+      setPill("pill-gpu", `${m.gpu || "CUDA"}${mem}`, "ok", `torch ${m.torch}, CUDA ${m.torch_cuda}`);
+    } else {
+      setPill("pill-gpu", "CPU only: CUDA not available", "bad", `torch ${m.torch}`);
+    }
+    const online = s.cameras.filter((c) => c.online).length;
+    setPill("pill-cams", `cameras: ${online}/${s.cameras.length}`, online ? "ok" : "bad", s.camera_error || "");
+    renderCams(s.cameras);
+    renderGallery(s.gallery);
+    if (m.state === "error") showTiming(`Model loading failed: ${m.error}`, true);
+    updateButtons();
+  } catch (err) {
+    setPill("pill-models", "device unreachable", "bad", String(err));
+  }
+}
+
+function updateButtons() {
+  const cam = state.cams.find((c) => c.id === state.cam);
+  $("capture").disabled = !(cam && cam.online);
+  $("automask").disabled = !(state.capture && state.models && state.models.state === "ready");
+}
+
+function renderCams(cams) {
+  state.cams = cams;
+  const json = JSON.stringify(cams.map((c) => [c.id, c.online, c.fps, c.error, c.usb]));
+  if (!state.cam || !cams.some((c) => c.id === state.cam)) {
+    const first = cams.find((c) => c.online) || cams[0];
+    if (first) selectCam(first.id);
+  }
+  if (json === lastCamsJson) return;
+  lastCamsJson = json;
+  const tabs = $("cam-tabs");
+  if (!cams.length) {
+    tabs.innerHTML = '<span class="hint">No camera found. Plug in a D435 and press Rescan.</span>';
+  } else {
+    tabs.innerHTML = cams.map((c) =>
+      `<button data-cam="${esc(c.id)}" class="${c.id === state.cam ? "active" : ""}">` +
+      `${c.kind === "realsense" ? "D435" : "V4L2"} …${esc(String(c.id).slice(-4))}` +
+      `${c.online ? "" : " (offline)"}</button>`).join("");
+    tabs.querySelectorAll("button").forEach((b) => (b.onclick = () => selectCam(b.dataset.cam)));
+  }
+  renderCamInfo();
+}
+
+function renderCamInfo() {
+  const c = state.cams.find((x) => x.id === state.cam);
+  if (!c) { $("cam-info").textContent = ""; return; }
+  const parts = [c.name, c.serial && `S/N ${c.serial}`, c.usb && `USB ${c.usb}`, c.firmware && `FW ${c.firmware}`,
+                 c.width && `${c.width}×${c.height}`, `${c.fps} fps`];
+  $("cam-info").textContent = parts.filter(Boolean).join(" · ") + (c.error ? ` · ${c.error}` : "");
+  if (c.usb && c.usb.startsWith("2")) {
+    $("cam-info").textContent += " · plugged into USB 2: use a USB 3 port";
+  }
+}
+
+function selectCam(id) {
+  if (state.cam === id) return;
+  state.cam = id;
+  lastCamsJson = "";
+  setLive();
+  renderCams(state.cams);
+  updateButtons();
+}
+
+function setLive() {
+  if (!state.cam) return;
+  $("live").src = `/stream/${encodeURIComponent(state.cam)}?view=${$("view").value}&t=${Date.now()}`;
+}
+
+function renderGallery(items) {
+  setPill("pill-gallery", `gallery: ${items.length} objects`, items.length ? "ok" : "");
+  const json = JSON.stringify(items);
+  if (json === lastGalleryJson) return;
+  lastGalleryJson = json;
+  const el = $("gallery");
+  if (!items.length) {
+    el.innerHTML = "Empty. Segment an object and add it.";
+    el.className = "hint";
+    return;
+  }
+  el.className = "";
+  el.innerHTML = items.map((g) =>
+    `<div class="gallery-item">
+       <img src="/api/gallery/${encodeURIComponent(g.name)}/thumb.png?v=${g.views}" alt="">
+       <div class="grow"><div>${esc(g.name)}</div>
+         <div class="hint">${g.views} view${g.views === 1 ? "" : "s"}${g.up_sides.length ? " · " + esc(g.up_sides.join(", ")) : ""}</div></div>
+       <button data-del="${esc(g.name)}" title="Delete ${esc(g.name)}">Delete</button>
+     </div>`).join("");
+  el.querySelectorAll("[data-del]").forEach((b) => (b.onclick = async () => {
+    if (!confirm(`Delete all views of ${b.dataset.del}?`)) return;
+    const r = await api(`/api/gallery/${encodeURIComponent(b.dataset.del)}`, { method: "DELETE" });
+    renderGallery(r.gallery);
+    rematch();
+  }));
+}
+
+// ---------- capture ----------
+
+async function doCapture() {
+  try {
+    $("capture").disabled = true;
+    const c = await api("/api/capture", { method: "POST", body: JSON.stringify({ camera: state.cam }) });
+    const img = await loadImage(`/api/captures/${c.id}/color.jpg`);
+    Object.assign(state, {
+      capture: c, img, points: [], box: null, drag: null, mode: null,
+      prompt: [], promptImgs: [], auto: [], autoImg: null, selected: null,
+    });
+    canvas.width = c.width;
+    canvas.height = c.height;
+    $("dl-color").href = `/api/captures/${c.id}/color.png`;
+    $("dl-color").hidden = false;
+    $("dl-depth").href = `/api/captures/${c.id}/depth.png`;
+    $("dl-depth").hidden = !c.has_depth;
+    const note = c.set_image_ms == null ? "models not ready yet" : `SAM image embedding ${ms(c.set_image_ms)}`;
+    showTiming(`Capture ${c.id} from ${c.camera} · ${c.width}×${c.height} · ${note}`);
+    renderMasks();
+    draw();
+  } catch (err) {
+    showTiming(`Capture failed: ${err.message}`, true);
+  } finally {
+    updateButtons();
+  }
+}
+
+// ---------- prompts and segmentation ----------
+
+function toImage(e) {
+  const r = canvas.getBoundingClientRect();
+  return [(e.clientX - r.left) * canvas.width / r.width, (e.clientY - r.top) * canvas.height / r.height];
+}
+
+canvas.addEventListener("contextmenu", (e) => e.preventDefault());
+canvas.addEventListener("mousedown", (e) => {
+  if (!state.capture) return;
+  const [x, y] = toImage(e);
+  if (e.button === 2) {
+    state.points.push([Math.round(x), Math.round(y), 0]);
+    segment();
+  } else if (e.button === 0 && tool() === "point") {
+    state.points.push([Math.round(x), Math.round(y), 1]);
+    segment();
+  } else if (e.button === 0) {
+    state.drag = { x0: x, y0: y, x1: x, y1: y };
+  }
+});
+canvas.addEventListener("mousemove", (e) => {
+  if (!state.drag) return;
+  [state.drag.x1, state.drag.y1] = toImage(e);
+  draw();
+});
+window.addEventListener("mouseup", () => {
+  const d = state.drag;
+  if (!d) return;
+  state.drag = null;
+  if (Math.abs(d.x1 - d.x0) > 4 && Math.abs(d.y1 - d.y0) > 4) {
+    state.box = [Math.min(d.x0, d.x1), Math.min(d.y0, d.y1), Math.max(d.x0, d.x1), Math.max(d.y0, d.y1)].map(Math.round);
+    segment();
+  } else {
+    draw();
+  }
+});
+
+let segmentBusy = false;
+let segmentAgain = false;
+
+async function segment() {
+  if (!state.points.length && !state.box) {
+    if (state.mode === "prompt") { state.mode = null; state.selected = null; }
+    renderMasks();
+    draw();
+    return;
+  }
+  if (segmentBusy) { segmentAgain = true; draw(); return; }
+  segmentBusy = true;
+  draw();
+  try {
+    const r = await api("/api/segment", {
+      method: "POST",
+      body: JSON.stringify({ capture: state.capture.id, points: state.points, box: state.box, multimask: $("multimask").checked }),
+    });
+    state.prompt = r.masks;
+    state.promptImgs = await Promise.all(r.masks.map((m) => loadImage(m.overlay)));
+    state.mode = "prompt";
+    state.selected = r.masks.length ? 0 : null;
+    const t = r.timing;
+    showTiming(`SAM embedding ${t.set_image_ms ? ms(t.set_image_ms) : "cached"} · SAM decoder ${ms(t.predict_ms)} · DINOv2 ${ms(t.embed_ms)} for ${r.masks.length} masks`);
+  } catch (err) {
+    showTiming(`Segmentation failed: ${err.message}`, true);
+  } finally {
+    segmentBusy = false;
+    renderMasks();
+    draw();
+    if (segmentAgain) { segmentAgain = false; segment(); }
+  }
+}
+
+async function runAutomask() {
+  if (!state.capture) return;
+  $("automask").disabled = true;
+  showTiming("Running the automatic mask generator…");
+  try {
+    const r = await api("/api/automask", {
+      method: "POST",
+      body: JSON.stringify({ capture: state.capture.id, points_per_side: Number($("pps").value), max_area_frac: Number($("maxarea").value) }),
+    });
+    state.auto = r.masks;
+    state.autoImg = r.overlay ? await loadImage(r.overlay) : null;
+    state.mode = "auto";
+    state.selected = null;
+    const t = r.timing;
+    showTiming(`Auto masks: ${t.count} masks · generator ${ms(t.automask_ms)} · DINOv2 ${ms(t.embed_ms)}`);
+  } catch (err) {
+    showTiming(`Auto masks failed: ${err.message}`, true);
+  } finally {
+    updateButtons();
+    renderMasks();
+    draw();
+  }
+}
+
+async function rematch() {
+  if (!state.capture) return;
+  try {
+    const r = await api("/api/rematch", { method: "POST", body: JSON.stringify({ capture: state.capture.id }) });
+    r.prompt.forEach((m, i) => { if (state.prompt[i]) state.prompt[i].match = m; });
+    r.auto.forEach((m, i) => { if (state.auto[i]) state.auto[i].match = m; });
+    renderMasks();
+    draw();
+  } catch (err) { /* the capture may have expired */ }
+}
+
+// ---------- drawing ----------
+
+function labelOf(m) {
+  const g = m.match;
+  if (!g || g.score == null) return "no gallery";
+  return g.label !== "unknown" ? `${g.label} ${g.score.toFixed(2)}` : `unknown (${g.candidate} ${g.score.toFixed(2)})`;
+}
+
+function draw() {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  if (!state.img) return;
+  ctx.drawImage(state.img, 0, 0, canvas.width, canvas.height);
+  const lw = Math.max(2, canvas.width / 500);
+  ctx.font = `${Math.round(lw * 7)}px system-ui, sans-serif`;
+  ctx.textBaseline = "top";
+
+  if (state.mode === "auto") {
+    if (state.autoImg) ctx.drawImage(state.autoImg, 0, 0);
+    state.auto.forEach((m, i) => {
+      const [x0, y0, x1, y1] = m.bbox;
+      if (i === state.selected) {
+        ctx.strokeStyle = "#fff";
+        ctx.lineWidth = lw;
+        ctx.strokeRect(x0, y0, x1 - x0, y1 - y0);
+      }
+      const text = `#${i} ${labelOf(m)}`;
+      const w = ctx.measureText(text).width + lw * 3;
+      ctx.fillStyle = "rgba(0,0,0,.65)";
+      ctx.fillRect(x0, y0, w, lw * 9);
+      ctx.fillStyle = m.match && m.match.label !== "unknown" ? "#3ecf8e" : m.color;
+      ctx.fillText(text, x0 + lw * 1.5, y0 + lw);
+    });
+  } else if (state.mode === "prompt" && state.selected != null && state.promptImgs[state.selected]) {
+    ctx.drawImage(state.promptImgs[state.selected], 0, 0);
+  }
+
+  ctx.lineWidth = lw;
+  if (state.box) {
+    ctx.strokeStyle = "#4f9dff";
+    ctx.setLineDash([]);
+    const [x0, y0, x1, y1] = state.box;
+    ctx.strokeRect(x0, y0, x1 - x0, y1 - y0);
+  }
+  if (state.drag) {
+    const d = state.drag;
+    ctx.strokeStyle = "#fff";
+    ctx.setLineDash([lw * 3, lw * 2]);
+    ctx.strokeRect(d.x0, d.y0, d.x1 - d.x0, d.y1 - d.y0);
+    ctx.setLineDash([]);
+  }
+  for (const [x, y, label] of state.points) {
+    ctx.beginPath();
+    ctx.arc(x, y, lw * 3, 0, 2 * Math.PI);
+    ctx.fillStyle = label ? "#3ecf8e" : "#f45b69";
+    ctx.fill();
+    ctx.strokeStyle = "#fff";
+    ctx.stroke();
+  }
+}
+
+// ---------- mask table ----------
+
+function depthCell(m) {
+  if (m.depth_m === undefined) return "–";
+  if (m.depth_m === null) return '<span class="unknown">none</span>';
+  return `${m.depth_m.toFixed(3)} m <span class="hint">${Math.round(m.depth_valid * 100)} %</span>`;
+}
+
+function matchCell(m) {
+  const g = m.match;
+  if (!g || g.score == null) return '<span class="unknown">no gallery</span>';
+  if (g.label !== "unknown") return `<span class="known">${esc(g.label)}</span> ${g.score.toFixed(2)}`;
+  return `<span class="unknown">unknown · ${esc(g.candidate)} ${g.score.toFixed(2)}</span>`;
+}
+
+function renderMasks() {
+  const el = $("masks");
+  const list = state.mode === "auto" ? state.auto : state.mode === "prompt" ? state.prompt : [];
+  if (!list.length) {
+    el.className = "hint";
+    el.innerHTML = state.mode === "auto" ? "The generator kept no masks. Try more points per side or a larger max area."
+      : "Click an object in the capture, drag a box, or run Auto masks.";
+    $("detail").innerHTML = "";
+    return;
+  }
+  el.className = "table-wrap";
+  const head = state.mode === "auto"
+    ? "<th>#</th><th>Gallery</th><th>IoU</th><th>Area</th><th>Depth</th>"
+    : "<th>#</th><th>SAM</th><th>Gallery</th><th>Area</th><th>Depth</th>";
+  const rows = list.map((m, i) => {
+    const first = state.mode === "auto"
+      ? `<td><span class="swatch" style="background:${m.color}"></span>${i}</td><td>${matchCell(m)}</td><td>${m.predicted_iou.toFixed(2)}</td>`
+      : `<td>${i}</td><td>${m.sam_score.toFixed(3)}</td><td>${matchCell(m)}</td>`;
+    return `<tr data-i="${i}" class="${i === state.selected ? "sel" : ""}">${first}<td>${m.area}</td><td>${depthCell(m)}</td></tr>`;
+  }).join("");
+  el.innerHTML = `<table><thead><tr>${head}</tr></thead><tbody>${rows}</tbody></table>`;
+  el.querySelectorAll("tbody tr").forEach((tr) => (tr.onclick = () => {
+    state.selected = Number(tr.dataset.i);
+    renderMasks();
+    draw();
+  }));
+  renderDetail(list);
+}
+
+function renderDetail(list) {
+  const m = state.selected != null ? list[state.selected] : null;
+  if (!m) { $("detail").innerHTML = '<span class="hint">Select a mask to see its gallery scores.</span>'; return; }
+  const g = m.match;
+  let html = `<div class="hint">Mask #${state.selected} · bbox ${m.bbox.join(", ")}</div>`;
+  if (g && g.top.length) {
+    html += `<table><thead><tr><th>Gallery object</th><th>Cosine</th></tr></thead><tbody>` +
+      g.top.map((t) => `<tr><td>${esc(t.name)}</td><td>${t.score.toFixed(3)}</td></tr>`).join("") +
+      `</tbody></table><div class="hint">Accepted when score ≥ 0.60 and margin ≥ 0.05 (margin ${g.margin.toFixed(3)}).</div>`;
+  }
+  $("detail").innerHTML = html;
+}
+
+// ---------- gallery add ----------
+
+async function addToGallery() {
+  const msg = $("add-msg");
+  if (state.selected == null || !state.mode) { msg.textContent = "Select a mask first."; return; }
+  const name = $("obj-name").value.trim();
+  if (!name) { msg.textContent = "Enter an object name."; return; }
+  try {
+    const r = await api("/api/gallery/add", {
+      method: "POST",
+      body: JSON.stringify({ capture: state.capture.id, source: state.mode, index: state.selected, name, up_side: $("obj-side").value }),
+    });
+    msg.textContent = `Stored view ${r.views} of ${r.name}.`;
+    renderGallery(r.gallery);
+    rematch();
+  } catch (err) {
+    msg.textContent = `Could not add: ${err.message}`;
+  }
+}
+
+// ---------- wiring ----------
+
+$("view").onchange = setLive;
+$("rescan").onclick = async () => {
+  $("rescan").disabled = true;
+  try {
+    const r = await api("/api/cameras/rescan", { method: "POST" });
+    lastCamsJson = "";
+    renderCams(r.cameras);
+  } finally {
+    $("rescan").disabled = false;
+  }
+};
+$("capture").onclick = doCapture;
+$("automask").onclick = runAutomask;
+$("add").onclick = addToGallery;
+$("clear").onclick = () => {
+  state.points = [];
+  state.box = null;
+  segment();
+};
+$("multimask").onchange = segment;
+$("live").onerror = () => setTimeout(setLive, 2000);
+
+refreshStatus();
+setInterval(refreshStatus, 2000);
+</script>
+</body>
+</html>

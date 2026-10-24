@@ -1,0 +1,59 @@
+version: 1
+stages:
+  - name: app
+    from: ubuntu:22.04
+    workdir: /app
+    # Wendy resolves the CUDA runtime and the Jetson wheel index from the target's GPU
+    # (sm_87 on the Orin Nano: PyTorch built for CUDA 12.6, which runs on the JetPack 7 driver).
+    cuda: true
+    env:
+      PYTHONUNBUFFERED: "1"
+      PORT: "8090"
+      DATA_DIR: /data
+      SAM2_ROOT: /opt/sam2
+      SAM2_CKPT: /models/sam2.1_hiera_small.pt
+      DINO_DIR: /models/dinov2-small
+      HF_HUB_OFFLINE: "1"
+    install:
+      apt:
+        packages: [python3-pip, python3-dev, libopenblas-dev, libgomp1, libusb-1.0-0, libglib2.0-0]
+      pip:
+        # NumPy stays on 1.x: the Jetson PyTorch wheels are built against it, and so is
+        # OpenCV 4.10. Pin it in both groups: they install into the same tree without
+        # uninstalling, so an unpinned torch group pulls NumPy 2 and the two versions mix.
+        - packages: ["torch==2.8.0", "torchvision==0.23.0", "numpy==1.26.4"]
+          cuda: true
+        # pyrealsense2 publishes aarch64 wheels for Python 3.10 (Ubuntu 22.04).
+        - packages:
+            - numpy==1.26.4
+            - opencv-python-headless==4.10.0.84
+            - pyrealsense2==2.59.1.11053
+            - transformers==4.56.2
+            - hydra-core==1.3.2
+            - iopath==0.1.10
+            - pillow
+            - tqdm
+            - scipy
+            - fastapi
+            - uvicorn
+    download:
+      # SAM 2.1 is used from source (no compiled extension; it is optional post-processing).
+      - url: https://github.com/facebookresearch/sam2/archive/2b90b9f5ceec907a1c18123530e92e794ad901a4.tar.gz
+        dest: /opt/sam2
+        extract: tar.gz
+      - url: https://dl.fbaipublicfiles.com/segment_anything_2/092824/sam2.1_hiera_small.pt
+        dest: /models/sam2.1_hiera_small.pt
+      - url: https://huggingface.co/facebook/dinov2-small/resolve/main/config.json
+        dest: /models/dinov2-small/config.json
+      - url: https://huggingface.co/facebook/dinov2-small/resolve/main/model.safetensors
+        dest: /models/dinov2-small/model.safetensors
+    copy:
+      - from: local
+        paths: [app.py, cameras.py, vision.py]
+        dest: /app/
+      - from: local
+        paths: [static]
+        dest: /app/static/
+    # RealSense over libusb and Jetson GPU access both need root.
+    user: root
+    cmd: [python3, app.py]

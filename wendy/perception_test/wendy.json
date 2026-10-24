@@ -1,0 +1,23 @@
+{
+    "appId": "perception-test",
+    "version": "0.1.0",
+    "platform": "linux",
+    "language": "python",
+    "entitlements": [
+        { "type": "network", "mode": "host" },
+        { "type": "http", "port": 8090 },
+        { "type": "gpu" },
+        { "type": "usb" },
+        { "type": "camera" },
+        { "type": "persist", "name": "perception-test-data", "path": "/data" }
+    ],
+    "readiness": {
+        "tcpSocket": { "port": 8090 },
+        "timeoutSeconds": 300
+    },
+    "hooks": {
+        "postStart": {
+            "cli": "wendy utils open-browser http://${WENDY_HOSTNAME}:8090"
+        }
+    }
+}
