@@ -4,10 +4,14 @@ from __future__ import annotations
 
 import asyncio
 import base64
+import io
 import itertools
+import json
 import logging
 import os
 import threading
+import time
+import zipfile
 from collections import OrderedDict
 from dataclasses import dataclass, field
 from pathlib import Path
@@ -19,7 +23,7 @@ from fastapi import FastAPI, HTTPException, Request
 from fastapi.responses import FileResponse, Response, StreamingResponse
 from pydantic import BaseModel
 
-from cameras import CameraManager
+from cameras import MIN_VALID_FRACTION, CameraManager, median_depth
 from vision import Gallery, Models, mask_bbox
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(name)s: %(message)s")
@@ -57,6 +61,8 @@ class Capture:
     color: np.ndarray  # RGB
     depth_m: np.ndarray | None  # metres, aligned to colour, 0 where invalid
     intrinsics: dict | None
+    stamp: float  # arrival time of the newest frame
+    frames: int  # depth frames in the per-pixel median (section 5.1)
     prompt: list = field(default_factory=list)
     auto: list = field(default_factory=list)
 
@@ -113,8 +119,50 @@ def _matches(items, assign):
     return gallery.match(np.stack([it.embedding for it in items]), assign=assign)
 
 
+def _download_name(cap, suffix):
+    """Unique across restarts, unlike the capture id: local time of the capture plus camera serial."""
+    return f"{time.strftime('%Y%m%d-%H%M%S', time.localtime(cap.stamp))}_{cap.camera}_{suffix}"
+
+
+def _attachment(cap, suffix):
+    return {"Content-Disposition": f'attachment; filename="{_download_name(cap, suffix)}"'}
+
+
+def _color_png(cap):
+    ok, buf = cv2.imencode(".png", cv2.cvtColor(cap.color, cv2.COLOR_RGB2BGR))
+    return buf.tobytes()
+
+
+def _depth_png(cap):
+    """Section 8.3 format: 16-bit PNG in millimetres on the colour pixel grid, 0 = no data."""
+    millimetres = np.clip(np.round(cap.depth_m * 1000.0), 0, 65535).astype(np.uint16)
+    ok, buf = cv2.imencode(".png", millimetres)
+    return buf.tobytes()
+
+
+def _capture_meta(cap):
+    """Everything needed to turn depth.png back into 3D points offline (section 5.2)."""
+    return {
+        "capture": cap.id,
+        "camera_serial": cap.camera,
+        "stamp": cap.stamp,
+        "width": int(cap.color.shape[1]),
+        "height": int(cap.color.shape[0]),
+        "intrinsics": cap.intrinsics,
+        "depth": None if cap.depth_m is None else {
+            "file": "depth.png",
+            "units": "millimetres",
+            "aligned_to": "color",
+            "invalid_value": 0,
+            "median_frames": cap.frames,
+            "min_valid_fraction": MIN_VALID_FRACTION,
+        },
+    }
+
+
 class CaptureRequest(BaseModel):
     camera: str
+    frames: int = 10  # section 5.1: depth frames in the per-pixel median; 1 = a single frame
 
 
 class SegmentRequest(BaseModel):
@@ -201,13 +249,23 @@ def capture(req: CaptureRequest):
     camera = cameras.get(req.camera)
     if camera is None:
         raise HTTPException(404, f"Unknown camera {req.camera}")
-    frame = camera.latest()
-    if frame is None:
+    if camera.latest() is None:
         raise HTTPException(503, "The camera has not delivered a frame yet")
-    depth_m = None
-    if frame.depth is not None:
-        depth_m = frame.depth.astype(np.float32) * (camera.depth_scale or 0.001)
-    cap = Capture(f"c{next(_capture_ids)}", camera.id, frame.color, depth_m, camera.intrinsics)
+    try:
+        frame, depths = camera.collect(req.frames)
+    except ValueError as exc:
+        raise HTTPException(400, str(exc))
+    except TimeoutError as exc:
+        raise HTTPException(503, f"Camera {camera.id}: {exc}")
+
+    depth_m = median_ms = depth_valid = None
+    if depths:
+        start = time.monotonic()
+        depth_m = median_depth(depths) * (camera.depth_scale or 0.001)
+        median_ms = round((time.monotonic() - start) * 1000.0, 1)
+        depth_valid = round(np.count_nonzero(depth_m) / depth_m.size, 3)
+    cap = Capture(f"c{next(_capture_ids)}", camera.id, frame.color, depth_m, camera.intrinsics,
+                  frame.stamp, len(depths))
     with _captures_lock:
         _captures[cap.id] = cap
         while len(_captures) > MAX_CAPTURES:
@@ -220,6 +278,9 @@ def capture(req: CaptureRequest):
         "height": int(cap.color.shape[0]),
         "has_depth": depth_m is not None,
         "intrinsics": cap.intrinsics,
+        "frames": cap.frames,
+        "median_ms": median_ms,
+        "depth_valid": depth_valid,
         "set_image_ms": set_image_ms,
     }
 
@@ -234,21 +295,35 @@ def capture_jpg(capture_id: str):
 @app.get("/api/captures/{capture_id}/color.png")
 def capture_png(capture_id: str):
     cap = _get_capture(capture_id)
-    ok, buf = cv2.imencode(".png", cv2.cvtColor(cap.color, cv2.COLOR_RGB2BGR))
-    return Response(buf.tobytes(), media_type="image/png",
-                    headers={"Content-Disposition": f'attachment; filename="{cap.id}_color.png"'})
+    return Response(_color_png(cap), media_type="image/png", headers=_attachment(cap, "color.png"))
 
 
 @app.get("/api/captures/{capture_id}/depth.png")
 def capture_depth(capture_id: str):
-    """Section 8.3 format: 16-bit PNG in millimetres on the colour pixel grid."""
     cap = _get_capture(capture_id)
     if cap.depth_m is None:
         raise HTTPException(404, "This capture has no depth")
-    millimetres = np.clip(cap.depth_m * 1000.0, 0, 65535).astype(np.uint16)
-    ok, buf = cv2.imencode(".png", millimetres)
-    return Response(buf.tobytes(), media_type="image/png",
-                    headers={"Content-Disposition": f'attachment; filename="{cap.id}_depth.png"'})
+    return Response(_depth_png(cap), media_type="image/png", headers=_attachment(cap, "depth.png"))
+
+
+@app.get("/api/captures/{capture_id}/intrinsics.json")
+def capture_intrinsics(capture_id: str):
+    cap = _get_capture(capture_id)
+    return Response(json.dumps(_capture_meta(cap), indent=2), media_type="application/json",
+                    headers=_attachment(cap, "intrinsics.json"))
+
+
+@app.get("/api/captures/{capture_id}/capture.zip")
+def capture_zip(capture_id: str):
+    """colour.png, depth.png and intrinsics.json together, the unit an offline test loads."""
+    cap = _get_capture(capture_id)
+    buf = io.BytesIO()
+    with zipfile.ZipFile(buf, "w", zipfile.ZIP_STORED) as archive:  # PNGs are already compressed
+        archive.writestr("color.png", _color_png(cap))
+        if cap.depth_m is not None:
+            archive.writestr("depth.png", _depth_png(cap))
+        archive.writestr("intrinsics.json", json.dumps(_capture_meta(cap), indent=2))
+    return Response(buf.getvalue(), media_type="application/zip", headers=_attachment(cap, "capture.zip"))
 
 
 @app.post("/api/segment")

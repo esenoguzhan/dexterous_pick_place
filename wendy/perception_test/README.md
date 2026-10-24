@@ -8,9 +8,10 @@ table-plane fit, clustering, view fusion or 3D size check.
 | Doc section | What the page does |
 |---|---|
 | 3.3 | Colour 1280x720, depth 848x480 aligned to colour, laser power 250 (15 fps to spare the CPU) |
+| 5.1 | Capture depth is the per-pixel median of the next 10 frames (selectable), zeros ignored, a pixel needs half its samples valid |
 | 5.5 | `SAM2ImagePredictor` with point and box prompts, three candidates, best score first |
 | 5.5 | `SAM2AutomaticMaskGenerator` over the whole image, masks above a chosen area dropped |
-| 5.7 | Masked crop (10 % padding, grey 127 background, 224x224), DINOv2-small CLS, L2-normalised |
+| 5.7 | Masked crop (10 % padding, grey 127 background, padded to a grey square, 224x224), DINOv2-small CLS, L2-normalised |
 | 5.7 | Gallery score = best cosine over an object's views; accepted at >= 0.6 with margin >= 0.05; auto masks use Hungarian assignment |
 | 7.1, 8.3 | Gallery stored as `gallery/<name>/view_XX.png`, `embeddings.npy`, `meta.json` |
 
@@ -62,7 +63,9 @@ Measured on the Orin Nano (25 W mode, 1280x720): SAM image embedding 0.33 s, SAM
    20 views (section 7.1).
 4. Put several objects down, capture, and press **Auto masks** to see which ones the gallery names.
 
-Each capture can be downloaded as `colour.png` and a 16-bit millimetre `depth.png` for offline tests.
+Each capture can be downloaded as `colour.png`, a 16-bit millimetre `depth.png`, `intrinsics.json`
+(camera serial, `fx`, `fy`, `cx`, `cy`, distortion, depth units and median settings), or all three in
+one zip for offline tests. File names start with the capture time and the camera serial.
 
 ## Questions it answers (section 11.1)
 

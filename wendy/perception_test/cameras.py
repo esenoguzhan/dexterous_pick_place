@@ -4,10 +4,12 @@ from __future__ import annotations
 
 import glob
 import logging
+import math
 import os
 import re
 import threading
 import time
+from collections import deque
 from dataclasses import dataclass
 
 import cv2
@@ -21,6 +23,9 @@ DEPTH_SIZE = (848, 480)
 FPS = int(os.environ.get("CAMERA_FPS", "15"))
 LASER_POWER = float(os.environ.get("LASER_POWER", "250"))
 DEPTH_VIEW_MAX_M = 2.0
+# Section 5.1: depth frames kept for the per-pixel median, and the share of valid samples a pixel needs.
+MAX_DEPTH_FRAMES = 30
+MIN_VALID_FRACTION = 0.5
 
 try:
     import pyrealsense2 as rs
@@ -45,6 +50,26 @@ def colorize_depth(depth, scale):
     return image
 
 
+def median_depth(depths, min_valid=MIN_VALID_FRACTION):
+    """Section 5.1: per-pixel median over frames, ignoring zeros (no data).
+
+    A pixel keeps a value only when at least min_valid of its samples are valid; otherwise it is 0.
+    Returns raw depth units as float32.
+    """
+    stack = np.stack(depths)
+    n = stack.shape[0]
+    valid = np.count_nonzero(stack, axis=0)
+    ordered = np.sort(stack, axis=0)  # zeros sort first
+    zeros = n - valid
+    lo = np.minimum(zeros + (valid - 1) // 2, n - 1)
+    hi = np.minimum(zeros + valid // 2, n - 1)
+    lower = np.take_along_axis(ordered, lo[None], axis=0)[0].astype(np.float32)
+    upper = np.take_along_axis(ordered, hi[None], axis=0)[0].astype(np.float32)
+    median = 0.5 * (lower + upper)
+    median[valid < max(1, math.ceil(min_valid * n))] = 0.0
+    return median
+
+
 class Camera:
     """Latest-frame buffer and JPEG cache. Subclasses fill it from their own capture thread."""
 
@@ -62,7 +87,9 @@ class Camera:
         self._seq = 0
         self._fps = 0.0
         self._jpeg = {}
+        self._depths = deque(maxlen=MAX_DEPTH_FRAMES)  # (seq, depth) of the newest frames
         self._lock = threading.Lock()
+        self._new_frame = threading.Condition(self._lock)
         self._thread = threading.Thread(target=self._run, daemon=True, name=f"camera-{cam_id}")
 
     def start(self):
@@ -73,15 +100,32 @@ class Camera:
 
     def _publish(self, color, depth):
         now = time.time()
-        with self._lock:
+        with self._new_frame:
             if self._frame is not None and now > self._frame.stamp:
                 self._fps = 0.9 * self._fps + 0.1 / (now - self._frame.stamp)
             self._seq += 1
             self._frame = Frame(color, depth, now, self._seq)
+            if depth is not None:
+                self._depths.append((self._seq, depth))
+            self._new_frame.notify_all()
 
     def latest(self):
         with self._lock:
             return self._frame
+
+    def collect(self, n, timeout=5.0):
+        """Section 5.1: wait for n frames that arrive after this call.
+
+        Returns the newest frame and the depth images of those n frames (empty without depth).
+        Only fresh frames are used, so an object moved just before the capture cannot leak in.
+        """
+        if not 1 <= n <= MAX_DEPTH_FRAMES:
+            raise ValueError(f"frames must be between 1 and {MAX_DEPTH_FRAMES}")
+        with self._new_frame:
+            start = self._seq
+            if not self._new_frame.wait_for(lambda: self._seq >= start + n, timeout):
+                raise TimeoutError(f"only {self._seq - start} of {n} frames arrived within {timeout:.0f} s")
+            return self._frame, [depth for seq, depth in self._depths if seq > start]
 
     def jpeg(self, view="color"):
         frame = self.latest()
@@ -136,7 +180,8 @@ class RealSenseCamera(Camera):
             sensor.set_option(rs.option.laser_power, min(LASER_POWER, limits.max))
         intr = profile.get_stream(rs.stream.color).as_video_stream_profile().get_intrinsics()
         self.intrinsics = {"fx": intr.fx, "fy": intr.fy, "cx": intr.ppx, "cy": intr.ppy,
-                           "width": intr.width, "height": intr.height}
+                           "width": intr.width, "height": intr.height,
+                           "model": str(intr.model), "coeffs": [float(c) for c in intr.coeffs]}
         return pipeline, rs.align(rs.stream.color)
 
     def _run(self):

@@ -70,6 +70,9 @@
     <img id="live" alt="Live camera stream">
     <div class="row gap">
       <button id="capture" class="primary" disabled>Capture</button>
+      <label class="hint">depth frames
+        <select id="frames"><option>1</option><option>5</option><option selected>10</option><option>20</option></select>
+      </label>
       <span id="cam-info" class="hint"></span>
     </div>
     <h2 class="gap">Gallery</h2>
@@ -97,6 +100,8 @@
       </label>
       <a id="dl-color" class="hint" hidden>colour.png</a>
       <a id="dl-depth" class="hint" hidden>depth.png</a>
+      <a id="dl-intr" class="hint" hidden>intrinsics.json</a>
+      <a id="dl-zip" class="hint" hidden>all (.zip)</a>
     </div>
     <canvas id="canvas" width="1280" height="720"></canvas>
     <div id="timing" class="timing">Capture a frame to start.</div>
@@ -280,7 +285,9 @@ function renderGallery(items) {
 async function doCapture() {
   try {
     $("capture").disabled = true;
-    const c = await api("/api/capture", { method: "POST", body: JSON.stringify({ camera: state.cam }) });
+    const c = await api("/api/capture", {
+      method: "POST", body: JSON.stringify({ camera: state.cam, frames: Number($("frames").value) }),
+    });
     const img = await loadImage(`/api/captures/${c.id}/color.jpg`);
     Object.assign(state, {
       capture: c, img, points: [], box: null, drag: null, mode: null,
@@ -292,8 +299,15 @@ async function doCapture() {
     $("dl-color").hidden = false;
     $("dl-depth").href = `/api/captures/${c.id}/depth.png`;
     $("dl-depth").hidden = !c.has_depth;
+    $("dl-intr").href = `/api/captures/${c.id}/intrinsics.json`;
+    $("dl-intr").hidden = false;
+    $("dl-zip").href = `/api/captures/${c.id}/capture.zip`;
+    $("dl-zip").hidden = false;
+    const depth = c.has_depth
+      ? `depth median of ${c.frames} (${ms(c.median_ms)}), ${Math.round(100 * c.depth_valid)} % valid`
+      : "no depth";
     const note = c.set_image_ms == null ? "models not ready yet" : `SAM image embedding ${ms(c.set_image_ms)}`;
-    showTiming(`Capture ${c.id} from ${c.camera} · ${c.width}×${c.height} · ${note}`);
+    showTiming(`Capture ${c.id} from ${c.camera} · ${c.width}×${c.height} · ${depth} · ${note}`);
     renderMasks();
     draw();
   } catch (err) {

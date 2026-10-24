@@ -222,7 +222,8 @@ flowchart TD
 ### 5.7 Identify with DINOv2 and the gallery
 
 - **Embedding:** per camera, crop the mask's bounding box with 10 % padding, set the background
-  outside the mask to grey (127), resize to 224x224 and run DINOv2. Take the CLS token (384 values
+  outside the mask to grey (127), pad the crop to a grey square so the object keeps its aspect ratio
+  at every rotation, resize to 224x224 and run DINOv2. Take the CLS token (384 values
   for the small model) and L2-normalise. Average over the cameras that saw the object and normalise
   again.
 - **Gallery score:** for each gallery object, the highest cosine similarity between the detection

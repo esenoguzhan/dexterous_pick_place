@@ -64,7 +64,8 @@ def mask_bbox(mask):
 
 
 def masked_crop(image, mask):
-    """Section 5.7: mask bounding box plus 10 % padding, grey outside the mask, resized to 224x224."""
+    """Section 5.7: mask bounding box plus 10 % padding, grey outside the mask, padded to a grey
+    square and resized to 224x224, so the object keeps its aspect ratio at every rotation."""
     h, w = mask.shape
     x0, y0, x1, y1 = mask_bbox(mask)
     pad_x, pad_y = round((x1 - x0) * CROP_PAD), round((y1 - y0) * CROP_PAD)
@@ -72,7 +73,14 @@ def masked_crop(image, mask):
     x1, y1 = min(w, x1 + pad_x), min(h, y1 + pad_y)
     crop = image[y0:y1, x0:x1].copy()
     crop[~mask[y0:y1, x0:x1]] = CROP_GREY
-    return cv2.resize(crop, (DINO_SIZE, DINO_SIZE), interpolation=cv2.INTER_AREA)
+    ch, cw = crop.shape[:2]
+    side = max(ch, cw)
+    square = np.full((side, side, 3), CROP_GREY, np.uint8)
+    top, left = (side - ch) // 2, (side - cw) // 2
+    square[top:top + ch, left:left + cw] = crop
+    # INTER_AREA only suits shrinking; enlarging a small object with it is close to nearest-neighbour.
+    interpolation = cv2.INTER_AREA if side >= DINO_SIZE else cv2.INTER_LINEAR
+    return cv2.resize(square, (DINO_SIZE, DINO_SIZE), interpolation=interpolation)
 
 
 class Models:
