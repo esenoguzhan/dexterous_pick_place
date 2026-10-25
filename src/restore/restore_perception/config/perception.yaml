@@ -1,0 +1,103 @@
+# Perception parameters (docs/perception_architecture.md). Every value is a starting point to tune.
+# The defaults live in restore_perception/core/config.py; a file only has to list what it changes,
+# and an unknown key is an error.
+
+world_frame: world
+flange_frame: lara5_flange
+
+# Serial number -> ROS camera name. The calibration file says which camera is on the hand.
+cameras:
+  "263522073705": camera_1
+  "262722075125": camera_2
+
+capture:                      # 3.3 and 5.1
+  frames: 10                  # depth frames in the per-pixel median
+  min_valid_fraction: 0.5     # a pixel needs half of its samples valid
+  timeout_s: 5.0
+  color_size: [1280, 720]
+  depth_size: [848, 480]
+  fps: 15
+  laser_power: 250.0          # D435 maximum 360; raise it if the black mouse has holes
+  min_depth_m: 0.15
+  max_depth_m: 2.0
+
+workspace:                    # 5.2, world frame. Simulation values: measure the real table.
+  min: [-0.6, -0.4, 0.88]
+  max: [0.6, 0.4, 1.30]
+  pixel_stride: 2             # back-project every 2nd pixel; masks stay full resolution
+
+table:                        # 5.3
+  voxel_m: 0.005
+  distance_threshold_m: 0.008
+  ransac_iterations: 1000
+  max_tilt_deg: 10.0          # plane normal vs world up
+  max_height_change_m: 0.01   # vs the previous capture; a larger change is reported
+  object_min_height_m: 0.01   # points above this height are object candidates
+
+cluster:                      # 5.4, DBSCAN on 4 mm voxels
+  voxel_m: 0.004
+  eps_m: 0.015
+  min_points: 20              # neighbouring voxels for a core voxel, itself included
+  min_cluster_points: 50      # full-resolution points
+  max_extent_m: 0.30
+  min_height_m: 0.015
+  min_camera_points: 30       # a camera sees a candidate with this many of its points
+  box_padding_px: 10
+
+segment:                      # 5.5, SAM 2.1
+  enabled: true
+  mask_min_height_m: 0.005    # mask pixels lower than this are table bleed and shadows
+  min_mask_points: 30
+  split_coverage: 0.7         # below this the cluster is split with point prompts
+  max_splits: 3
+  min_split_px: 300
+  depth_poor:                 # automatic masks for objects without depth (steel mug, can lids)
+    enabled: false            # about 7 s per camera on the Orin Nano
+    cameras: []               # camera names; empty = every camera
+    points_per_side: 24
+    min_area_frac: 0.0005
+    max_area_frac: 0.05
+    max_overlap: 0.1          # overlap with objects found by geometry
+    assumed_height_m: 0.03    # outline projected at this height to associate the cameras
+
+fuse:                         # 5.6
+  max_distance_m: 0.02        # footprint centres this close are one object
+  min_iou: 0.3                # or footprints overlapping this much
+  grid_m: 0.005
+  outlier_neighbors: 20
+  outlier_std_ratio: 2.0
+
+identify:                     # 5.7, DINOv2 and the gallery
+  enabled: true
+  min_score: 0.6
+  min_margin: 0.05
+  size_tolerance: 0.3         # per dimension, any axis order
+  histogram_margin: 0.1       # colour histogram tie-break when the margin is too small
+
+describe:                     # 5.8
+  height_percentile: 95.0
+  min_points: 200             # fewer points: known-size fallback for named objects
+  support_min_bottom_m: 0.015 # a higher bottom means the object rests on another
+  footprint_epsilon_m: 0.003
+  cloud_voxel_m: 0.003        # ObjectState.cloud
+  hull_grid_m: 0.002          # known-size fallback raster
+
+change:                       # 6, reference vs current
+  depth_threshold_m: 0.01
+  color_threshold: 25.0       # 8-bit Lab distance
+  min_region_px: 200
+  bumped_fraction: 0.5        # more changed than this: the camera was probably bumped
+
+observe:                      # 5.0, checked by the ROS node before every capture
+  require_observe_pose: false
+  joints: {}                  # e.g. {lara5_joint1: 0.0, ...}, the observe configuration [rad]
+  tolerance_rad: 0.01
+  max_speed_rad_s: 0.01
+  settle_s: 0.5
+  max_age_s: 0.5              # /joint_states must have arrived within this time
+
+models:
+  sam2_root: /opt/sam2
+  sam2_checkpoint: /models/sam2.1_hiera_small.pt
+  sam2_config: configs/sam2.1/sam2.1_hiera_s.yaml
+  dino_dir: /models/dinov2-small

@@ -1,0 +1,68 @@
+# The eight hackathon objects (docs/perception_architecture.md, section 7.2).
+# Sizes are estimates from a photo: measure the real objects and replace them.
+#
+# size_m: [length, width, height] as the object rests in the reference scene
+# symmetry: yaw symmetry about the table normal
+#   none          every yaw is distinct
+#   continuous    yaw does not matter (round, upright)
+#   {n: k}        k-fold (2 = 180 degrees, 4 = 90 degrees)
+# depth_reliable: false switches the object to the known-size fallback (pose from its masks)
+objects:
+  tuna_can:
+    size_m: [0.085, 0.085, 0.040]
+    shape: cylinder_upright
+    symmetry: continuous
+    grasp: wrap_top
+    rolls: false
+    depth_reliable: false     # shiny lid
+  yellow_bottle:
+    size_m: [0.140, 0.090, 0.090]
+    shape: cylinder_lying
+    symmetry: none            # cap end is distinct
+    grasp: wrap_wide
+    rolls: true
+    depth_reliable: true
+    mass_kg: 0.5
+  mouse:
+    size_m: [0.115, 0.075, 0.045]
+    shape: irregular
+    symmetry: none
+    grasp: wrap_top
+    rolls: false
+    depth_reliable: true      # black plastic: watch for holes
+  steel_mug:
+    size_m: [0.110, 0.080, 0.080]   # length includes the handle
+    shape: cylinder_upright
+    symmetry: none            # handle direction
+    grasp: wrap_body
+    rolls: false
+    depth_reliable: false     # mirror-like metal
+  soup_can:
+    size_m: [0.110, 0.073, 0.073]
+    shape: cylinder_lying
+    symmetry: {n: 2}
+    grasp: wrap_top
+    rolls: true
+    depth_reliable: true      # lids are shiny, the label is not
+  sponge:
+    size_m: [0.090, 0.060, 0.045]
+    shape: box
+    symmetry: {n: 2}
+    up_side_matters: true     # yellow or dark side up
+    grasp: pinch_wide
+    rolls: false
+    depth_reliable: true
+  wooden_cube:
+    size_m: [0.055, 0.055, 0.055]
+    shape: box
+    symmetry: {n: 4}
+    grasp: pinch_wide
+    rolls: false
+    depth_reliable: true
+  wooden_egg:
+    size_m: [0.060, 0.045, 0.045]
+    shape: ellipsoid_lying
+    symmetry: {n: 2}
+    grasp: tripod_top
+    rolls: true
+    depth_reliable: true

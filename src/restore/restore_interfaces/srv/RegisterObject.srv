@@ -1,0 +1,8 @@
+# Add the views of the one object on the table to the gallery (docs/perception_architecture.md, 7.1).
+
+string name
+string up_side                     # optional view tag
+---
+bool success
+string message
+uint32 views_stored

@@ -1,0 +1,8 @@
+# Capture both cameras and return a scene snapshot (docs/perception_architecture.md, section 8.1).
+
+string name                        # e.g. "reference"; empty for an automatic id
+bool save_to_disk
+---
+bool success
+string message
+SceneSnapshot snapshot

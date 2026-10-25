@@ -1,0 +1,31 @@
+<?xml version="1.0"?>
+<?xml-model href="http://download.ros.org/schema/package_format3.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
+<package format="3">
+  <name>restore_perception</name>
+  <version>0.1.0</version>
+  <description>Scene perception for the restoring task: table plane, clusters, SAM 2.1 masks, DINOv2 identity and object poses as scene snapshots (docs/perception_architecture.md).</description>
+  <maintainer email="ogguzhanesen@gmail.com">Oguzhan Esen</maintainer>
+  <license>Apache-2.0</license>
+
+  <exec_depend>rclpy</exec_depend>
+  <exec_depend>ament_index_python</exec_depend>
+  <exec_depend>restore_interfaces</exec_depend>
+  <exec_depend>std_msgs</exec_depend>
+  <exec_depend>geometry_msgs</exec_depend>
+  <exec_depend>sensor_msgs</exec_depend>
+  <exec_depend>visualization_msgs</exec_depend>
+  <exec_depend>tf2_ros_py</exec_depend>
+  <exec_depend>launch_ros</exec_depend>
+  <exec_depend>python3-numpy</exec_depend>
+  <exec_depend>python3-scipy</exec_depend>
+  <exec_depend>python3-yaml</exec_depend>
+  <!-- The Jetson image installs opencv-python-headless with pip and skips this key in rosdep. -->
+  <exec_depend>python3-opencv</exec_depend>
+  <!-- pyrealsense2, torch, SAM 2.1 and transformers come from pip on the Jetson; see section 10. -->
+
+  <test_depend>python3-pytest</test_depend>
+
+  <export>
+    <build_type>ament_python</build_type>
+  </export>
+</package>
