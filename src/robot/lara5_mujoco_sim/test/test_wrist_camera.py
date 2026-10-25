@@ -25,6 +25,7 @@ class WristCameraTests(unittest.TestCase):
 
     def model(self, config=None):
         root = ET.fromstring('''<mujoco><worldbody>
+          <body name="camera_1_color_optical_frame" pos="-0.9 0.4 1.815"/>
           <body name="right_hand_base_link" pos="0.2 -0.1 1">
             <joint name="wrist" type="hinge" axis="0 0 1"/>
             <geom type="sphere" size="0.01" mass="1"/>
@@ -53,7 +54,8 @@ class WristCameraTests(unittest.TestCase):
         external = mujoco.mj_name2id(model, mujoco.mjtObj.mjOBJ_CAMERA, "external_camera")
         parent = mujoco.mj_name2id(model, mujoco.mjtObj.mjOBJ_BODY, self.config["wrist_camera"]["parent_frame"])
         self.assertEqual(model.cam_bodyid[wrist], parent)
-        self.assertEqual(model.cam_bodyid[external], 0)
+        fixed_parent = model.body(self.config["external_camera"]["parent_frame"]).id
+        self.assertEqual(model.cam_bodyid[external], fixed_parent)
         poses = []
         for angle in (0.0, 0.7):
             data.qpos[0] = angle

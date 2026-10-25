@@ -1,0 +1,31 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://wiki.ros.org/xacro">
+  <!-- Tape-measured camera point, expressed in the arm mounting-base axes.
+       +X forward, +Y left, +Z up; positive body pitch looks downward.
+       The measured point is used as the color optical origin. Housing geometry
+       is approximate and visual only; this is not an optical calibration. -->
+  <xacro:macro name="measured_fixed_camera" params="parent name:=camera_1">
+    <link name="${name}_link">
+      <visual>
+        <origin xyz="-0.012525 0 0"/>
+        <geometry><box size="0.02505 0.090 0.025"/></geometry>
+        <material name="fixed_camera_housing"><color rgba="0.12 0.55 0.75 1"/></material>
+      </visual>
+      <visual>
+        <origin xyz="0.001 0 0" rpy="0 ${pi/2} 0"/>
+        <geometry><cylinder radius="0.007" length="0.003"/></geometry>
+        <material name="fixed_camera_lens"><color rgba="0.02 0.025 0.03 1"/></material>
+      </visual>
+    </link>
+    <joint name="${name}_mount_joint" type="fixed">
+      <parent link="${parent}"/><child link="${name}_link"/>
+      <origin xyz="-0.555 -0.450 0.900" rpy="0 ${pi/4} 0"/>
+    </joint>
+    <link name="${name}_color_optical_frame"/>
+    <joint name="${name}_color_optical_joint" type="fixed">
+      <parent link="${name}_link"/><child link="${name}_color_optical_frame"/>
+      <!-- ROS optical axes: +X right, +Y down, +Z forward. -->
+      <origin xyz="0 0 0" rpy="${-pi/2} 0 ${-pi/2}"/>
+    </joint>
+  </xacro:macro>
+</robot>
