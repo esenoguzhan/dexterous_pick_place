@@ -18,6 +18,7 @@
   <exec_depend>rviz2</exec_depend>
   <exec_depend>std_msgs</exec_depend>
   <exec_depend>action_msgs</exec_depend>
+  <exec_depend>control_msgs</exec_depend>
   <exec_depend>lara5_safety_msgs</exec_depend>
   <exec_depend>launch_ros</exec_depend>
   <exec_depend>ament_index_python</exec_depend>

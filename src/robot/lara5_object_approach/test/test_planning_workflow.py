@@ -48,7 +48,7 @@ class ToyModel:
 
 
 class Harness:
-    def __init__(self, services=True):
+    def __init__(self, services=True, node_class=GraspPreview, parameters=None):
         self.prefix = "/plan_test_"+uuid.uuid4().hex
         self.context = Context(); self.context.init()
         self.peer = Node("planner_test_peer", context=self.context)
@@ -59,9 +59,12 @@ class Harness:
         remaps.extend(["-r", "/joint_states:="+self.prefix+"/state"])
         for suffix in ("get_frame_pose", "plan_cartesian_path", "check_trajectory"):
             remaps.extend(["-r", f"/safety/arm/{suffix}:={self.prefix}/{suffix}"])
-        self.preview = GraspPreview(context=self.context, cli_args=["--ros-args", *remaps],
+        for source, suffix in (("/arm/approach/target", "target"), ("/arm/approach/status", "plan_status"),
+                               ("/arm_trajectory_controller/follow_joint_trajectory", "motion")):
+            remaps.extend(["-r", source+":="+self.prefix+"/"+suffix])
+        self.preview = node_class(context=self.context, cli_args=["--ros-args", *remaps],
             parameter_overrides=[Parameter("plan_trajectories", value=True),
-                                 Parameter("planning_service_timeout", value=.5)])
+                                 Parameter("planning_service_timeout", value=.5), *(parameters or [])])
         self.preview.planner.model = ToyModel()
         self.q = [.1, -.1, 1.3, 0., 0., 0.]
         self.hand = [0.]*6

@@ -1,12 +1,65 @@
+# Two-phase arm positioning. The hand must be opened explicitly.
+# Clearance is FLANGE height above object centre, not the descent distance.
 object_approach:
   ros__parameters:
     world_frame: world
-    # T_world_flange = T_world_object * T_object_flange.
-    # Metres from OBJECT CENTRE, not its top or the fingertips. Provisional:
-    # calibrate for the installed hand, object size and desired stopping distance.
-    object_to_flange_xyz: [0.0, 0.0, 0.20]
-    # Palm down, fingers horizontal, accounting for the hand's -90 deg mount.
-    # The old roll=pi pointed the extended fingers down into the tabletop at 20 cm.
-    object_to_flange_rpy: [-1.5707963267948966, 1.5707963267948966, 0.0]
-    # 0 lets the existing backend choose duration from its configured speed limits.
-    duration: 0.0
+    flange_link: lara5_flange
+    hand_link: right_hand_base_link
+    hand_to_grasp_xyz:
+    - -0.025
+    - 0.085
+    - 0.15
+    hand_to_grasp_rpy:
+    - -1.5707963267948966
+    - 0.0
+    - 0.0
+    object_to_grasp_xyz:
+    - 0.0
+    - 0.0
+    - 0.0
+    object_to_grasp_rpy:
+    - 3.141592653589793
+    - 0.0
+    - 0.0
+    open_joint_names:
+    - right_thumb_finger_proximal_yaw
+    - right_index_finger_proximal
+    - right_middle_finger_proximal
+    - right_ring_finger_proximal
+    - right_pinky_finger_proximal
+    - right_thumb_finger_proximal_pitch
+    open_joint_positions:
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+    arm_joint_names:
+    - lara5_joint1
+    - lara5_joint2
+    - lara5_joint3
+    - lara5_joint4
+    - lara5_joint5
+    - lara5_joint6
+    pregrasp_flange_clearance: 0.3
+    planning_state_max_age: 1.0
+    planning_state_tolerance: 0.01
+    planning_open_tolerance: 0.03
+    planning_max_joint_step: 0.2
+    planning_max_joint_speed: 0.25
+    planning_max_joint_acceleration: 0.5
+    planning_position_tolerance: 0.001
+    planning_angle_tolerance: 0.01
+    planning_path_tolerance: 0.003
+    planning_timeout: 60.0
+    planning_service_timeout: 15.0
+    execution_joint_tolerance: 0.01
+    execution_position_tolerance: 0.003
+    execution_angle_tolerance: 0.02
+    execution_settle_time: 0.2
+    execution_verification_timeout: 3.0
+    execution_goal_response_timeout: 10.0
+    execution_timeout_margin: 10.0
+    execution_cancel_timeout: 5.0
+    execution_tracking_tolerance: 0.1

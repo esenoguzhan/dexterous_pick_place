@@ -1,0 +1,253 @@
+{
+  "image": "lara5_hackathon:positioning",
+  "image_id": "sha256:18be09d61b02c256366051343e3982574c50987de16d7e587318381959efe3d5",
+  "ordinary_checks": {
+    "passed": 140,
+    "optional_skipped": 4
+  },
+  "native_forwarding_regression": "passed",
+  "simulated_positioning_regression": "passed",
+  "initial_isolated_run": [
+    {
+      "state": "planning",
+      "message": "Checking measured start and planning pregrasp",
+      "request_id": "ab6b4cb0-1c95-4bb8-b535-f1c12833b8ac",
+      "active_request_id": "ab6b4cb0-1c95-4bb8-b535-f1c12833b8ac",
+      "execution_enabled": true,
+      "ready_for_closure": false,
+      "holder_camera_collision_checked": false,
+      "manual_object_collision_checked": false,
+      "pregrasp_flange_clearance_m": 0.3,
+      "elapsed_s": 0.011864106003486086
+    },
+    {
+      "state": "planning",
+      "message": "Pregrasp validated; planning final approach from its endpoint",
+      "request_id": "ab6b4cb0-1c95-4bb8-b535-f1c12833b8ac",
+      "active_request_id": "ab6b4cb0-1c95-4bb8-b535-f1c12833b8ac",
+      "execution_enabled": true,
+      "ready_for_closure": false,
+      "holder_camera_collision_checked": false,
+      "manual_object_collision_checked": false,
+      "elapsed_s": 0.4254778920003446
+    },
+    {
+      "state": "moving_to_pregrasp",
+      "message": "Sending validated phase to the safety-filtered arm action",
+      "request_id": "ab6b4cb0-1c95-4bb8-b535-f1c12833b8ac",
+      "active_request_id": "ab6b4cb0-1c95-4bb8-b535-f1c12833b8ac",
+      "execution_enabled": true,
+      "ready_for_closure": false,
+      "holder_camera_collision_checked": false,
+      "manual_object_collision_checked": false,
+      "elapsed_s": 0.5184021680033766
+    },
+    {
+      "state": "moving_to_pregrasp",
+      "message": "Controller accepted phase; monitoring fresh open-hand feedback",
+      "request_id": "ab6b4cb0-1c95-4bb8-b535-f1c12833b8ac",
+      "active_request_id": "ab6b4cb0-1c95-4bb8-b535-f1c12833b8ac",
+      "execution_enabled": true,
+      "ready_for_closure": false,
+      "holder_camera_collision_checked": false,
+      "manual_object_collision_checked": false,
+      "elapsed_s": 0.5437558379999246
+    },
+    {
+      "state": "verifying_pregrasp",
+      "message": "Controller completed; checking fresh measured joint and grasp-frame pose",
+      "request_id": "ab6b4cb0-1c95-4bb8-b535-f1c12833b8ac",
+      "active_request_id": "ab6b4cb0-1c95-4bb8-b535-f1c12833b8ac",
+      "execution_enabled": true,
+      "ready_for_closure": false,
+      "holder_camera_collision_checked": false,
+      "manual_object_collision_checked": false,
+      "elapsed_s": 90.99958916200558
+    },
+    {
+      "state": "moving_to_grasp",
+      "message": "Sending validated phase to the safety-filtered arm action",
+      "request_id": "ab6b4cb0-1c95-4bb8-b535-f1c12833b8ac",
+      "active_request_id": "ab6b4cb0-1c95-4bb8-b535-f1c12833b8ac",
+      "execution_enabled": true,
+      "ready_for_closure": false,
+      "holder_camera_collision_checked": false,
+      "manual_object_collision_checked": false,
+      "elapsed_s": 91.36362599400309
+    },
+    {
+      "state": "moving_to_grasp",
+      "message": "Controller accepted phase; monitoring fresh open-hand feedback",
+      "request_id": "ab6b4cb0-1c95-4bb8-b535-f1c12833b8ac",
+      "active_request_id": "ab6b4cb0-1c95-4bb8-b535-f1c12833b8ac",
+      "execution_enabled": true,
+      "ready_for_closure": false,
+      "holder_camera_collision_checked": false,
+      "manual_object_collision_checked": false,
+      "elapsed_s": 91.36837329800619
+    },
+    {
+      "state": "verifying_grasp",
+      "message": "Controller completed; checking fresh measured joint and grasp-frame pose",
+      "request_id": "ab6b4cb0-1c95-4bb8-b535-f1c12833b8ac",
+      "active_request_id": "ab6b4cb0-1c95-4bb8-b535-f1c12833b8ac",
+      "execution_enabled": true,
+      "ready_for_closure": false,
+      "holder_camera_collision_checked": false,
+      "manual_object_collision_checked": false,
+      "elapsed_s": 110.22149107199948
+    },
+    {
+      "state": "succeeded",
+      "message": "Positioning verified; hand open and ready for explicit closure",
+      "request_id": "ab6b4cb0-1c95-4bb8-b535-f1c12833b8ac",
+      "active_request_id": null,
+      "execution_enabled": true,
+      "ready_for_closure": true,
+      "holder_camera_collision_checked": false,
+      "manual_object_collision_checked": false,
+      "joint_error_rad": 3.094417559101892e-05,
+      "flange_error_m_rad": [
+        1.2430486609406598e-05,
+        2.271273292756124e-05
+      ],
+      "grasp_error_m_rad": [
+        1.4569939389583505e-05,
+        2.271273292756124e-05
+      ],
+      "measured_flange_xyz": [
+        0.10000052734396483,
+        -0.22500062615992253,
+        1.035012403500693
+      ],
+      "elapsed_s": 110.46474275000219
+    }
+  ],
+  "final_image_run": [
+    {
+      "state": "idle",
+      "message": "Waiting for a manual object pose; hand must already be open",
+      "request_id": null,
+      "active_request_id": null,
+      "execution_enabled": true,
+      "ready_for_closure": false,
+      "holder_camera_collision_checked": false,
+      "manual_object_collision_checked": false,
+      "elapsed_s": 0.0010121640007128008
+    },
+    {
+      "state": "planning",
+      "message": "Checking measured start and planning pregrasp",
+      "request_id": "fffe7e8d-d876-4480-a87c-d90de2151f5f",
+      "active_request_id": "fffe7e8d-d876-4480-a87c-d90de2151f5f",
+      "execution_enabled": true,
+      "ready_for_closure": false,
+      "holder_camera_collision_checked": false,
+      "manual_object_collision_checked": false,
+      "pregrasp_flange_clearance_m": 0.3,
+      "elapsed_s": 2.3070784690062283
+    },
+    {
+      "state": "planning",
+      "message": "Pregrasp validated; planning final approach from its endpoint",
+      "request_id": "fffe7e8d-d876-4480-a87c-d90de2151f5f",
+      "active_request_id": "fffe7e8d-d876-4480-a87c-d90de2151f5f",
+      "execution_enabled": true,
+      "ready_for_closure": false,
+      "holder_camera_collision_checked": false,
+      "manual_object_collision_checked": false,
+      "elapsed_s": 2.700047195001389
+    },
+    {
+      "state": "moving_to_pregrasp",
+      "message": "Sending validated phase to the safety-filtered arm action",
+      "request_id": "fffe7e8d-d876-4480-a87c-d90de2151f5f",
+      "active_request_id": "fffe7e8d-d876-4480-a87c-d90de2151f5f",
+      "execution_enabled": true,
+      "ready_for_closure": false,
+      "holder_camera_collision_checked": false,
+      "manual_object_collision_checked": false,
+      "elapsed_s": 2.7870262490032474
+    },
+    {
+      "state": "moving_to_pregrasp",
+      "message": "Controller accepted phase; monitoring fresh open-hand feedback",
+      "request_id": "fffe7e8d-d876-4480-a87c-d90de2151f5f",
+      "active_request_id": "fffe7e8d-d876-4480-a87c-d90de2151f5f",
+      "execution_enabled": true,
+      "ready_for_closure": false,
+      "holder_camera_collision_checked": false,
+      "manual_object_collision_checked": false,
+      "elapsed_s": 2.8273386530054267
+    },
+    {
+      "state": "verifying_pregrasp",
+      "message": "Controller completed; checking fresh measured joint and grasp-frame pose",
+      "request_id": "fffe7e8d-d876-4480-a87c-d90de2151f5f",
+      "active_request_id": "fffe7e8d-d876-4480-a87c-d90de2151f5f",
+      "execution_enabled": true,
+      "ready_for_closure": false,
+      "holder_camera_collision_checked": false,
+      "manual_object_collision_checked": false,
+      "elapsed_s": 93.19673026200326
+    },
+    {
+      "state": "moving_to_grasp",
+      "message": "Sending validated phase to the safety-filtered arm action",
+      "request_id": "fffe7e8d-d876-4480-a87c-d90de2151f5f",
+      "active_request_id": "fffe7e8d-d876-4480-a87c-d90de2151f5f",
+      "execution_enabled": true,
+      "ready_for_closure": false,
+      "holder_camera_collision_checked": false,
+      "manual_object_collision_checked": false,
+      "elapsed_s": 93.45757487000083
+    },
+    {
+      "state": "moving_to_grasp",
+      "message": "Controller accepted phase; monitoring fresh open-hand feedback",
+      "request_id": "fffe7e8d-d876-4480-a87c-d90de2151f5f",
+      "active_request_id": "fffe7e8d-d876-4480-a87c-d90de2151f5f",
+      "execution_enabled": true,
+      "ready_for_closure": false,
+      "holder_camera_collision_checked": false,
+      "manual_object_collision_checked": false,
+      "elapsed_s": 93.46773304500675
+    },
+    {
+      "state": "verifying_grasp",
+      "message": "Controller completed; checking fresh measured joint and grasp-frame pose",
+      "request_id": "fffe7e8d-d876-4480-a87c-d90de2151f5f",
+      "active_request_id": "fffe7e8d-d876-4480-a87c-d90de2151f5f",
+      "execution_enabled": true,
+      "ready_for_closure": false,
+      "holder_camera_collision_checked": false,
+      "manual_object_collision_checked": false,
+      "elapsed_s": 112.37924079900404
+    },
+    {
+      "state": "succeeded",
+      "message": "Positioning verified; hand open and ready for explicit closure",
+      "request_id": "fffe7e8d-d876-4480-a87c-d90de2151f5f",
+      "active_request_id": null,
+      "execution_enabled": true,
+      "ready_for_closure": true,
+      "holder_camera_collision_checked": false,
+      "manual_object_collision_checked": false,
+      "joint_error_rad": 1.0687690822130946e-05,
+      "flange_error_m_rad": [
+        4.274276118875969e-06,
+        7.767722495314292e-06
+      ],
+      "grasp_error_m_rad": [
+        4.999963138218498e-06,
+        7.767722495314292e-06
+      ],
+      "measured_flange_xyz": [
+        0.10000016506669233,
+        -0.22500022096713546,
+        1.0350042653678448
+      ],
+      "elapsed_s": 112.65388274900033
+    }
+  ]
+}

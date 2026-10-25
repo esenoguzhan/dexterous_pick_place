@@ -14,10 +14,11 @@ from ament_index_python.packages import get_package_share_directory
 
 from lara5_mujoco_sim.mjcf_builder import build_scene
 from lara5_object_approach.grasp_geometry import HandModel, from_rpy, grasp_targets
+from lara5_object_approach.planning_geometry import pregrasp_target
 
 
 @pytest.mark.parametrize("yaw", [0, math.pi/2, math.pi, -math.pi/2])
-@pytest.mark.parametrize("mode", ["final_grasp_preview", "approach_20cm"])
+@pytest.mark.parametrize("mode", ["final_grasp_preview", "aligned_pregrasp"])
 def test_open_hand_meshes_clear_object_and_table(yaw, mode):
     p = yaml.safe_load((Path(__file__).resolve().parents[1]/"config/grasp_preview.yaml").read_text())[
         "grasp_preview"]["ros__parameters"]
@@ -25,15 +26,15 @@ def test_open_hand_meshes_clear_object_and_table(yaw, mode):
     urdf = xacro.process_file(str(share/"urdf/lara5_inspire_hand.urdf.xacro")).toxml()
     hand = HandModel(urdf, p["flange_link"], p["hand_link"], p["open_joint_names"], p["open_joint_positions"])
     world_object = from_rpy([.25, -.2, .95], [0, 0, yaw])
-    flange, _, world_hand = grasp_targets(world_object, hand.flange_hand,
+    flange, grasp, world_hand = grasp_targets(world_object, hand.flange_hand,
         from_rpy(p["hand_to_grasp_xyz"], p["hand_to_grasp_rpy"]),
         from_rpy(p["object_to_grasp_xyz"], p["object_to_grasp_rpy"]))
-    if mode == "approach_20cm":
+    if mode == "aligned_pregrasp":
         approach = yaml.safe_load((Path(__file__).resolve().parents[1]/"config/approach.yaml").read_text())[
             "object_approach"]["ros__parameters"]
-        flange = world_object @ from_rpy(approach["object_to_flange_xyz"], approach["object_to_flange_rpy"])
+        flange = pregrasp_target(world_object, flange, grasp, approach["pregrasp_flange_clearance"])
         world_hand = flange @ hand.flange_hand
-        assert flange[2, 3] == pytest.approx(1.15)
+        assert flange[2, 3] == pytest.approx(1.25)
     root = ET.Element("robot", name="static_grasp_test")
     ET.SubElement(root, "link", name="world")
     ET.SubElement(root, "link", name=p["flange_link"])

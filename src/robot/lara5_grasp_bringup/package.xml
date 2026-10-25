@@ -1,0 +1,28 @@
+<?xml version="1.0"?>
+<package format="3">
+  <name>lara5_grasp_bringup</name>
+  <version>0.1.0</version>
+  <description>Single-command Humble simulation bringup for independent positioning and contact-limited closure.</description>
+  <maintainer email="ercankacmaz@users.noreply.github.com">Ercan Kacmaz</maintainer>
+  <license>Apache-2.0</license>
+  <buildtool_depend>ament_cmake</buildtool_depend>
+  <exec_depend>launch</exec_depend>
+  <exec_depend>launch_ros</exec_depend>
+  <exec_depend>ament_index_python</exec_depend>
+  <exec_depend>rviz2</exec_depend>
+  <exec_depend>lara5_controller_manager</exec_depend>
+  <exec_depend>lara5_object_approach</exec_depend>
+  <exec_depend>lara5_grasp</exec_depend>
+  <exec_depend>lara5_object_lift</exec_depend>
+  <exec_depend>lara5_mujoco_sim</exec_depend>
+  <test_depend>ament_cmake_pytest</test_depend>
+  <test_depend>rclpy</test_depend>
+  <test_depend>rcl_interfaces</test_depend>
+  <test_depend>control_msgs</test_depend>
+  <test_depend>std_msgs</test_depend>
+  <test_depend>sensor_msgs</test_depend>
+  <test_depend>controller_manager_msgs</test_depend>
+  <test_depend>lara5_safety_msgs</test_depend>
+  <test_depend>python3-yaml</test_depend>
+  <export><build_type>ament_cmake</build_type></export>
+</package>

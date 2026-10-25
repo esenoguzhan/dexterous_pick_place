@@ -13,8 +13,12 @@
   <exec_depend>builtin_interfaces</exec_depend>
   <exec_depend>trajectory_msgs</exec_depend>
   <exec_depend>control_msgs</exec_depend>
+  <exec_depend>sensor_msgs</exec_depend>
+  <exec_depend>lara5_safety_msgs</exec_depend>
   <exec_depend>launch_ros</exec_depend>
   <exec_depend>ament_index_python</exec_depend>
   <test_depend>ament_cmake_pytest</test_depend>
+  <test_depend>lara5_object_approach</test_depend>
+  <test_depend>lara5_mujoco_sim</test_depend>
   <export><build_type>ament_cmake</build_type></export>
 </package>

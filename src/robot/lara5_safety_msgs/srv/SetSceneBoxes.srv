@@ -1,0 +1,7 @@
+# Atomically replace the perception layer; configured static obstacles remain.
+# Only "world" is supported. Disabled unless allow_scene_updates is enabled.
+string frame_id
+lara5_safety_msgs/SceneBox[] boxes
+---
+bool success
+string message

@@ -1,0 +1,18 @@
+# Simulation-only, explicit manipulation collision context. No commands are sent.
+# All world boxes replace perception boxes; configured static geometry is retained.
+SceneBox[] boxes
+# Six actuated right-hand joints. Mimics are resolved from the original URDF.
+# Empty restores the original fixed-open hand model and clears grasp context.
+sensor_msgs/JointState hand_state
+# During contact approach/release, only this box may touch the named hand links.
+string touch_object
+string[] touch_links
+# During carry, remove the world box and model it as a flange-fixed collision box.
+bool attach_object
+# Only for the initial vertical test lift from the tabletop; removed before transfer.
+bool allow_support_contact
+geometry_msgs/Pose object_in_flange
+geometry_msgs/Vector3 object_size
+---
+bool success
+string message

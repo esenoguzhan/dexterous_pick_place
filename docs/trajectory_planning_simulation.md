@@ -3,7 +3,8 @@
 This step generates and validates two arm trajectories. It **does not execute
 either trajectory**, open/close fingers, or lift an object. The simulated robot
 stays at its starting pose while RViz displays the planned paths and final hand.
-Step 3 will add positioning execution after this review.
+Step 3 execution is now available through the separate motion topic; see
+[the execution UI guide](positioning_execution_simulation.md). This preview remains motion-free.
 
 Input remains a manually supplied correct object-centre pose in `world`.
 No perception node, camera feedback, object selection or learning is required.
@@ -30,8 +31,8 @@ failed direct-line IK at 20 cm. This is a result for the tested state/target,
 not a guarantee for every object pose. There is no automatic yaw search or route
 selection; rejected inputs report the native reason.
 
-The old `/arm/approach/target` execution node keeps its independent 20 cm
-provisional stop. Do not launch or command it for this planning-only test.
+The `/arm/approach/target` execution node now executes both positioning phases.
+Do not launch or command it for this planning-only test.
 
 ## Terminal 1: new Docker container and MuJoCo viewer
 
@@ -170,7 +171,7 @@ over 0.01 rad or a hand posture outside its 0.03 rad open tolerance invalidates 
 ready plan. An active planning request discards additional targets. Timeouts
 abandon the request and ignore late responses.
 
-Do not connect preview trajectory topics to controllers. Step 3 must own fresh
+Do not connect preview trajectory topics to controllers. The separate execution task owns fresh
 state checks, execution and phase-to-phase feedback. To change any planning
 parameter, edit a copy of the full `grasp_preview.yaml` and restart with
 `config_file:=/path/to/your/config.yaml`.

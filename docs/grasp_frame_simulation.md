@@ -1,3 +1,7 @@
+> Historical step-1 guide: its old 20 cm approach-motion instructions are superseded.
+> Use [the step-3 execution guide](positioning_execution_simulation.md) for current motion tests.
+> Static preview commands remain available.
+
 # Grasp frame and 20 cm approach: Docker / simulation UI test
 
 For the newer step-2 planning-only mode with a 30 cm aligned pregrasp, use

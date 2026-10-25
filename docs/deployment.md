@@ -53,8 +53,10 @@ filter only runs on x86_64, and it provides the Cartesian `MoveToPose` action in
 well. Keeping the simulation next to it means the Jetson sees exactly the same interface in simulation
 and on the robot.
 
-The simulated cameras (to be added to `lara5_mujoco_sim`) publish their images as ROS topics, which
-the Jetson's perception node reads in simulation mode. See section 3.2 of
+The [trajectory prototype](../src/robot/lara5_sim_approach/README.md) now provides
+one fixed external RGB-D camera in `lara5_mujoco_sim`, with topics under
+`/sim/external_camera/`. The proposed dual-camera topic adapter remains future
+work. See section 3.2 of
 [`perception_architecture.md`](perception_architecture.md).
 
 ## 3. Network

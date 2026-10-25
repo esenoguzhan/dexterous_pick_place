@@ -203,6 +203,13 @@ automatic lifting by this camera work.
 The [next-step grasping plan](../../../docs/grasping_next_steps.md) is documentation
 for your review. Its steps will be applied only when explicitly requested.
 
+`/sim/grasp_feedback` publishes loaded contact links, opposing contact detection,
+support state and simulator object poses at 20 Hz. This is **simulation ground-truth
+feedback**, used to verify grasp, slip and placement and to model the carried
+collision body. It does not replace image localization. There is no weld or
+object teleporting. A hardware version needs tactile/force and visual feedback
+instead of this simulator-only verifier.
+
 ## Verification
 
 The following tests compile the model and evaluate kinematics/messages without
@@ -229,3 +236,21 @@ not the desktop session. Set `DISPLAY` to that display, `MUJOCO_GL=egl` and
 The test opens the viewer in a fresh process and confirms it stays open while both
 camera threads render 40 frames, then shuts down cleanly. No ROS nodes, physics
 steps or robot commands are involved.
+
+## Viewer and feedback scheduling
+
+The MuJoCo viewer now runs in its own spawned process, with independent model,
+data and graphics state. Physics publishes compact state snapshots without
+waiting for the viewer. Orbit/zoom and rendering cannot hold its physics locks or
+block contact publication; closing the window leaves the simulation running.
+Contact publication uses a wall-time 20 Hz gate after completed physics steps,
+so a slower physics rate does not stretch a fixed 25-step interval past the
+grasp watchdog deadline. No stalled physics sample is republished with a new timestamp.
+The viewer observes the simulation; actuators and object motion remain governed
+by physics and ROS commands. Offscreen camera rendering remains on the simulator's
+EGL workers.
+
+This addresses a visible-UI grasp failure where a slow viewer refresh caused
+`Stale simulation contact/force feedback`. The grasp freshness limit stays at
+0.5 seconds and actual missing feedback still stops closure. See the
+[contact closure UI guide](../../../docs/contact_closure_simulation.md).

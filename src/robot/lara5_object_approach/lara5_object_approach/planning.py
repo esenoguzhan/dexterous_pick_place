@@ -20,7 +20,8 @@ from .planning_geometry import ArmModel, path_poses, pose_error, pregrasp_target
 
 
 class TrajectoryPreview:
-    def __init__(self, node, description, flange_link, open_names, open_positions):
+    def __init__(self, node, description, flange_link, open_names, open_positions,
+                 status_topic="/arm/approach/preview/plan_status"):
         self.node = node
         def param(name, default):
             return node.declare_parameter(name, default).value
@@ -52,7 +53,7 @@ class TrajectoryPreview:
         self.last_id = None
         qos = QoSProfile(depth=1, durability=DurabilityPolicy.TRANSIENT_LOCAL)
         base = "/arm/approach/preview/"
-        self.status = node.create_publisher(String, base+"plan_status", qos)
+        self.status = node.create_publisher(String, status_topic, qos)
         self.outputs = [node.create_publisher(JointTrajectory, base+suffix, qos)
                         for suffix in ("pregrasp_trajectory", "final_trajectory")]
         self.markers = node.create_publisher(MarkerArray, base+"path_markers", qos)
@@ -265,6 +266,10 @@ class TrajectoryPreview:
             markers.append(line)
         self.markers.publish(MarkerArray(markers=markers))
         self.active = None
+        self.complete_plan(context, stamp)
+
+    def complete_plan(self, context, stamp):
+        """Preview keeps a stationary review result; execution overrides this hook."""
         self.valid = context
         self.report("plan_ready", "Both phases validated for preview; no execution command sent",
                     trajectory_stamp=dict(sec=stamp.sec, nanosec=stamp.nanosec),

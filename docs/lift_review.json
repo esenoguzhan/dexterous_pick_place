@@ -1,0 +1,261 @@
+{
+  "environment": "Isolated Docker, Ubuntu 22.04 / ROS 2 Humble / MuJoCo 3.6.0; no hardware network",
+  "test": "lara5_object_lift/test/test_sim_lift.py::test_physical_object_rises_and_remains_gripped",
+  "scope": "One complete nominal green-cylinder trial; repeatability across poses remains untested",
+  "manual_object_pose": {
+    "frame": "world",
+    "xyz": [
+      0.25,
+      -0.2,
+      0.95
+    ],
+    "quaternion_xyzw": [
+      0,
+      0,
+      -0.7071067811865476,
+      0.7071067811865476
+    ]
+  },
+  "physics": {
+    "object_free_body": true,
+    "object_mass_kg": 0.15,
+    "friction": [
+      1.0,
+      0.01,
+      0.001
+    ],
+    "artificial_attachment": false,
+    "teleportation": false,
+    "hand_kp_nm_rad": 2.0,
+    "hand_max_torque_nm": 1.0
+  },
+  "holding": {
+    "first_contact_preload_rad": 0.04,
+    "finite_flexion_preload_rad": 0.25,
+    "finite_preload_min_duration_s": 3.0,
+    "summed_contact_force_limit_n": 16.0
+  },
+  "approach_result": {
+    "state": "succeeded",
+    "message": "Positioning verified; hand open and ready for explicit closure",
+    "request_id": "3fadcede-b3f0-4ced-a6d3-b533f5be0694",
+    "active_request_id": null,
+    "execution_enabled": true,
+    "ready_for_closure": true,
+    "holder_camera_collision_checked": false,
+    "manual_object_collision_checked": false,
+    "joint_error_rad": 9.157376138912987e-05,
+    "flange_error_m_rad": [
+      3.683459222837988e-05,
+      6.741772461119573e-05
+    ],
+    "grasp_error_m_rad": [
+      4.318208010611807e-05,
+      6.741772131763145e-05
+    ],
+    "measured_flange_xyz": [
+      0.10000167088659634,
+      -0.22500182653549847,
+      1.0350367513141354
+    ],
+    "elapsed_s": 114.39964038399921
+  },
+  "grasp_result": {
+    "state": "succeeded",
+    "message": "Contact-limited closure completed; retention not verified",
+    "request_id": "00693891-aa86-47a9-b042-42297e7201c6",
+    "active_request_id": null,
+    "retention_verified": false,
+    "feedback_mode": "simulation",
+    "closure_outcome": "contact_limited",
+    "contact_evidence": true,
+    "current_contact_digits": [
+      "index",
+      "middle",
+      "ring",
+      "thumb"
+    ],
+    "contact_links": [
+      "right_index_distal_link",
+      "right_index_force_sensor_2",
+      "right_middle_distal_link",
+      "right_middle_force_sensor_2",
+      "right_ring_distal_link",
+      "right_thumb_4_link"
+    ],
+    "contact_normal_forces_n": [
+      2.8365411148149,
+      0.5788358525506792,
+      3.4298401409335364,
+      0.6213593022526699,
+      0.5128942133378255,
+      3.3381184043302192
+    ],
+    "holding_preload_rad": 0.25,
+    "measured_positions": [
+      0.8695970558429176,
+      0.6771518834596509,
+      0.685909833620618,
+      0.8530627689998372,
+      0.8890637131349988,
+      0.09476711924906847
+    ],
+    "hold_mode": "measured_position",
+    "measured_hold_verified": true,
+    "controller_motion_completed": true,
+    "contacted_digits_during_closure": [
+      "index",
+      "middle",
+      "ring",
+      "thumb"
+    ],
+    "segments": 34,
+    "elapsed_s": 145.01404259700212
+  },
+  "lift_events": [
+    {
+      "state": "verifying_grasp",
+      "message": "Checking sustained opposing contact before any lift",
+      "request_id": "61541cc9-eb76-4b13-bd6d-7667bae68403",
+      "active_request_id": "61541cc9-eb76-4b13-bd6d-7667bae68403",
+      "retention_verified": false,
+      "holder_camera_collision_checked": false,
+      "other_scene_objects_checked": false,
+      "elapsed_s": 145.0173600690032
+    },
+    {
+      "state": "preparing_lift",
+      "message": "Updating measured closed-hand/payload collision geometry",
+      "request_id": "61541cc9-eb76-4b13-bd6d-7667bae68403",
+      "active_request_id": "61541cc9-eb76-4b13-bd6d-7667bae68403",
+      "retention_verified": false,
+      "holder_camera_collision_checked": false,
+      "other_scene_objects_checked": false,
+      "initial_support_exception": true,
+      "elapsed_s": 145.40338389499811
+    },
+    {
+      "state": "test_lifting",
+      "message": "Requesting checked vertical arm motion",
+      "request_id": "61541cc9-eb76-4b13-bd6d-7667bae68403",
+      "active_request_id": "61541cc9-eb76-4b13-bd6d-7667bae68403",
+      "retention_verified": false,
+      "holder_camera_collision_checked": false,
+      "other_scene_objects_checked": false,
+      "lift_height_m": 0.04,
+      "elapsed_s": 146.96086223100428
+    },
+    {
+      "state": "verifying_test_lift",
+      "message": "Checking measured object rise, loss of table support and retained grip",
+      "request_id": "61541cc9-eb76-4b13-bd6d-7667bae68403",
+      "active_request_id": "61541cc9-eb76-4b13-bd6d-7667bae68403",
+      "retention_verified": false,
+      "holder_camera_collision_checked": false,
+      "other_scene_objects_checked": false,
+      "elapsed_s": 151.22309755400056
+    },
+    {
+      "state": "preparing_lift",
+      "message": "Updating measured closed-hand/payload collision geometry",
+      "request_id": "61541cc9-eb76-4b13-bd6d-7667bae68403",
+      "active_request_id": "61541cc9-eb76-4b13-bd6d-7667bae68403",
+      "retention_verified": false,
+      "holder_camera_collision_checked": false,
+      "other_scene_objects_checked": false,
+      "initial_support_exception": false,
+      "elapsed_s": 152.10193226199772
+    },
+    {
+      "state": "lifting",
+      "message": "Requesting checked vertical arm motion",
+      "request_id": "61541cc9-eb76-4b13-bd6d-7667bae68403",
+      "active_request_id": "61541cc9-eb76-4b13-bd6d-7667bae68403",
+      "retention_verified": false,
+      "holder_camera_collision_checked": false,
+      "other_scene_objects_checked": false,
+      "lift_height_m": 0.1,
+      "elapsed_s": 153.63318065500061
+    },
+    {
+      "state": "verifying_lift",
+      "message": "Checking measured object rise, loss of table support and retained grip",
+      "request_id": "61541cc9-eb76-4b13-bd6d-7667bae68403",
+      "active_request_id": "61541cc9-eb76-4b13-bd6d-7667bae68403",
+      "retention_verified": false,
+      "holder_camera_collision_checked": false,
+      "other_scene_objects_checked": false,
+      "elapsed_s": 159.69665004999842
+    },
+    {
+      "state": "succeeded",
+      "message": "Object lift and retained grip verified",
+      "request_id": "61541cc9-eb76-4b13-bd6d-7667bae68403",
+      "active_request_id": null,
+      "retention_verified": true,
+      "holder_camera_collision_checked": false,
+      "other_scene_objects_checked": false,
+      "verification_interval_s": 0.75,
+      "payload_collision_checked": true,
+      "object_rise_m": 0.09886003553670664,
+      "measured_flange_xyz": [
+        0.10017535174619535,
+        -0.22518187604685388,
+        1.1353116332133575
+      ],
+      "flange_error_m_rad": [
+        0.00013151687698593323,
+        0.00044448438126621834
+      ],
+      "relative_slip_m": 0.007221465365604558,
+      "opposing_contacts": true,
+      "supported": false,
+      "contact_links": [
+        "right_index_distal_link",
+        "right_middle_distal_link",
+        "right_ring_distal_link",
+        "right_thumb_3_link",
+        "right_thumb_4_link"
+      ],
+      "contact_normal_forces_n": [
+        2.7346282672404074,
+        3.1947339010868894,
+        2.1328421765595555,
+        2.928016679770344,
+        3.708482050498157
+      ],
+      "elapsed_s": 160.5523813339969
+    }
+  ],
+  "final_physics": {
+    "elapsed_s": 160.8432159560034,
+    "object_xyz": [
+      0.2402624175357058,
+      -0.20157131063407385,
+      1.048783781074229
+    ],
+    "object_in_flange_xyz": [
+      0.08668508278616494,
+      0.02366952797121345,
+      0.13998009073099416
+    ],
+    "supported": false,
+    "opposing_contacts": true,
+    "contact_links": [
+      "right_index_distal_link",
+      "right_middle_distal_link",
+      "right_ring_distal_link",
+      "right_thumb_3_link",
+      "right_thumb_4_link"
+    ],
+    "normal_forces_n": [
+      2.7319745188621205,
+      3.182004672417751,
+      2.2139389953447144,
+      2.9743983400767786,
+      3.686423506239711
+    ]
+  },
+  "maximum_lift_contact_force_n": 14.788740032941075,
+  "note": "Payload fixed to flange in native collision checking only; simulated object remains free. Retention verified at endpoint for 0.75 seconds."
+}

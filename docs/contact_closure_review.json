@@ -1,0 +1,510 @@
+{
+  "image": "lara5_hackathon:contact-grasp",
+  "image_id": "sha256:fc3b1bc604c1ba2ae2dbae79710804ab27a5aecb39d343608230d7415ccf7bd6",
+  "ordinary_checks": {
+    "passed": 160,
+    "optional_skipped": 5
+  },
+  "scope": "Step 4 closure/contact evidence only; sustained retention assessment remains step 5",
+  "cylinder": {
+    "approach_result": {
+      "state": "succeeded",
+      "message": "Positioning verified; hand open and ready for explicit closure",
+      "request_id": "4ef26cc4-7dbc-4950-b677-fec3eaaae1a9",
+      "active_request_id": null,
+      "execution_enabled": true,
+      "ready_for_closure": true,
+      "holder_camera_collision_checked": false,
+      "manual_object_collision_checked": false,
+      "joint_error_rad": 7.21398490352021e-05,
+      "flange_error_m_rad": [
+        2.9014526060643614e-05,
+        5.309855200199177e-05
+      ],
+      "grasp_error_m_rad": [
+        3.401840596243613e-05,
+        5.309855200199177e-05
+      ],
+      "measured_flange_xyz": [
+        0.10000129422235865,
+        -0.22500142856279812,
+        1.0350289504217471
+      ],
+      "elapsed_s": 113.94268627999554
+    },
+    "grasp_events": [
+      {
+        "state": "idle",
+        "message": "Waiting for explicit closure; require open hand and stationary arm",
+        "request_id": null,
+        "active_request_id": null,
+        "retention_verified": false,
+        "feedback_mode": "simulation",
+        "elapsed_s": 0.0721536909986753
+      },
+      {
+        "state": "opposing_thumb",
+        "message": "Sending bounded hand-only segment",
+        "request_id": "422d0e52-7850-412b-9684-6adf76812a54",
+        "active_request_id": "422d0e52-7850-412b-9684-6adf76812a54",
+        "retention_verified": false,
+        "feedback_mode": "simulation",
+        "step": 1,
+        "contact_digits": [],
+        "elapsed_s": 114.44777045699448
+      },
+      {
+        "state": "opposing_thumb",
+        "message": "Sending bounded hand-only segment",
+        "request_id": "422d0e52-7850-412b-9684-6adf76812a54",
+        "active_request_id": "422d0e52-7850-412b-9684-6adf76812a54",
+        "retention_verified": false,
+        "feedback_mode": "simulation",
+        "step": 2,
+        "contact_digits": [],
+        "elapsed_s": 115.26004884799477
+      },
+      {
+        "state": "opposing_thumb",
+        "message": "Sending bounded hand-only segment",
+        "request_id": "422d0e52-7850-412b-9684-6adf76812a54",
+        "active_request_id": "422d0e52-7850-412b-9684-6adf76812a54",
+        "retention_verified": false,
+        "feedback_mode": "simulation",
+        "step": 3,
+        "contact_digits": [],
+        "elapsed_s": 116.08100361299876
+      },
+      {
+        "state": "opposing_thumb",
+        "message": "Sending bounded hand-only segment",
+        "request_id": "422d0e52-7850-412b-9684-6adf76812a54",
+        "active_request_id": "422d0e52-7850-412b-9684-6adf76812a54",
+        "retention_verified": false,
+        "feedback_mode": "simulation",
+        "step": 4,
+        "contact_digits": [],
+        "elapsed_s": 116.90441181999631
+      },
+      {
+        "state": "opposing_thumb",
+        "message": "Sending bounded hand-only segment",
+        "request_id": "422d0e52-7850-412b-9684-6adf76812a54",
+        "active_request_id": "422d0e52-7850-412b-9684-6adf76812a54",
+        "retention_verified": false,
+        "feedback_mode": "simulation",
+        "step": 5,
+        "contact_digits": [],
+        "elapsed_s": 117.7201350749965
+      },
+      {
+        "state": "opposing_thumb",
+        "message": "Sending bounded hand-only segment",
+        "request_id": "422d0e52-7850-412b-9684-6adf76812a54",
+        "active_request_id": "422d0e52-7850-412b-9684-6adf76812a54",
+        "retention_verified": false,
+        "feedback_mode": "simulation",
+        "step": 6,
+        "contact_digits": [],
+        "elapsed_s": 118.54072742800054
+      },
+      {
+        "state": "opposing_thumb",
+        "message": "Sending bounded hand-only segment",
+        "request_id": "422d0e52-7850-412b-9684-6adf76812a54",
+        "active_request_id": "422d0e52-7850-412b-9684-6adf76812a54",
+        "retention_verified": false,
+        "feedback_mode": "simulation",
+        "step": 7,
+        "contact_digits": [],
+        "elapsed_s": 119.36666869899636
+      },
+      {
+        "state": "opposing_thumb",
+        "message": "Sending bounded hand-only segment",
+        "request_id": "422d0e52-7850-412b-9684-6adf76812a54",
+        "active_request_id": "422d0e52-7850-412b-9684-6adf76812a54",
+        "retention_verified": false,
+        "feedback_mode": "simulation",
+        "step": 8,
+        "contact_digits": [],
+        "elapsed_s": 120.17999027000042
+      },
+      {
+        "state": "opposing_thumb",
+        "message": "Sending bounded hand-only segment",
+        "request_id": "422d0e52-7850-412b-9684-6adf76812a54",
+        "active_request_id": "422d0e52-7850-412b-9684-6adf76812a54",
+        "retention_verified": false,
+        "feedback_mode": "simulation",
+        "step": 9,
+        "contact_digits": [],
+        "elapsed_s": 121.0021621229971
+      },
+      {
+        "state": "opposing_thumb",
+        "message": "Sending bounded hand-only segment",
+        "request_id": "422d0e52-7850-412b-9684-6adf76812a54",
+        "active_request_id": "422d0e52-7850-412b-9684-6adf76812a54",
+        "retention_verified": false,
+        "feedback_mode": "simulation",
+        "step": 10,
+        "contact_digits": [],
+        "elapsed_s": 121.82167917799961
+      },
+      {
+        "state": "opposing_thumb",
+        "message": "Sending bounded hand-only segment",
+        "request_id": "422d0e52-7850-412b-9684-6adf76812a54",
+        "active_request_id": "422d0e52-7850-412b-9684-6adf76812a54",
+        "retention_verified": false,
+        "feedback_mode": "simulation",
+        "step": 11,
+        "contact_digits": [],
+        "elapsed_s": 122.63995868899656
+      },
+      {
+        "state": "opposing_thumb",
+        "message": "Sending bounded hand-only segment",
+        "request_id": "422d0e52-7850-412b-9684-6adf76812a54",
+        "active_request_id": "422d0e52-7850-412b-9684-6adf76812a54",
+        "retention_verified": false,
+        "feedback_mode": "simulation",
+        "step": 12,
+        "contact_digits": [],
+        "elapsed_s": 123.45946939099667
+      },
+      {
+        "state": "opposing_thumb",
+        "message": "Sending bounded hand-only segment",
+        "request_id": "422d0e52-7850-412b-9684-6adf76812a54",
+        "active_request_id": "422d0e52-7850-412b-9684-6adf76812a54",
+        "retention_verified": false,
+        "feedback_mode": "simulation",
+        "step": 13,
+        "contact_digits": [],
+        "elapsed_s": 124.28314321799553
+      },
+      {
+        "state": "opposing_thumb",
+        "message": "Sending bounded hand-only segment",
+        "request_id": "422d0e52-7850-412b-9684-6adf76812a54",
+        "active_request_id": "422d0e52-7850-412b-9684-6adf76812a54",
+        "retention_verified": false,
+        "feedback_mode": "simulation",
+        "step": 14,
+        "contact_digits": [],
+        "elapsed_s": 125.09999179100123
+      },
+      {
+        "state": "opposing_thumb",
+        "message": "Sending bounded hand-only segment",
+        "request_id": "422d0e52-7850-412b-9684-6adf76812a54",
+        "active_request_id": "422d0e52-7850-412b-9684-6adf76812a54",
+        "retention_verified": false,
+        "feedback_mode": "simulation",
+        "step": 15,
+        "contact_digits": [],
+        "elapsed_s": 125.92050655699859
+      },
+      {
+        "state": "opposing_thumb",
+        "message": "Sending bounded hand-only segment",
+        "request_id": "422d0e52-7850-412b-9684-6adf76812a54",
+        "active_request_id": "422d0e52-7850-412b-9684-6adf76812a54",
+        "retention_verified": false,
+        "feedback_mode": "simulation",
+        "step": 16,
+        "contact_digits": [],
+        "elapsed_s": 126.7426560659951
+      },
+      {
+        "state": "opposing_thumb",
+        "message": "Sending bounded hand-only segment",
+        "request_id": "422d0e52-7850-412b-9684-6adf76812a54",
+        "active_request_id": "422d0e52-7850-412b-9684-6adf76812a54",
+        "retention_verified": false,
+        "feedback_mode": "simulation",
+        "step": 17,
+        "contact_digits": [],
+        "elapsed_s": 127.55962812399957
+      },
+      {
+        "state": "opposing_thumb",
+        "message": "Sending bounded hand-only segment",
+        "request_id": "422d0e52-7850-412b-9684-6adf76812a54",
+        "active_request_id": "422d0e52-7850-412b-9684-6adf76812a54",
+        "retention_verified": false,
+        "feedback_mode": "simulation",
+        "step": 18,
+        "contact_digits": [],
+        "elapsed_s": 128.3805613910008
+      },
+      {
+        "state": "closing",
+        "message": "Sending bounded hand-only segment",
+        "request_id": "422d0e52-7850-412b-9684-6adf76812a54",
+        "active_request_id": "422d0e52-7850-412b-9684-6adf76812a54",
+        "retention_verified": false,
+        "feedback_mode": "simulation",
+        "step": 19,
+        "contact_digits": [],
+        "elapsed_s": 129.14003033699555
+      },
+      {
+        "state": "closing",
+        "message": "Sending bounded hand-only segment",
+        "request_id": "422d0e52-7850-412b-9684-6adf76812a54",
+        "active_request_id": "422d0e52-7850-412b-9684-6adf76812a54",
+        "retention_verified": false,
+        "feedback_mode": "simulation",
+        "step": 20,
+        "contact_digits": [],
+        "elapsed_s": 129.9633787729981
+      },
+      {
+        "state": "closing",
+        "message": "Sending bounded hand-only segment",
+        "request_id": "422d0e52-7850-412b-9684-6adf76812a54",
+        "active_request_id": "422d0e52-7850-412b-9684-6adf76812a54",
+        "retention_verified": false,
+        "feedback_mode": "simulation",
+        "step": 21,
+        "contact_digits": [],
+        "elapsed_s": 130.7805169209969
+      },
+      {
+        "state": "closing",
+        "message": "Sending bounded hand-only segment",
+        "request_id": "422d0e52-7850-412b-9684-6adf76812a54",
+        "active_request_id": "422d0e52-7850-412b-9684-6adf76812a54",
+        "retention_verified": false,
+        "feedback_mode": "simulation",
+        "step": 22,
+        "contact_digits": [
+          "thumb"
+        ],
+        "elapsed_s": 131.60003706099815
+      },
+      {
+        "state": "closing",
+        "message": "Sending bounded hand-only segment",
+        "request_id": "422d0e52-7850-412b-9684-6adf76812a54",
+        "active_request_id": "422d0e52-7850-412b-9684-6adf76812a54",
+        "retention_verified": false,
+        "feedback_mode": "simulation",
+        "step": 23,
+        "contact_digits": [
+          "thumb"
+        ],
+        "elapsed_s": 132.42161644899898
+      },
+      {
+        "state": "closing",
+        "message": "Sending bounded hand-only segment",
+        "request_id": "422d0e52-7850-412b-9684-6adf76812a54",
+        "active_request_id": "422d0e52-7850-412b-9684-6adf76812a54",
+        "retention_verified": false,
+        "feedback_mode": "simulation",
+        "step": 24,
+        "contact_digits": [
+          "thumb"
+        ],
+        "elapsed_s": 133.24052064699936
+      },
+      {
+        "state": "closing",
+        "message": "Sending bounded hand-only segment",
+        "request_id": "422d0e52-7850-412b-9684-6adf76812a54",
+        "active_request_id": "422d0e52-7850-412b-9684-6adf76812a54",
+        "retention_verified": false,
+        "feedback_mode": "simulation",
+        "step": 25,
+        "contact_digits": [
+          "thumb"
+        ],
+        "elapsed_s": 134.0607135159953
+      },
+      {
+        "state": "closing",
+        "message": "Sending bounded hand-only segment",
+        "request_id": "422d0e52-7850-412b-9684-6adf76812a54",
+        "active_request_id": "422d0e52-7850-412b-9684-6adf76812a54",
+        "retention_verified": false,
+        "feedback_mode": "simulation",
+        "step": 26,
+        "contact_digits": [
+          "thumb"
+        ],
+        "elapsed_s": 134.8821162749955
+      },
+      {
+        "state": "closing",
+        "message": "Sending bounded hand-only segment",
+        "request_id": "422d0e52-7850-412b-9684-6adf76812a54",
+        "active_request_id": "422d0e52-7850-412b-9684-6adf76812a54",
+        "retention_verified": false,
+        "feedback_mode": "simulation",
+        "step": 27,
+        "contact_digits": [
+          "thumb"
+        ],
+        "elapsed_s": 135.69998826699884
+      },
+      {
+        "state": "closing",
+        "message": "Sending bounded hand-only segment",
+        "request_id": "422d0e52-7850-412b-9684-6adf76812a54",
+        "active_request_id": "422d0e52-7850-412b-9684-6adf76812a54",
+        "retention_verified": false,
+        "feedback_mode": "simulation",
+        "step": 28,
+        "contact_digits": [
+          "thumb"
+        ],
+        "elapsed_s": 136.52033234899864
+      },
+      {
+        "state": "closing",
+        "message": "Sending bounded hand-only segment",
+        "request_id": "422d0e52-7850-412b-9684-6adf76812a54",
+        "active_request_id": "422d0e52-7850-412b-9684-6adf76812a54",
+        "retention_verified": false,
+        "feedback_mode": "simulation",
+        "step": 29,
+        "contact_digits": [
+          "thumb"
+        ],
+        "elapsed_s": 137.34633978199417
+      },
+      {
+        "state": "closing",
+        "message": "Sending bounded hand-only segment",
+        "request_id": "422d0e52-7850-412b-9684-6adf76812a54",
+        "active_request_id": "422d0e52-7850-412b-9684-6adf76812a54",
+        "retention_verified": false,
+        "feedback_mode": "simulation",
+        "step": 30,
+        "contact_digits": [
+          "thumb"
+        ],
+        "elapsed_s": 138.15982731999975
+      },
+      {
+        "state": "closing",
+        "message": "Sending bounded hand-only segment",
+        "request_id": "422d0e52-7850-412b-9684-6adf76812a54",
+        "active_request_id": "422d0e52-7850-412b-9684-6adf76812a54",
+        "retention_verified": false,
+        "feedback_mode": "simulation",
+        "step": 31,
+        "contact_digits": [
+          "thumb"
+        ],
+        "elapsed_s": 138.98187117199996
+      },
+      {
+        "state": "closing",
+        "message": "Sending bounded hand-only segment",
+        "request_id": "422d0e52-7850-412b-9684-6adf76812a54",
+        "active_request_id": "422d0e52-7850-412b-9684-6adf76812a54",
+        "retention_verified": false,
+        "feedback_mode": "simulation",
+        "step": 32,
+        "contact_digits": [
+          "thumb"
+        ],
+        "elapsed_s": 139.80068604699773
+      },
+      {
+        "state": "holding",
+        "message": "Sending bounded hand-only segment",
+        "request_id": "422d0e52-7850-412b-9684-6adf76812a54",
+        "active_request_id": "422d0e52-7850-412b-9684-6adf76812a54",
+        "retention_verified": false,
+        "feedback_mode": "simulation",
+        "step": 33,
+        "contact_digits": [
+          "index",
+          "thumb"
+        ],
+        "elapsed_s": 140.62286064599903
+      },
+      {
+        "state": "succeeded",
+        "message": "Contact-limited closure completed; retention not verified",
+        "request_id": "422d0e52-7850-412b-9684-6adf76812a54",
+        "active_request_id": null,
+        "retention_verified": false,
+        "feedback_mode": "simulation",
+        "closure_outcome": "contact_limited",
+        "contact_evidence": true,
+        "current_contact_digits": [
+          "index",
+          "thumb"
+        ],
+        "contact_links": [
+          "right_index_distal_link",
+          "right_thumb_4_link"
+        ],
+        "contact_normal_forces_n": [
+          0.6012142511257312,
+          0.5418962722101347
+        ],
+        "measured_positions": [
+          0.8794462421544623,
+          0.6245321469181119,
+          0.6246611935949041,
+          0.6248942613788103,
+          0.6251909073546856,
+          0.08949449016187161
+        ],
+        "hold_mode": "measured_position",
+        "measured_hold_verified": true,
+        "controller_motion_completed": true,
+        "contacted_digits_during_closure": [
+          "index",
+          "thumb"
+        ],
+        "segments": 33,
+        "elapsed_s": 141.20479785800126
+      }
+    ],
+    "closure_duration_s": 26.75702740100678,
+    "final_arm_drift_rad": 8.13162278296975e-05,
+    "final_physics_contact": {
+      "elapsed_s": 141.3549470729995,
+      "links": [
+        "right_index_distal_link",
+        "right_thumb_4_link"
+      ],
+      "normal_forces_n": [
+        0.615640526245009,
+        0.6107297293223668
+      ],
+      "object_xyz": [
+        0.24933083853614676,
+        -0.20014886151767955,
+        0.9495699660364223
+      ]
+    }
+  },
+  "empty_hand": {
+    "grasp_result": {
+      "state": "failed",
+      "message": "Closure completed without current target finger contact",
+      "request_id": "05259fe4-e81e-42a0-882e-196e558b68d0",
+      "active_request_id": null,
+      "retention_verified": false,
+      "feedback_mode": "simulation",
+      "closure_outcome": "no_object_contact",
+      "hold_mode": "measured_position",
+      "controller_motion_completed": true,
+      "contact_evidence": false,
+      "contacted_digits_during_closure": [],
+      "segments": 50,
+      "elapsed_s": 44.55826580400026
+    },
+    "final_arm_drift_rad": 1.0708023800987121e-08
+  }
+}

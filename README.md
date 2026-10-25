@@ -7,22 +7,38 @@ This repository contains the LARA5 robot stack and a two-camera RealSense worksp
   environment and robot build instructions.
 - [`ws/`](ws/src/neurahackathon_cameras): two D435 cameras with color, depth, and
   left/right infrared streams, built for **ROS 2 Humble** in the Docker setup below.
+- [Single-command grasp simulation](docs/grasp_bringup_simulation.md):
+  one launch starts MuJoCo, cameras, controllers, approach, grasp, verified lift and RViz.
+- [Manual approach → grasp → lift workflow](docs/grasp_bringup_simulation.md):
+  ordered terminal commands for positioning, contact-limited closure and a verified vertical test lift.
 - [Object-pose approach task](src/robot/lara5_object_approach/README.md):
-  independent `/arm/approach/target` command, manually supplied pose, 20 cm flange
-  offset, direct NEURA IK motion and completion status.
+  independent `/arm/approach/target` command, manually supplied pose, two-phase
+  positioning with 30 cm pregrasp clearance and measured completion checks.
 - [Grasp frame and simulation UI test](docs/grasp_frame_simulation.md):
   static open-hand preview, calculated flange target and ordered Docker/ROS commands.
 - [Two-phase trajectory planning UI test](docs/trajectory_planning_simulation.md):
   30 cm aligned pregrasp, native planning/checks and RViz paths; planning only.
+- [Open-hand positioning execution UI test](docs/positioning_execution_simulation.md):
+  ordered Docker/ROS commands for actual MuJoCo movement and measured phase verification.
 - [Independent grabbing motion](src/robot/lara5_grasp/README.md):
-  `/arm/grasp/target` closes the hand through its own controller, with separate
-  status and no arm motion.
+  `/arm/grasp/target` performs measured, contact-limited closure with separate
+  completion/contact evidence and no arm motion.
+- [Independent verified object lift](src/robot/lara5_object_lift/README.md):
+  explicit `/arm/lift/target`, a 4 cm test lift, and a verified total 10 cm raise.
+- [Contact-limited closure UI test](docs/contact_closure_simulation.md):
+  staged finger motion, simulated normal-force feedback and ordered Docker/ROS commands.
+- [Camera-guided trajectory simulation](src/robot/lara5_sim_approach/README.md):
+  simulated external RGB-D feedback, NEURA IK waypoint routing and final
+  approach, with execution through the current arm safety filter.
 - [Simulated external and wrist D435 cameras](src/robot/lara5_mujoco_sim/README.md):
   CAD holder, nominal photo-based wrist mount, RGB-D topics, optical TF and EGL camera rendering.
 - [Camera holder CAD and mounting photo](docs/wrist_camera_holder.md):
   left/right screw pair, mechanical datums, nominal optical pose and current depth-range limit.
 - [Next steps for better grasping](docs/grasping_next_steps.md):
-  steps 1–2 are implemented for review; positioning execution and contact improvements remain proposals.
+  positioning, contact-limited closure and verified lifting are implemented;
+  repeatability across manual poses is the next review step.
+- [Simulation pick and place](src/robot/lara5_sim_approach/PICK_AND_PLACE.md):
+  obstacle-free scene, wrist refinement, contact-verified grasp, transfer and release.
 
 Use the Docker setup below to run both workspaces in **Ubuntu 22.04 / ROS 2
 Humble**. The host needs Linux Docker Engine and Docker Compose; **neither ROS 2
@@ -32,6 +48,34 @@ are provided later for running only the cameras outside Docker.
 Robot meshes and the NEURA dependency archive use Git LFS. Install Git LFS on a
 new machine, run `git lfs install`, and run `git lfs pull` after cloning this branch
 to download those assets. The vendored RealSense models remain ordinary Git files.
+
+## Manual approach, grasp and lift in simulation
+
+Use the [complete two-terminal Docker/UI commands](docs/grasp_bringup_simulation.md).
+The updated image is `lara5_hackathon:grasp-lift`. Inside its sourced Humble shell,
+start every developed task with one command:
+
+```bash
+ros2 launch lara5_grasp_bringup simulation.launch.py
+```
+
+In the second terminal, command the stages in order:
+
+1. Supply the green-cylinder centre pose to `/arm/approach/target`; wait for
+   `/arm/approach/status` to report verified positioning.
+2. Trigger `/arm/grasp/target`; wait for successful contact-limited closure.
+3. Trigger the new lift and monitor its measured result:
+
+```bash
+ros2 topic pub --once --wait-matching-subscriptions 1 /arm/lift/target std_msgs/msg/Empty '{}'
+ros2 topic echo /arm/lift/status --qos-reliability reliable --qos-durability transient_local --full-length
+```
+
+The lift first tests 4 cm, then completes a total 10 cm only if the object follows
+and leaves table support. It keeps the hand closed and verifies actual object
+rise; no MuJoCo weld, teleportation, transfer or automatic reopening is used.
+Startup never triggers motion, and all three command topics stay independently
+testable. Restart a fresh simulation for repeatable trials after lifting.
 
 ## Robot and cameras in the Humble Docker container
 

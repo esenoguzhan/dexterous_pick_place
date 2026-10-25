@@ -1,0 +1,90 @@
+{
+  "production_image": "lara5_hackathon:contact-grasp",
+  "production_image_id": "sha256:ba8fb79336f84f4ca00544d2c53fdf7fc7b64f7e812835abae2d27c22707bc59",
+  "validation": "Updated source installed into isolated Humble/private Xvfb container; MuJoCo and RViz windows plus both cameras active",
+  "ordinary_checks": {
+    "passed": 167,
+    "optional_skipped": 6
+  },
+  "freshness_limit_s": 0.5,
+  "before": {
+    "result": {
+      "state": "failed",
+      "message": "Stale simulation contact/force feedback (measurement_age=0.505s, receive_gap=0.471s, limit=0.500s)",
+      "request_id": "ccb282af-11c5-42e7-b25c-02eb10b64f09",
+      "active_request_id": null,
+      "retention_verified": false,
+      "feedback_mode": "simulation",
+      "hold_mode": "measured_position",
+      "measured_hold_verified": true,
+      "controller_motion_completed": true,
+      "contact_evidence": false,
+      "contacted_digits_during_closure": [],
+      "segments": 7,
+      "elapsed_s": 119.68450444799964
+    },
+    "max_contact_gap_s": 0.5083704969947576
+  },
+  "after": {
+    "result": {
+      "state": "succeeded",
+      "message": "Contact-limited closure completed; retention not verified",
+      "request_id": "20388c4c-895a-4ef2-bbab-916d71f535a3",
+      "active_request_id": null,
+      "retention_verified": false,
+      "feedback_mode": "simulation",
+      "closure_outcome": "contact_limited",
+      "contact_evidence": true,
+      "current_contact_digits": [
+        "index",
+        "thumb"
+      ],
+      "contact_links": [
+        "right_index_distal_link",
+        "right_thumb_4_link"
+      ],
+      "contact_normal_forces_n": [
+        0.6653877446134021,
+        0.6720950887290547
+      ],
+      "measured_positions": [
+        0.87107686817882,
+        0.6222093590371989,
+        0.6421364575381832,
+        0.6435067105920421,
+        0.6454885262119493,
+        0.09698720041012752
+      ],
+      "hold_mode": "measured_position",
+      "measured_hold_verified": true,
+      "controller_motion_completed": true,
+      "contacted_digits_during_closure": [
+        "index",
+        "thumb"
+      ],
+      "segments": 45,
+      "elapsed_s": 151.34530637499847
+    },
+    "max_contact_gap_s": 0.16877946800377686,
+    "max_received_measurement_age_s": 0.10798168182373047,
+    "final_arm_drift_rad": 7.995836201146744e-05,
+    "final_contact": {
+      "elapsed_s": 151.619564102999,
+      "links": [
+        "right_index_distal_link",
+        "right_thumb_4_link"
+      ],
+      "normal_forces_n": [
+        0.6474581108596573,
+        0.7189294635727765
+      ],
+      "object_xyz": [
+        0.24948437315684321,
+        -0.20018197266217605,
+        0.9495704739906613
+      ],
+      "measurement_age_s": 0.004914522171020508
+    }
+  },
+  "retention_verified": false
+}
