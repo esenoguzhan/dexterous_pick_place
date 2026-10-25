@@ -91,7 +91,9 @@
     <section>
       <h2>Samples</h2>
       <div class="hint">The robot side records samples:
-        <code>ros2 run lara5_controller_manager calibrate_cameras.py --jetson http://&lt;jetson&gt;:8090 auto --pivot 0.4</code>
+        <code>ros2 run lara5_controller_manager calibrate_cameras.py --jetson http://&lt;jetson&gt;:8090 auto --session /ws/calibration_session.json</code>
+        replays the exported session's joint poses. Preview with <code>--dry-run</code>.
+        To generate new Cartesian poses use <code>auto --random --pivot 0.4</code>
         (<code>--pivot</code> about the hand camera's distance to the board; leave it out with the board on the hand).
         Aim for 15 to 25 poses, tilted 10 to 30° in different directions. A partly covered board is fine.</div>
       <div class="table-wrap"><table>

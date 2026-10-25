@@ -82,21 +82,49 @@ Gives the fixed camera's pose in the robot's `world` frame and the hand camera's
    the recording is done. The page shows live detection for each camera; a partly covered board is fine.
 3. **Record** on the Ubuntu PC, inside the robot container with the controller launch running
    (`safety:=on`). Rebuild `lara5_controller_manager` once so the script is installed. Move the arm so
-   the hand camera looks at the board from about 0.4 m with room around the hand, then:
+   the hand camera sees the board with room around the hand. To repeat a previous manually recorded
+   session, copy its exported JSON to the robot container (run this from the repository root on the host):
 
    ```bash
-   ros2 run lara5_controller_manager calibrate_cameras.py --jetson http://<jetson>:8090 auto --pivot 0.4
+   docker cp calibration_session.json lara5_workspace:/ws/calibration_session.json
    ```
 
-   `auto` visits 20 poses within 8 cm and 8 to 25 degrees of tilt around the start pose through the
-   safety filter, records each one and returns to the start. `--pivot 0.4` tilts the hand about a point
-   0.4 m along the flange's z axis, so the hand camera keeps looking at the board; use your camera's
-   distance to the board, and `--pivot-axis` if another flange axis points at it. `manual` records
-   whenever you press Enter, while you move the arm yourself. **The safety filter knows neither the
-   board nor the hand camera**, so start with plenty of room and keep the e-stop in reach.
+   Inside the robot container, preview the saved targets, then replay them:
+
+   ```bash
+   ros2 run lara5_controller_manager calibrate_cameras.py --jetson http://<jetson>:8090 auto --session /ws/calibration_session.json --dry-run
+   ros2 run lara5_controller_manager calibrate_cameras.py --jetson http://<jetson>:8090 auto --session /ws/calibration_session.json
+   ```
+
+   `auto` now defaults to replaying the six `robot.joints` values from every sample in
+   `./calibration_session.json`, in file order. Missing/nonfinite joints reject the whole input before
+   motion; `--count N` limits the run to the first N targets. The input file is not modified. The
+   robot goes through the safety filter's public `FollowJointTrajectory` action and returns to its
+   starting joints after a completed run. Intervening paths are joint-space lines, not recordings of
+   the original manual paths, and each is collision-checked. A rejected path is skipped. Peak joint
+   speed defaults to 0.2 rad/s (`--joint-speed`, maximum 0.5), with smooth starts and stops and at least
+   3 seconds per move. `--dry-run` only lists targets; it makes no HTTP or ROS connections.
+
+   For newly generated Cartesian poses, explicitly use `auto --random --pivot 0.4`. That mode visits
+   20 poses within 8 cm and 8 to 25 degrees of tilt; `--pivot` is the approximate board distance along
+   the flange's z axis, adjustable with `--pivot-axis`. `manual` records whenever you press Enter,
+   while you move the arm yourself. **The safety filter knows neither the board nor the hand camera**,
+   so start with plenty of room and keep the e-stop in reach.
+
+   Replay verifies the measured joints within 0.01 rad before recording; a controller error or
+   measured mismatch stops the run without another move or a return motion. Ctrl+C requests
+   cancellation of an active joint goal and does not request a return motion. Captures and flange
+   poses are fresh measurements, not copies of the old observations. To start a fresh calibration,
+   export the Jetson's current session and clear its samples on the page before replaying the local
+   pose file; keep the board stationary throughout the new run.
+   In Cartesian mode, after each successful controller result, the script requires fresh joint feedback
+   and checks the measured flange against the requested pose (within 5 mm and 2 degrees). If the controller reports
+   success while the arm stays still, auto stops before recording or requesting another move. Check
+   the robot's drive/control status and controller logs; do not use samples from an unmoving arm.
 4. **Solve** on the page (or `calibrate_cameras.py ... solve`). Good results: reprojection under
    0.5 px and board error under 2 mm (green). Delete bad samples with **×** and solve again. Widely
    spread poses matter most for the fixed camera, which inherits the board's orientation error.
+   Sessions with less than one degree of measured robot rotation are rejected before solving.
 5. **Save** writes `/data/calibration/extrinsics.yaml`, the file perception loads, plus a timestamped
    copy. **Export session** downloads all samples, so a solve can be repeated later.
 

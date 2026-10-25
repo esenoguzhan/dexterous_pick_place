@@ -135,9 +135,12 @@ The board can instead be fixed to the hand, which calibrates fixed cameras only.
   camera's mount, shows live board detection, keeps the samples in `/data/calibration/session.json`,
   solves, and saves the file.
 - **Ubuntu PC:** `ros2 run lara5_controller_manager calibrate_cameras.py` reads the flange pose from TF
-  at every pose and sends it to the Jetson over HTTP (port 8090). It records while you move the arm, or
-  visits poses around a start pose through the safety filter's `MoveToPose`, tilting about a point in
-  front of the hand so the hand camera keeps the board in view. Until the Jetson runs ROS, this HTTP
+  at every pose and sends it to the Jetson over HTTP (port 8090). It records while you move the arm,
+  or replays saved `robot.joints` from an exported session through the safety filter's public
+  `FollowJointTrajectory` action, verifying measured joints before every capture. The explicit
+  `auto --random` mode visits poses around a start pose through the safety filter's `MoveToPose`,
+  tilting about a point in front of the hand so the hand camera keeps the board in view.
+  Until the Jetson runs ROS, this HTTP
   call is the only link the calibration needs.
 
 **Accuracy on synthetic renders** (D435 intrinsics, the hand covering part of the hand camera's view,

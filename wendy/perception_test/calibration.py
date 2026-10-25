@@ -426,6 +426,10 @@ def solve(data, min_samples=MIN_SAMPLES):
             skipped[serial] = f"{len(observations[serial])} samples, need {min_samples}"
         elif location == "hand" and mount == "hand":
             skipped[serial] = "it is on the hand like the board, so it sees the board in the same place at every pose"
+        elif max(Rotation.from_matrix(observations[serial][0][1][:3, :3].T @ pose[:3, :3]).magnitude()
+                 for _, pose, _ in observations[serial]) < math.radians(1.0):
+            skipped[serial] = ("recorded robot orientations barely change (less than 1 degree); "
+                               "verify that the real arm moves and collect poses with tilts about different axes")
         else:
             continue
         del observations[serial]
