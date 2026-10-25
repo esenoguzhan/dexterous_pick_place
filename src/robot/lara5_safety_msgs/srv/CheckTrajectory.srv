@@ -1,0 +1,7 @@
+# Empty start_state uses measured joints; explicit state is useful for previews.
+sensor_msgs/JointState start_state
+trajectory_msgs/JointTrajectory trajectory
+---
+bool valid
+string message
+float64 clearance

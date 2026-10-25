@@ -1,0 +1,12 @@
+object_approach:
+  ros__parameters:
+    world_frame: world
+    # T_world_flange = T_world_object * T_object_flange.
+    # Metres from OBJECT CENTRE, not its top or the fingertips. Provisional:
+    # calibrate for the installed hand, object size and desired stopping distance.
+    object_to_flange_xyz: [0.0, 0.0, 0.20]
+    # Palm down, fingers horizontal, accounting for the hand's -90 deg mount.
+    # The old roll=pi pointed the extended fingers down into the tabletop at 20 cm.
+    object_to_flange_rpy: [-1.5707963267948966, 1.5707963267948966, 0.0]
+    # 0 lets the existing backend choose duration from its configured speed limits.
+    duration: 0.0

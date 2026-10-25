@@ -1,0 +1,4267 @@
+{
+  "files": [
+    {
+      "path": "tcp_cam_holder_v2/AdditiveLoft.AddSubShape.Map.txt",
+      "bytes": 760,
+      "sha256": "0dbaff03d8c7be3ea1195d368a6eec20d6daad63ae7d5799b5d919c5f1bb9877",
+      "matches_fcstd": true
+    },
+    {
+      "path": "tcp_cam_holder_v2/AdditiveLoft.AddSubShape.brp",
+      "bytes": 9230,
+      "sha256": "e7e52cc5ca7131ce1186e70e4b39a83175f7a81ca31e9e9d62fa3eab673e737a",
+      "matches_fcstd": true
+    },
+    {
+      "path": "tcp_cam_holder_v2/AdditiveLoft.Shape.Map.txt",
+      "bytes": 760,
+      "sha256": "c541c84c3c39d48659c6f575a75915ff10ad1f875e309fd13618a5ff0b56e5c2",
+      "matches_fcstd": true
+    },
+    {
+      "path": "tcp_cam_holder_v2/AdditiveLoft.Shape.brp",
+      "bytes": 9465,
+      "sha256": "e043bf5dac0c8a4b23db604b6631dcbb1a2434478ca58edc472dbb810784e5fb",
+      "matches_fcstd": true
+    },
+    {
+      "path": "tcp_cam_holder_v2/AdditiveLoft.SuppressedShape.brp",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "matches_fcstd": true
+    },
+    {
+      "path": "tcp_cam_holder_v2/Body.Shape.Map.txt",
+      "bytes": 17788,
+      "sha256": "de8126d99d67e9017ab5c8c4348738837a6cfb785ce5e8766e1a4bb694f1abb6",
+      "matches_fcstd": true
+    },
+    {
+      "path": "tcp_cam_holder_v2/Body.Shape.brp",
+      "bytes": 230094,
+      "sha256": "8edb41a44fccf3c305801c56add974f487d6a35e021e609f72315a552c51c6c4",
+      "matches_fcstd": true
+    },
+    {
+      "path": "tcp_cam_holder_v2/Boolean.Shape.Map.txt",
+      "bytes": 4496,
+      "sha256": "4d2daa9ceb7b8a78c439dfb052d120885ab45cafb3af9f068bc12c3eb9a59f50",
+      "matches_fcstd": true
+    },
+    {
+      "path": "tcp_cam_holder_v2/Boolean.Shape.brp",
+      "bytes": 118967,
+      "sha256": "1b99f6f6b194a4422a806b7c40763d6d647b08a0c7f231a5cfd8197bb294c56c",
+      "matches_fcstd": true
+    },
+    {
+      "path": "tcp_cam_holder_v2/Boolean.SuppressedShape.brp",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "matches_fcstd": true
+    },
+    {
+      "path": "tcp_cam_holder_v2/CopyPart__Feature.Shape.brp",
+      "bytes": 3008,
+      "sha256": "8dc50042ddba9aa5cca75e602b584734de58c3ff26f70cb1e8deee7cd515b971",
+      "matches_fcstd": true
+    },
+    {
+      "path": "tcp_cam_holder_v2/CopyPart__Feature001.Shape.brp",
+      "bytes": 3008,
+      "sha256": "6028111aa77291296a18a040d610d5c207c74264a05d73595503ba6d6c9a8462",
+      "matches_fcstd": true
+    },
+    {
+      "path": "tcp_cam_holder_v2/DatumPlane.Shape.brp",
+      "bytes": 668,
+      "sha256": "150bbbd86969ed9efa534f82e13f341bb47a99094ed78524786a010f78454c04",
+      "matches_fcstd": true
+    },
+    {
+      "path": "tcp_cam_holder_v2/DatumPlane001.Shape.brp",
+      "bytes": 666,
+      "sha256": "ca411ec9a6e3365c9b2c99346db1ad05ed719e7b04986fd27d488415102ee17e",
+      "matches_fcstd": true
+    },
+    {
+      "path": "tcp_cam_holder_v2/Document.xml",
+      "bytes": 138531,
+      "sha256": "0140b25f2309cd0380439e76baa2e827fb3bd4abd117bf02ae322f9a474dda2b",
+      "matches_fcstd": true
+    },
+    {
+      "path": "tcp_cam_holder_v2/Fillet.AddSubShape.brp",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "matches_fcstd": true
+    },
+    {
+      "path": "tcp_cam_holder_v2/Fillet.Shape.Map.txt",
+      "bytes": 5860,
+      "sha256": "fa683f4844f68c4e6dcce171aa76f49442446569dd8666d313d041ca1fa50a55",
+      "matches_fcstd": true
+    },
+    {
+      "path": "tcp_cam_holder_v2/Fillet.Shape.brp",
+      "bytes": 119466,
+      "sha256": "313235313c2a0e96a59ab6037ca985c926c2b398fa580a1d5b2d574fdbfe69f9",
+      "matches_fcstd": true
+    },
+    {
+      "path": "tcp_cam_holder_v2/Fillet.SuppressedShape.brp",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "matches_fcstd": true
+    },
+    {
+      "path": "tcp_cam_holder_v2/Fillet001.AddSubShape.brp",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "matches_fcstd": true
+    },
+    {
+      "path": "tcp_cam_holder_v2/Fillet001.Shape.Map.txt",
+      "bytes": 6949,
+      "sha256": "abc56493e11d78edeec52a4c1f0954bb402b39c951a4090b63eb23c58f25c0fa",
+      "matches_fcstd": true
+    },
+    {
+      "path": "tcp_cam_holder_v2/Fillet001.Shape.brp",
+      "bytes": 123431,
+      "sha256": "6905351e00473e8f6a2d9ab2c8efaf776ef8f706f0c7f2021a77693b8f871e44",
+      "matches_fcstd": true
+    },
+    {
+      "path": "tcp_cam_holder_v2/Fillet001.SuppressedShape.brp",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "matches_fcstd": true
+    },
+    {
+      "path": "tcp_cam_holder_v2/GuiDocument.xml",
+      "bytes": 97869,
+      "sha256": "6fd17338edc0c0cff5d5cc43dac382a96ffdb935fe051826453ec350016f0314",
+      "matches_fcstd": true
+    },
+    {
+      "path": "tcp_cam_holder_v2/Hole.AddSubShape.Map.txt",
+      "bytes": 1725,
+      "sha256": "f14012218f41102e6ca1b113e98cfd6f1ae7fd9384ff40afe93a2ec6df09cc08",
+      "matches_fcstd": true
+    },
+    {
+      "path": "tcp_cam_holder_v2/Hole.AddSubShape.brp",
+      "bytes": 5247,
+      "sha256": "94e4c80d89392ab71f2d4db97e0d14735c04adc582093b4baf72d778b63ac029",
+      "matches_fcstd": true
+    },
+    {
+      "path": "tcp_cam_holder_v2/Hole.Shape.Map.txt",
+      "bytes": 8855,
+      "sha256": "90737f299e7ad439d279866d9cc616915faa70f0309d1968b5b8c01b9b5959aa",
+      "matches_fcstd": true
+    },
+    {
+      "path": "tcp_cam_holder_v2/Hole.Shape.brp",
+      "bytes": 139353,
+      "sha256": "7c4cd343bee7b579aa1caad4446564dd5141ab662b25b9bc98b779e7a810a9bc",
+      "matches_fcstd": true
+    },
+    {
+      "path": "tcp_cam_holder_v2/Hole.SuppressedShape.brp",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "matches_fcstd": true
+    },
+    {
+      "path": "tcp_cam_holder_v2/LineColorArray",
+      "bytes": 8,
+      "sha256": "db2f49478b1bd09745c18c18c3ec0b9b2911b331946c721e394d448f3e81cd3a",
+      "matches_fcstd": true
+    },
+    {
+      "path": "tcp_cam_holder_v2/LineColorArray1",
+      "bytes": 8,
+      "sha256": "f8cfd31cd4840791d04d724521cd6441b708c4c65aa7672461aba954654fcb76",
+      "matches_fcstd": true
+    },
+    {
+      "path": "tcp_cam_holder_v2/LineColorArray10",
+      "bytes": 8,
+      "sha256": "f8cfd31cd4840791d04d724521cd6441b708c4c65aa7672461aba954654fcb76",
+      "matches_fcstd": true
+    },
+    {
+      "path": "tcp_cam_holder_v2/LineColorArray11",
+      "bytes": 8,
+      "sha256": "db2f49478b1bd09745c18c18c3ec0b9b2911b331946c721e394d448f3e81cd3a",
+      "matches_fcstd": true
+    },
+    {
+      "path": "tcp_cam_holder_v2/LineColorArray12",
+      "bytes": 8,
+      "sha256": "db2f49478b1bd09745c18c18c3ec0b9b2911b331946c721e394d448f3e81cd3a",
+      "matches_fcstd": true
+    },
+    {
+      "path": "tcp_cam_holder_v2/LineColorArray13",
+      "bytes": 8,
+      "sha256": "db2f49478b1bd09745c18c18c3ec0b9b2911b331946c721e394d448f3e81cd3a",
+      "matches_fcstd": true
+    },
+    {
+      "path": "tcp_cam_holder_v2/LineColorArray14",
+      "bytes": 8,
+      "sha256": "db2f49478b1bd09745c18c18c3ec0b9b2911b331946c721e394d448f3e81cd3a",
+      "matches_fcstd": true
+    },
+    {
+      "path": "tcp_cam_holder_v2/LineColorArray15",
+      "bytes": 8,
+      "sha256": "db2f49478b1bd09745c18c18c3ec0b9b2911b331946c721e394d448f3e81cd3a",
+      "matches_fcstd": true
+    },
+    {
+      "path": "tcp_cam_holder_v2/LineColorArray2",
+      "bytes": 8,
+      "sha256": "db2f49478b1bd09745c18c18c3ec0b9b2911b331946c721e394d448f3e81cd3a",
+      "matches_fcstd": true
+    },
+    {
+      "path": "tcp_cam_holder_v2/LineColorArray3",
+      "bytes": 8,
+      "sha256": "db2f49478b1bd09745c18c18c3ec0b9b2911b331946c721e394d448f3e81cd3a",
+      "matches_fcstd": true
+    },
+    {
+      "path": "tcp_cam_holder_v2/LineColorArray4",
+      "bytes": 8,
+      "sha256": "db2f49478b1bd09745c18c18c3ec0b9b2911b331946c721e394d448f3e81cd3a",
+      "matches_fcstd": true
+    },
+    {
+      "path": "tcp_cam_holder_v2/LineColorArray5",
+      "bytes": 8,
+      "sha256": "c28603c9b677170318ea96005f4c225ae9108c01fea602478c8e91a6f56f4b91",
+      "matches_fcstd": true
+    },
+    {
+      "path": "tcp_cam_holder_v2/LineColorArray6",
+      "bytes": 8,
+      "sha256": "f8cfd31cd4840791d04d724521cd6441b708c4c65aa7672461aba954654fcb76",
+      "matches_fcstd": true
+    },
+    {
+      "path": "tcp_cam_holder_v2/LineColorArray7",
+      "bytes": 8,
+      "sha256": "c28603c9b677170318ea96005f4c225ae9108c01fea602478c8e91a6f56f4b91",
+      "matches_fcstd": true
+    },
+    {
+      "path": "tcp_cam_holder_v2/LineColorArray8",
+      "bytes": 8,
+      "sha256": "f8cfd31cd4840791d04d724521cd6441b708c4c65aa7672461aba954654fcb76",
+      "matches_fcstd": true
+    },
+    {
+      "path": "tcp_cam_holder_v2/LineColorArray9",
+      "bytes": 8,
+      "sha256": "db2f49478b1bd09745c18c18c3ec0b9b2911b331946c721e394d448f3e81cd3a",
+      "matches_fcstd": true
+    },
+    {
+      "path": "tcp_cam_holder_v2/LinearPattern.Shape.Map.txt",
+      "bytes": 12935,
+      "sha256": "3aea6b7e8f217b0262de34249f6bf97a22d7dae5ef735b0676fffdd4d0f37288",
+      "matches_fcstd": true
+    },
+    {
+      "path": "tcp_cam_holder_v2/LinearPattern.Shape.brp",
+      "bytes": 186433,
+      "sha256": "3b1d9276b182f705b34db7b8bee4e88d86030e92fb6ba856eb5bd70696e967c2",
+      "matches_fcstd": true
+    },
+    {
+      "path": "tcp_cam_holder_v2/LinearPattern.SuppressedShape.brp",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "matches_fcstd": true
+    },
+    {
+      "path": "tcp_cam_holder_v2/LinearPattern001.Shape.Map.txt",
+      "bytes": 17760,
+      "sha256": "8ee81813190581f94e67ca00bc2260d8058bcae61c1a7fde33318d4e4c54d937",
+      "matches_fcstd": true
+    },
+    {
+      "path": "tcp_cam_holder_v2/LinearPattern001.Shape.brp",
+      "bytes": 233633,
+      "sha256": "a31bd1048617138e1fe90393ab5c5c55d2b724d794d88bd0a68f308cf479f22d",
+      "matches_fcstd": true
+    },
+    {
+      "path": "tcp_cam_holder_v2/LinearPattern001.SuppressedShape.brp",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "matches_fcstd": true
+    },
+    {
+      "path": "tcp_cam_holder_v2/Pad.AddSubShape.Map.txt",
+      "bytes": 601,
+      "sha256": "3e1a23a296310ca958269aca5f4c7f7eb0956d0ba55b84f6cfec64920e2ae92f",
+      "matches_fcstd": true
+    },
+    {
+      "path": "tcp_cam_holder_v2/Pad.AddSubShape.brp",
+      "bytes": 5248,
+      "sha256": "093b98cde842b134239d26a047ca63a2ec992b50071e6671564af86505ffd082",
+      "matches_fcstd": true
+    },
+    {
+      "path": "tcp_cam_holder_v2/Pad.Shape.Map.txt",
+      "bytes": 4977,
+      "sha256": "dc01c7467132e819bdc1c850a11ec3e25e44ba6d251ad478786a3186b1688108",
+      "matches_fcstd": true
+    },
+    {
+      "path": "tcp_cam_holder_v2/Pad.Shape.brp",
+      "bytes": 115998,
+      "sha256": "cfc200c26fcf5edb256efb512719f25ac915975440633e0b53129a4013c52791",
+      "matches_fcstd": true
+    },
+    {
+      "path": "tcp_cam_holder_v2/Pad.SuppressedShape.brp",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "matches_fcstd": true
+    },
+    {
+      "path": "tcp_cam_holder_v2/Part__Feature.Shape.brp",
+      "bytes": 149259,
+      "sha256": "3fbabc6a4604ce4e4b4d12f2d40ccfed186153df8af29a18374df7c9e160b523",
+      "matches_fcstd": true
+    },
+    {
+      "path": "tcp_cam_holder_v2/PointColorArray",
+      "bytes": 8,
+      "sha256": "db2f49478b1bd09745c18c18c3ec0b9b2911b331946c721e394d448f3e81cd3a",
+      "matches_fcstd": true
+    },
+    {
+      "path": "tcp_cam_holder_v2/PointColorArray1",
+      "bytes": 8,
+      "sha256": "f8cfd31cd4840791d04d724521cd6441b708c4c65aa7672461aba954654fcb76",
+      "matches_fcstd": true
+    },
+    {
+      "path": "tcp_cam_holder_v2/PointColorArray10",
+      "bytes": 8,
+      "sha256": "f8cfd31cd4840791d04d724521cd6441b708c4c65aa7672461aba954654fcb76",
+      "matches_fcstd": true
+    },
+    {
+      "path": "tcp_cam_holder_v2/PointColorArray11",
+      "bytes": 8,
+      "sha256": "db2f49478b1bd09745c18c18c3ec0b9b2911b331946c721e394d448f3e81cd3a",
+      "matches_fcstd": true
+    },
+    {
+      "path": "tcp_cam_holder_v2/PointColorArray12",
+      "bytes": 8,
+      "sha256": "db2f49478b1bd09745c18c18c3ec0b9b2911b331946c721e394d448f3e81cd3a",
+      "matches_fcstd": true
+    },
+    {
+      "path": "tcp_cam_holder_v2/PointColorArray13",
+      "bytes": 8,
+      "sha256": "db2f49478b1bd09745c18c18c3ec0b9b2911b331946c721e394d448f3e81cd3a",
+      "matches_fcstd": true
+    },
+    {
+      "path": "tcp_cam_holder_v2/PointColorArray14",
+      "bytes": 8,
+      "sha256": "db2f49478b1bd09745c18c18c3ec0b9b2911b331946c721e394d448f3e81cd3a",
+      "matches_fcstd": true
+    },
+    {
+      "path": "tcp_cam_holder_v2/PointColorArray15",
+      "bytes": 8,
+      "sha256": "db2f49478b1bd09745c18c18c3ec0b9b2911b331946c721e394d448f3e81cd3a",
+      "matches_fcstd": true
+    },
+    {
+      "path": "tcp_cam_holder_v2/PointColorArray2",
+      "bytes": 8,
+      "sha256": "db2f49478b1bd09745c18c18c3ec0b9b2911b331946c721e394d448f3e81cd3a",
+      "matches_fcstd": true
+    },
+    {
+      "path": "tcp_cam_holder_v2/PointColorArray3",
+      "bytes": 8,
+      "sha256": "db2f49478b1bd09745c18c18c3ec0b9b2911b331946c721e394d448f3e81cd3a",
+      "matches_fcstd": true
+    },
+    {
+      "path": "tcp_cam_holder_v2/PointColorArray4",
+      "bytes": 8,
+      "sha256": "db2f49478b1bd09745c18c18c3ec0b9b2911b331946c721e394d448f3e81cd3a",
+      "matches_fcstd": true
+    },
+    {
+      "path": "tcp_cam_holder_v2/PointColorArray5",
+      "bytes": 8,
+      "sha256": "c28603c9b677170318ea96005f4c225ae9108c01fea602478c8e91a6f56f4b91",
+      "matches_fcstd": true
+    },
+    {
+      "path": "tcp_cam_holder_v2/PointColorArray6",
+      "bytes": 8,
+      "sha256": "f8cfd31cd4840791d04d724521cd6441b708c4c65aa7672461aba954654fcb76",
+      "matches_fcstd": true
+    },
+    {
+      "path": "tcp_cam_holder_v2/PointColorArray7",
+      "bytes": 8,
+      "sha256": "c28603c9b677170318ea96005f4c225ae9108c01fea602478c8e91a6f56f4b91",
+      "matches_fcstd": true
+    },
+    {
+      "path": "tcp_cam_holder_v2/PointColorArray8",
+      "bytes": 8,
+      "sha256": "f8cfd31cd4840791d04d724521cd6441b708c4c65aa7672461aba954654fcb76",
+      "matches_fcstd": true
+    },
+    {
+      "path": "tcp_cam_holder_v2/PointColorArray9",
+      "bytes": 8,
+      "sha256": "db2f49478b1bd09745c18c18c3ec0b9b2911b331946c721e394d448f3e81cd3a",
+      "matches_fcstd": true
+    },
+    {
+      "path": "tcp_cam_holder_v2/ShapeAppearance",
+      "bytes": 76,
+      "sha256": "73caadf618b49e2027bdd40e6ea34515f873b74b44afb8fe1341ba01afee76da",
+      "matches_fcstd": true
+    },
+    {
+      "path": "tcp_cam_holder_v2/ShapeAppearance1",
+      "bytes": 76,
+      "sha256": "b4fafc4d32119c76aef3edb084bec64a4046257829bb145f76c37595666a92e2",
+      "matches_fcstd": true
+    },
+    {
+      "path": "tcp_cam_holder_v2/ShapeAppearance10",
+      "bytes": 40,
+      "sha256": "dfb385b9303aae83a9eae2b5832b5817a43c021fdb8acab487b580cfa391b1d0",
+      "matches_fcstd": true
+    },
+    {
+      "path": "tcp_cam_holder_v2/ShapeAppearance11",
+      "bytes": 76,
+      "sha256": "8eb0c9e87420ff534c1b911aa5f335c31bc5dc75173be82f985287c529c0093f",
+      "matches_fcstd": true
+    },
+    {
+      "path": "tcp_cam_holder_v2/ShapeAppearance12",
+      "bytes": 76,
+      "sha256": "b4fafc4d32119c76aef3edb084bec64a4046257829bb145f76c37595666a92e2",
+      "matches_fcstd": true
+    },
+    {
+      "path": "tcp_cam_holder_v2/ShapeAppearance13",
+      "bytes": 76,
+      "sha256": "8eb0c9e87420ff534c1b911aa5f335c31bc5dc75173be82f985287c529c0093f",
+      "matches_fcstd": true
+    },
+    {
+      "path": "tcp_cam_holder_v2/ShapeAppearance14",
+      "bytes": 76,
+      "sha256": "8eb0c9e87420ff534c1b911aa5f335c31bc5dc75173be82f985287c529c0093f",
+      "matches_fcstd": true
+    },
+    {
+      "path": "tcp_cam_holder_v2/ShapeAppearance15",
+      "bytes": 76,
+      "sha256": "b4fafc4d32119c76aef3edb084bec64a4046257829bb145f76c37595666a92e2",
+      "matches_fcstd": true
+    },
+    {
+      "path": "tcp_cam_holder_v2/ShapeAppearance16",
+      "bytes": 76,
+      "sha256": "b4fafc4d32119c76aef3edb084bec64a4046257829bb145f76c37595666a92e2",
+      "matches_fcstd": true
+    },
+    {
+      "path": "tcp_cam_holder_v2/ShapeAppearance17",
+      "bytes": 76,
+      "sha256": "8eb0c9e87420ff534c1b911aa5f335c31bc5dc75173be82f985287c529c0093f",
+      "matches_fcstd": true
+    },
+    {
+      "path": "tcp_cam_holder_v2/ShapeAppearance18",
+      "bytes": 76,
+      "sha256": "b4fafc4d32119c76aef3edb084bec64a4046257829bb145f76c37595666a92e2",
+      "matches_fcstd": true
+    },
+    {
+      "path": "tcp_cam_holder_v2/ShapeAppearance19",
+      "bytes": 76,
+      "sha256": "b4fafc4d32119c76aef3edb084bec64a4046257829bb145f76c37595666a92e2",
+      "matches_fcstd": true
+    },
+    {
+      "path": "tcp_cam_holder_v2/ShapeAppearance2",
+      "bytes": 76,
+      "sha256": "b4fafc4d32119c76aef3edb084bec64a4046257829bb145f76c37595666a92e2",
+      "matches_fcstd": true
+    },
+    {
+      "path": "tcp_cam_holder_v2/ShapeAppearance20",
+      "bytes": 76,
+      "sha256": "b4fafc4d32119c76aef3edb084bec64a4046257829bb145f76c37595666a92e2",
+      "matches_fcstd": true
+    },
+    {
+      "path": "tcp_cam_holder_v2/ShapeAppearance21",
+      "bytes": 76,
+      "sha256": "b4fafc4d32119c76aef3edb084bec64a4046257829bb145f76c37595666a92e2",
+      "matches_fcstd": true
+    },
+    {
+      "path": "tcp_cam_holder_v2/ShapeAppearance22",
+      "bytes": 76,
+      "sha256": "b4fafc4d32119c76aef3edb084bec64a4046257829bb145f76c37595666a92e2",
+      "matches_fcstd": true
+    },
+    {
+      "path": "tcp_cam_holder_v2/ShapeAppearance23",
+      "bytes": 76,
+      "sha256": "b4fafc4d32119c76aef3edb084bec64a4046257829bb145f76c37595666a92e2",
+      "matches_fcstd": true
+    },
+    {
+      "path": "tcp_cam_holder_v2/ShapeAppearance3",
+      "bytes": 76,
+      "sha256": "b4fafc4d32119c76aef3edb084bec64a4046257829bb145f76c37595666a92e2",
+      "matches_fcstd": true
+    },
+    {
+      "path": "tcp_cam_holder_v2/ShapeAppearance4",
+      "bytes": 76,
+      "sha256": "b4fafc4d32119c76aef3edb084bec64a4046257829bb145f76c37595666a92e2",
+      "matches_fcstd": true
+    },
+    {
+      "path": "tcp_cam_holder_v2/ShapeAppearance5",
+      "bytes": 40,
+      "sha256": "065c227be60df6d2678fb3456b22132270244af945bd1d46d8a6428343cbbe29",
+      "matches_fcstd": true
+    },
+    {
+      "path": "tcp_cam_holder_v2/ShapeAppearance6",
+      "bytes": 40,
+      "sha256": "a8a979bd1e99ea8abadfc0d09e5d376d7c44d4ca20659aea5eb9b0c5df76f08d",
+      "matches_fcstd": true
+    },
+    {
+      "path": "tcp_cam_holder_v2/ShapeAppearance7",
+      "bytes": 40,
+      "sha256": "2d56650ec983691f84d21507b4e37cfd5d1dff4499635f186177c7a304df8151",
+      "matches_fcstd": true
+    },
+    {
+      "path": "tcp_cam_holder_v2/ShapeAppearance8",
+      "bytes": 40,
+      "sha256": "dfb385b9303aae83a9eae2b5832b5817a43c021fdb8acab487b580cfa391b1d0",
+      "matches_fcstd": true
+    },
+    {
+      "path": "tcp_cam_holder_v2/ShapeAppearance9",
+      "bytes": 40,
+      "sha256": "dfb385b9303aae83a9eae2b5832b5817a43c021fdb8acab487b580cfa391b1d0",
+      "matches_fcstd": true
+    },
+    {
+      "path": "tcp_cam_holder_v2/Sketch.InternalShape.brp",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "matches_fcstd": true
+    },
+    {
+      "path": "tcp_cam_holder_v2/Sketch.Shape.Map.txt",
+      "bytes": 270,
+      "sha256": "8b1f7bd2c895a498c2eade2fa9a17cd847951498e2d4ee63c6478e29c09d8629",
+      "matches_fcstd": true
+    },
+    {
+      "path": "tcp_cam_holder_v2/Sketch.Shape.brp",
+      "bytes": 3483,
+      "sha256": "8473a862caad4555fdebc4218c078797803cc6d3861bd42d59c705672db8d568",
+      "matches_fcstd": true
+    },
+    {
+      "path": "tcp_cam_holder_v2/Sketch001.InternalShape.brp",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "matches_fcstd": true
+    },
+    {
+      "path": "tcp_cam_holder_v2/Sketch001.Shape.Map.txt",
+      "bytes": 276,
+      "sha256": "100de27ba38e46cb7d16a9811b71b72a2d089718efe9e60b6fa04c9a3f04bd58",
+      "matches_fcstd": true
+    },
+    {
+      "path": "tcp_cam_holder_v2/Sketch001.Shape.brp",
+      "bytes": 3372,
+      "sha256": "91320cf18ed57722aa0262b2c90df1b0d241946ef5977934895cb97d67d49fc6",
+      "matches_fcstd": true
+    },
+    {
+      "path": "tcp_cam_holder_v2/Sketch002.InternalShape.brp",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "matches_fcstd": true
+    },
+    {
+      "path": "tcp_cam_holder_v2/Sketch002.Shape.Map.txt",
+      "bytes": 275,
+      "sha256": "b373f06f757a052ea58857f74e85a9470af577290851c4ee51add88bdd93b71e",
+      "matches_fcstd": true
+    },
+    {
+      "path": "tcp_cam_holder_v2/Sketch002.Shape.brp",
+      "bytes": 3277,
+      "sha256": "6859eacc7c5883892e36fe795eb65c4f30a602df308cde4029f637ac0f29c4fe",
+      "matches_fcstd": true
+    },
+    {
+      "path": "tcp_cam_holder_v2/Sketch003.InternalShape.brp",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "matches_fcstd": true
+    },
+    {
+      "path": "tcp_cam_holder_v2/Sketch003.Shape.Map.txt",
+      "bytes": 269,
+      "sha256": "cbfa09d4ce6a3073336e262fe122fade578b6867deb1cb1b8f4223ffc4959e06",
+      "matches_fcstd": true
+    },
+    {
+      "path": "tcp_cam_holder_v2/Sketch003.Shape.brp",
+      "bytes": 1667,
+      "sha256": "4e146b746a031390cd974960500d2cc54cbf32c3d374d4a4491739f6014f9ec4",
+      "matches_fcstd": true
+    },
+    {
+      "path": "tcp_cam_holder_v2/StringHasher.Table.txt",
+      "bytes": 15066,
+      "sha256": "c0ab80c0b036a264a58c4686af9ae4d78565075211d3a61c03b839e2fca32822",
+      "matches_fcstd": true
+    },
+    {
+      "path": "tcp_cam_holder_v2/thumbnails/Thumbnail.png",
+      "bytes": 10172,
+      "sha256": "2f972fcdbe6f36e2863a557191d20967b4d4b9db63f3ea8f86df0df98a20d899",
+      "matches_fcstd": true
+    },
+    {
+      "path": "tcp_cam_holder_v2-Cam_Extension.3mf",
+      "bytes": 327034,
+      "sha256": "b3cc52aaaee9a83f307b50f2be778cd772456b0db575689f44a23c9af74cbdaf"
+    },
+    {
+      "path": "tcp_cam_holder_v2-Cam_Extension.stl",
+      "bytes": 1724684,
+      "sha256": "9ebf479da7e6b5179fd239e651f116aefdaee20cbde48641927a4f36fa5a347d"
+    },
+    {
+      "path": "tcp_cam_holder_v2.FCStd",
+      "bytes": 183965,
+      "sha256": "c0481ee14a6b151cce48a4e7a0996f32d77bd943440054836cde49613a42451f"
+    }
+  ],
+  "shapes": {
+    "AdditiveLoft.AddSubShape.brp": {
+      "bounds_mm": [
+        -27.2500001,
+        -5.000000100000004,
+        -30.000000100000005,
+        27.250000100000005,
+        10.000000100000003,
+        1.0000000254499999e-07
+      ],
+      "volume_mm3": 16350.0,
+      "faces": [],
+      "face_count": 6
+    },
+    "AdditiveLoft.Shape.brp": {
+      "bounds_mm": [
+        -27.250000100000072,
+        74.99999989999993,
+        -5.0000001000000776,
+        27.25000010000007,
+        105.00000010000007,
+        10.000000100000063
+      ],
+      "volume_mm3": 16350.0,
+      "faces": [],
+      "face_count": 6
+    },
+    "AdditiveLoft.SuppressedShape.brp": {
+      "readable": false,
+      "header": ""
+    },
+    "Body.Shape.brp": {
+      "bounds_mm": [
+        -45.000000100000115,
+        -45.000000100000115,
+        -6.04440485328529,
+        45.000000100000115,
+        105.00000010000011,
+        11.500000100000104
+      ],
+      "volume_mm3": 97725.60177992117,
+      "faces": [
+        {
+          "face": 1,
+          "area_mm2": 1968.5419796713645,
+          "center_mm": [
+            4.218847493575595e-15,
+            88.32423925535956,
+            4.441413085119853
+          ],
+          "kind": "plane",
+          "normal": [
+            0.0,
+            -0.31622776601683783,
+            0.9486832980505139
+          ],
+          "origin_mm": [
+            0.0,
+            90.0,
+            4.999999999999999
+          ]
+        },
+        {
+          "face": 2,
+          "area_mm2": 302.80750099064613,
+          "center_mm": [
+            -1.7012243149220588e-15,
+            104.00254668191177,
+            8.61610744568683
+          ],
+          "kind": "cylinder",
+          "radius_mm": 2.0,
+          "axis": [
+            1.0,
+            0.0,
+            0.0
+          ],
+          "origin_mm": [
+            -40.0,
+            103.0,
+            7.225148226554412
+          ]
+        },
+        {
+          "face": 3,
+          "area_mm2": 298.23539021549186,
+          "center_mm": [
+            40.0,
+            92.42970889865647,
+            0.3650546014828331
+          ],
+          "kind": "plane",
+          "normal": [
+            1.0,
+            0.0,
+            0.0
+          ],
+          "origin_mm": [
+            40.0,
+            91.534025117772,
+            0.18279163517339103
+          ]
+        },
+        {
+          "face": 4,
+          "area_mm2": 63.5,
+          "center_mm": [
+            33.650000000000006,
+            75.0,
+            -2.5
+          ],
+          "kind": "plane",
+          "normal": [
+            0.0,
+            -1.0,
+            0.0
+          ],
+          "origin_mm": [
+            -40.0,
+            75.0,
+            -5.0
+          ]
+        },
+        {
+          "face": 5,
+          "area_mm2": 54.600000000000044,
+          "center_mm": [
+            7.771561172376087e-16,
+            75.0,
+            0.5
+          ],
+          "kind": "plane",
+          "normal": [
+            0.0,
+            -1.0,
+            0.0
+          ],
+          "origin_mm": [
+            0.0,
+            75.0,
+            -5.0
+          ]
+        },
+        {
+          "face": 6,
+          "area_mm2": 63.5,
+          "center_mm": [
+            -33.65,
+            75.0,
+            -2.5
+          ],
+          "kind": "plane",
+          "normal": [
+            0.0,
+            -1.0,
+            0.0
+          ],
+          "origin_mm": [
+            -40.0,
+            75.0,
+            -5.0
+          ]
+        },
+        {
+          "face": 7,
+          "area_mm2": 86.18697104464782,
+          "center_mm": [
+            36.74999999999989,
+            87.51330566653954,
+            -0.6557938487454115
+          ],
+          "kind": "cylinder",
+          "radius_mm": 1.5,
+          "axis": [
+            0.0,
+            0.31622776601683805,
+            -0.9486832980505138
+          ],
+          "origin_mm": [
+            36.75,
+            86.02633403898973,
+            3.675444679663219
+          ]
+        },
+        {
+          "face": 8,
+          "area_mm2": 86.18697104464816,
+          "center_mm": [
+            31.999999999999893,
+            87.51330566653955,
+            -0.6557938487454286
+          ],
+          "kind": "cylinder",
+          "radius_mm": 1.5,
+          "axis": [
+            0.0,
+            0.31622776601683805,
+            -0.9486832980505138
+          ],
+          "origin_mm": [
+            32.0,
+            86.02633403898973,
+            3.675444679663219
+          ]
+        },
+        {
+          "face": 9,
+          "area_mm2": 86.18697104464816,
+          "center_mm": [
+            27.249999999999893,
+            87.51330566653955,
+            -0.6557938487454286
+          ],
+          "kind": "cylinder",
+          "radius_mm": 1.5,
+          "axis": [
+            0.0,
+            0.31622776601683805,
+            -0.9486832980505138
+          ],
+          "origin_mm": [
+            27.25,
+            86.02633403898973,
+            3.675444679663219
+          ]
+        },
+        {
+          "face": 10,
+          "area_mm2": 86.18697104464816,
+          "center_mm": [
+            22.499999999999893,
+            87.51330566653955,
+            -0.6557938487454286
+          ],
+          "kind": "cylinder",
+          "radius_mm": 1.5,
+          "axis": [
+            0.0,
+            0.31622776601683805,
+            -0.9486832980505138
+          ],
+          "origin_mm": [
+            22.5,
+            86.02633403898973,
+            3.675444679663219
+          ]
+        },
+        {
+          "face": 11,
+          "area_mm2": 86.18697104464816,
+          "center_mm": [
+            17.749999999999893,
+            87.51330566653955,
+            -0.6557938487454286
+          ],
+          "kind": "cylinder",
+          "radius_mm": 1.5,
+          "axis": [
+            0.0,
+            0.31622776601683805,
+            -0.9486832980505138
+          ],
+          "origin_mm": [
+            17.75,
+            86.02633403898973,
+            3.675444679663219
+          ]
+        },
+        {
+          "face": 12,
+          "area_mm2": 86.18697104464857,
+          "center_mm": [
+            12.99999999999989,
+            87.51330566653957,
+            -0.655793848745449
+          ],
+          "kind": "cylinder",
+          "radius_mm": 1.5,
+          "axis": [
+            0.0,
+            0.31622776601683805,
+            -0.9486832980505138
+          ],
+          "origin_mm": [
+            13.0,
+            86.02633403898973,
+            3.675444679663219
+          ]
+        },
+        {
+          "face": 13,
+          "area_mm2": 86.18697104464863,
+          "center_mm": [
+            8.249999999999904,
+            87.51330566653957,
+            -0.6557938487454521
+          ],
+          "kind": "cylinder",
+          "radius_mm": 1.5,
+          "axis": [
+            0.0,
+            0.31622776601683805,
+            -0.9486832980505138
+          ],
+          "origin_mm": [
+            8.25,
+            86.02633403898973,
+            3.675444679663219
+          ]
+        },
+        {
+          "face": 14,
+          "area_mm2": 86.18697104464863,
+          "center_mm": [
+            3.499999999999904,
+            87.51330566653957,
+            -0.6557938487454521
+          ],
+          "kind": "cylinder",
+          "radius_mm": 1.5,
+          "axis": [
+            0.0,
+            0.31622776601683805,
+            -0.9486832980505138
+          ],
+          "origin_mm": [
+            3.5,
+            86.02633403898973,
+            3.675444679663219
+          ]
+        },
+        {
+          "face": 15,
+          "area_mm2": 101.89493431266303,
+          "center_mm": [
+            36.75000000000003,
+            92.51391490574461,
+            0.13377603108842165
+          ],
+          "kind": "cylinder",
+          "radius_mm": 1.5,
+          "axis": [
+            0.0,
+            0.31622776601683805,
+            -0.9486832980505138
+          ],
+          "origin_mm": [
+            36.75,
+            90.7697505292423,
+            5.25658350974741
+          ]
+        },
+        {
+          "face": 16,
+          "area_mm2": 101.89493431266355,
+          "center_mm": [
+            32.000000000000036,
+            92.51391490574461,
+            0.13377603108839498
+          ],
+          "kind": "cylinder",
+          "radius_mm": 1.5,
+          "axis": [
+            0.0,
+            0.31622776601683805,
+            -0.9486832980505138
+          ],
+          "origin_mm": [
+            32.0,
+            90.7697505292423,
+            5.25658350974741
+          ]
+        },
+        {
+          "face": 17,
+          "area_mm2": 101.89493431266355,
+          "center_mm": [
+            27.250000000000018,
+            92.51391490574461,
+            0.1337760310883947
+          ],
+          "kind": "cylinder",
+          "radius_mm": 1.5,
+          "axis": [
+            0.0,
+            0.31622776601683805,
+            -0.9486832980505138
+          ],
+          "origin_mm": [
+            27.25,
+            90.7697505292423,
+            5.25658350974741
+          ]
+        },
+        {
+          "face": 18,
+          "area_mm2": 101.89493431266355,
+          "center_mm": [
+            22.50000000000002,
+            92.51391490574461,
+            0.1337760310883947
+          ],
+          "kind": "cylinder",
+          "radius_mm": 1.5,
+          "axis": [
+            0.0,
+            0.31622776601683805,
+            -0.9486832980505138
+          ],
+          "origin_mm": [
+            22.5,
+            90.7697505292423,
+            5.25658350974741
+          ]
+        },
+        {
+          "face": 19,
+          "area_mm2": 117.6028975805919,
+          "center_mm": [
+            36.74999999999999,
+            97.51621521763697,
+            0.9236129224136859
+          ],
+          "kind": "cylinder",
+          "radius_mm": 1.5,
+          "axis": [
+            0.0,
+            0.31622776601683805,
+            -0.9486832980505138
+          ],
+          "origin_mm": [
+            36.75,
+            95.51316701949487,
+            6.8377223398316
+          ]
+        },
+        {
+          "face": 20,
+          "area_mm2": 117.60289758059125,
+          "center_mm": [
+            31.999999999999986,
+            97.51621521763694,
+            0.9236129224137182
+          ],
+          "kind": "cylinder",
+          "radius_mm": 1.5,
+          "axis": [
+            0.0,
+            0.31622776601683805,
+            -0.9486832980505138
+          ],
+          "origin_mm": [
+            32.0,
+            95.51316701949487,
+            6.8377223398316
+          ]
+        },
+        {
+          "face": 21,
+          "area_mm2": 117.60289758059058,
+          "center_mm": [
+            27.24999999999998,
+            97.51621521763694,
+            0.9236129224137521
+          ],
+          "kind": "cylinder",
+          "radius_mm": 1.5,
+          "axis": [
+            0.0,
+            0.31622776601683805,
+            -0.9486832980505138
+          ],
+          "origin_mm": [
+            27.25,
+            95.51316701949487,
+            6.8377223398316
+          ]
+        },
+        {
+          "face": 22,
+          "area_mm2": 117.60289758059058,
+          "center_mm": [
+            22.499999999999982,
+            97.51621521763694,
+            0.9236129224137521
+          ],
+          "kind": "cylinder",
+          "radius_mm": 1.5,
+          "axis": [
+            0.0,
+            0.31622776601683805,
+            -0.9486832980505138
+          ],
+          "origin_mm": [
+            22.5,
+            95.51316701949487,
+            6.8377223398316
+          ]
+        },
+        {
+          "face": 23,
+          "area_mm2": 101.89493431266355,
+          "center_mm": [
+            17.75000000000002,
+            92.51391490574461,
+            0.1337760310883947
+          ],
+          "kind": "cylinder",
+          "radius_mm": 1.5,
+          "axis": [
+            0.0,
+            0.31622776601683805,
+            -0.9486832980505138
+          ],
+          "origin_mm": [
+            17.75,
+            90.7697505292423,
+            5.25658350974741
+          ]
+        },
+        {
+          "face": 24,
+          "area_mm2": 101.89493431266305,
+          "center_mm": [
+            13.000000000000023,
+            92.51391490574461,
+            0.1337760310884199
+          ],
+          "kind": "cylinder",
+          "radius_mm": 1.5,
+          "axis": [
+            0.0,
+            0.31622776601683805,
+            -0.9486832980505138
+          ],
+          "origin_mm": [
+            13.0,
+            90.7697505292423,
+            5.25658350974741
+          ]
+        },
+        {
+          "face": 25,
+          "area_mm2": 101.89493431266345,
+          "center_mm": [
+            8.250000000000027,
+            92.51391490574461,
+            0.13377603108839997
+          ],
+          "kind": "cylinder",
+          "radius_mm": 1.5,
+          "axis": [
+            0.0,
+            0.31622776601683805,
+            -0.9486832980505138
+          ],
+          "origin_mm": [
+            8.25,
+            90.7697505292423,
+            5.25658350974741
+          ]
+        },
+        {
+          "face": 26,
+          "area_mm2": 101.89493431266345,
+          "center_mm": [
+            3.5000000000000266,
+            92.51391490574461,
+            0.13377603108839997
+          ],
+          "kind": "cylinder",
+          "radius_mm": 1.5,
+          "axis": [
+            0.0,
+            0.31622776601683805,
+            -0.9486832980505138
+          ],
+          "origin_mm": [
+            3.5,
+            90.7697505292423,
+            5.25658350974741
+          ]
+        },
+        {
+          "face": 27,
+          "area_mm2": 117.60289758059058,
+          "center_mm": [
+            17.749999999999982,
+            97.51621521763694,
+            0.9236129224137521
+          ],
+          "kind": "cylinder",
+          "radius_mm": 1.5,
+          "axis": [
+            0.0,
+            0.31622776601683805,
+            -0.9486832980505138
+          ],
+          "origin_mm": [
+            17.75,
+            95.51316701949487,
+            6.8377223398316
+          ]
+        },
+        {
+          "face": 28,
+          "area_mm2": 117.60289758059184,
+          "center_mm": [
+            12.999999999999979,
+            97.51621521763695,
+            0.9236129224136884
+          ],
+          "kind": "cylinder",
+          "radius_mm": 1.5,
+          "axis": [
+            0.0,
+            0.31622776601683805,
+            -0.9486832980505138
+          ],
+          "origin_mm": [
+            13.0,
+            95.51316701949487,
+            6.8377223398316
+          ]
+        },
+        {
+          "face": 29,
+          "area_mm2": 117.6028975805921,
+          "center_mm": [
+            8.249999999999975,
+            97.51621521763697,
+            0.9236129224136755
+          ],
+          "kind": "cylinder",
+          "radius_mm": 1.5,
+          "axis": [
+            0.0,
+            0.31622776601683805,
+            -0.9486832980505138
+          ],
+          "origin_mm": [
+            8.25,
+            95.51316701949487,
+            6.8377223398316
+          ]
+        },
+        {
+          "face": 30,
+          "area_mm2": 117.6028975805915,
+          "center_mm": [
+            3.499999999999982,
+            97.51621521763695,
+            0.9236129224137053
+          ],
+          "kind": "cylinder",
+          "radius_mm": 1.5,
+          "axis": [
+            0.0,
+            0.31622776601683805,
+            -0.9486832980505138
+          ],
+          "origin_mm": [
+            3.5,
+            95.51316701949487,
+            6.8377223398316
+          ]
+        },
+        {
+          "face": 31,
+          "area_mm2": 86.18697104469557,
+          "center_mm": [
+            -3.5000000000001283,
+            87.51330566654097,
+            -0.6557938487478138
+          ],
+          "kind": "cylinder",
+          "radius_mm": 1.5,
+          "axis": [
+            0.0,
+            0.31622776601683805,
+            -0.9486832980505138
+          ],
+          "origin_mm": [
+            -3.5,
+            86.02633403898973,
+            3.675444679663221
+          ]
+        },
+        {
+          "face": 32,
+          "area_mm2": 86.18697104469584,
+          "center_mm": [
+            -8.250000000000131,
+            87.51330566654097,
+            -0.6557938487478272
+          ],
+          "kind": "cylinder",
+          "radius_mm": 1.5,
+          "axis": [
+            0.0,
+            0.31622776601683805,
+            -0.9486832980505138
+          ],
+          "origin_mm": [
+            -8.25,
+            86.02633403898973,
+            3.675444679663221
+          ]
+        },
+        {
+          "face": 33,
+          "area_mm2": 86.18697104469584,
+          "center_mm": [
+            -13.000000000000131,
+            87.51330566654097,
+            -0.6557938487478272
+          ],
+          "kind": "cylinder",
+          "radius_mm": 1.5,
+          "axis": [
+            0.0,
+            0.31622776601683805,
+            -0.9486832980505138
+          ],
+          "origin_mm": [
+            -13.0,
+            86.02633403898973,
+            3.675444679663221
+          ]
+        },
+        {
+          "face": 34,
+          "area_mm2": 86.18697104469544,
+          "center_mm": [
+            -17.750000000000128,
+            87.51330566654097,
+            -0.6557938487478069
+          ],
+          "kind": "cylinder",
+          "radius_mm": 1.5,
+          "axis": [
+            0.0,
+            0.31622776601683805,
+            -0.9486832980505138
+          ],
+          "origin_mm": [
+            -17.75,
+            86.02633403898973,
+            3.675444679663221
+          ]
+        },
+        {
+          "face": 35,
+          "area_mm2": 86.18697104469544,
+          "center_mm": [
+            -22.500000000000128,
+            87.51330566654097,
+            -0.6557938487478069
+          ],
+          "kind": "cylinder",
+          "radius_mm": 1.5,
+          "axis": [
+            0.0,
+            0.31622776601683805,
+            -0.9486832980505138
+          ],
+          "origin_mm": [
+            -22.5,
+            86.02633403898973,
+            3.675444679663221
+          ]
+        },
+        {
+          "face": 36,
+          "area_mm2": 86.18697104469544,
+          "center_mm": [
+            -27.25000000000013,
+            87.51330566654097,
+            -0.6557938487478069
+          ],
+          "kind": "cylinder",
+          "radius_mm": 1.5,
+          "axis": [
+            0.0,
+            0.31622776601683805,
+            -0.9486832980505138
+          ],
+          "origin_mm": [
+            -27.25,
+            86.02633403898973,
+            3.675444679663221
+          ]
+        },
+        {
+          "face": 37,
+          "area_mm2": 86.1869710446949,
+          "center_mm": [
+            -32.00000000000013,
+            87.51330566654096,
+            -0.6557938487477798
+          ],
+          "kind": "cylinder",
+          "radius_mm": 1.5,
+          "axis": [
+            0.0,
+            0.31622776601683805,
+            -0.9486832980505138
+          ],
+          "origin_mm": [
+            -32.0,
+            86.02633403898973,
+            3.675444679663221
+          ]
+        },
+        {
+          "face": 38,
+          "area_mm2": 86.1869710446951,
+          "center_mm": [
+            -36.75000000000013,
+            87.51330566654096,
+            -0.6557938487477898
+          ],
+          "kind": "cylinder",
+          "radius_mm": 1.5,
+          "axis": [
+            0.0,
+            0.31622776601683805,
+            -0.9486832980505138
+          ],
+          "origin_mm": [
+            -36.75,
+            86.02633403898973,
+            3.675444679663221
+          ]
+        },
+        {
+          "face": 39,
+          "area_mm2": 101.89493431266362,
+          "center_mm": [
+            -3.4999999999999725,
+            92.51391490574461,
+            0.13377603108839162
+          ],
+          "kind": "cylinder",
+          "radius_mm": 1.5,
+          "axis": [
+            0.0,
+            0.31622776601683805,
+            -0.9486832980505138
+          ],
+          "origin_mm": [
+            -3.5,
+            90.7697505292423,
+            5.25658350974741
+          ]
+        },
+        {
+          "face": 40,
+          "area_mm2": 101.89493431266305,
+          "center_mm": [
+            -8.249999999999977,
+            92.51391490574461,
+            0.1337760310884199
+          ],
+          "kind": "cylinder",
+          "radius_mm": 1.5,
+          "axis": [
+            0.0,
+            0.31622776601683805,
+            -0.9486832980505138
+          ],
+          "origin_mm": [
+            -8.25,
+            90.7697505292423,
+            5.25658350974741
+          ]
+        },
+        {
+          "face": 41,
+          "area_mm2": 101.89493431266305,
+          "center_mm": [
+            -12.999999999999977,
+            92.51391490574461,
+            0.1337760310884199
+          ],
+          "kind": "cylinder",
+          "radius_mm": 1.5,
+          "axis": [
+            0.0,
+            0.31622776601683805,
+            -0.9486832980505138
+          ],
+          "origin_mm": [
+            -13.0,
+            90.7697505292423,
+            5.25658350974741
+          ]
+        },
+        {
+          "face": 42,
+          "area_mm2": 101.89493431266355,
+          "center_mm": [
+            -17.74999999999998,
+            92.51391490574461,
+            0.1337760310883947
+          ],
+          "kind": "cylinder",
+          "radius_mm": 1.5,
+          "axis": [
+            0.0,
+            0.31622776601683805,
+            -0.9486832980505138
+          ],
+          "origin_mm": [
+            -17.75,
+            90.7697505292423,
+            5.25658350974741
+          ]
+        },
+        {
+          "face": 43,
+          "area_mm2": 117.60289758059172,
+          "center_mm": [
+            -3.500000000000023,
+            97.51621521763695,
+            0.9236129224136949
+          ],
+          "kind": "cylinder",
+          "radius_mm": 1.5,
+          "axis": [
+            0.0,
+            0.31622776601683805,
+            -0.9486832980505138
+          ],
+          "origin_mm": [
+            -3.5,
+            95.51316701949487,
+            6.8377223398316
+          ]
+        },
+        {
+          "face": 44,
+          "area_mm2": 117.60289758059184,
+          "center_mm": [
+            -8.25,
+            97.51621521763695,
+            0.9236129224136883
+          ],
+          "kind": "cylinder",
+          "radius_mm": 1.5,
+          "axis": [
+            0.0,
+            0.31622776601683805,
+            -0.9486832980505138
+          ],
+          "origin_mm": [
+            -8.25,
+            95.51316701949487,
+            6.8377223398316
+          ]
+        },
+        {
+          "face": 45,
+          "area_mm2": 117.60289758059184,
+          "center_mm": [
+            -13.000000000000021,
+            97.51621521763695,
+            0.9236129224136884
+          ],
+          "kind": "cylinder",
+          "radius_mm": 1.5,
+          "axis": [
+            0.0,
+            0.31622776601683805,
+            -0.9486832980505138
+          ],
+          "origin_mm": [
+            -13.0,
+            95.51316701949487,
+            6.8377223398316
+          ]
+        },
+        {
+          "face": 46,
+          "area_mm2": 117.60289758059058,
+          "center_mm": [
+            -17.750000000000018,
+            97.51621521763694,
+            0.9236129224137521
+          ],
+          "kind": "cylinder",
+          "radius_mm": 1.5,
+          "axis": [
+            0.0,
+            0.31622776601683805,
+            -0.9486832980505138
+          ],
+          "origin_mm": [
+            -17.75,
+            95.51316701949487,
+            6.8377223398316
+          ]
+        },
+        {
+          "face": 47,
+          "area_mm2": 101.89493431266355,
+          "center_mm": [
+            -22.499999999999982,
+            92.51391490574461,
+            0.1337760310883947
+          ],
+          "kind": "cylinder",
+          "radius_mm": 1.5,
+          "axis": [
+            0.0,
+            0.31622776601683805,
+            -0.9486832980505138
+          ],
+          "origin_mm": [
+            -22.5,
+            90.7697505292423,
+            5.25658350974741
+          ]
+        },
+        {
+          "face": 48,
+          "area_mm2": 101.89493431266355,
+          "center_mm": [
+            -27.24999999999998,
+            92.51391490574461,
+            0.1337760310883947
+          ],
+          "kind": "cylinder",
+          "radius_mm": 1.5,
+          "axis": [
+            0.0,
+            0.31622776601683805,
+            -0.9486832980505138
+          ],
+          "origin_mm": [
+            -27.25,
+            90.7697505292423,
+            5.25658350974741
+          ]
+        },
+        {
+          "face": 49,
+          "area_mm2": 101.89493431266342,
+          "center_mm": [
+            -31.999999999999968,
+            92.51391490574463,
+            0.13377603108840147
+          ],
+          "kind": "cylinder",
+          "radius_mm": 1.5,
+          "axis": [
+            0.0,
+            0.31622776601683805,
+            -0.9486832980505138
+          ],
+          "origin_mm": [
+            -32.0,
+            90.7697505292423,
+            5.25658350974741
+          ]
+        },
+        {
+          "face": 50,
+          "area_mm2": 101.89493431266303,
+          "center_mm": [
+            -36.74999999999997,
+            92.51391490574461,
+            0.13377603108842165
+          ],
+          "kind": "cylinder",
+          "radius_mm": 1.5,
+          "axis": [
+            0.0,
+            0.31622776601683805,
+            -0.9486832980505138
+          ],
+          "origin_mm": [
+            -36.75,
+            90.7697505292423,
+            5.25658350974741
+          ]
+        },
+        {
+          "face": 51,
+          "area_mm2": 117.60289758059058,
+          "center_mm": [
+            -22.500000000000018,
+            97.51621521763694,
+            0.9236129224137521
+          ],
+          "kind": "cylinder",
+          "radius_mm": 1.5,
+          "axis": [
+            0.0,
+            0.31622776601683805,
+            -0.9486832980505138
+          ],
+          "origin_mm": [
+            -22.5,
+            95.51316701949487,
+            6.8377223398316
+          ]
+        },
+        {
+          "face": 52,
+          "area_mm2": 117.60289758059058,
+          "center_mm": [
+            -27.250000000000018,
+            97.51621521763694,
+            0.9236129224137521
+          ],
+          "kind": "cylinder",
+          "radius_mm": 1.5,
+          "axis": [
+            0.0,
+            0.31622776601683805,
+            -0.9486832980505138
+          ],
+          "origin_mm": [
+            -27.25,
+            95.51316701949487,
+            6.8377223398316
+          ]
+        },
+        {
+          "face": 53,
+          "area_mm2": 117.60289758059177,
+          "center_mm": [
+            -32.000000000000014,
+            97.51621521763697,
+            0.9236129224136923
+          ],
+          "kind": "cylinder",
+          "radius_mm": 1.5,
+          "axis": [
+            0.0,
+            0.31622776601683805,
+            -0.9486832980505138
+          ],
+          "origin_mm": [
+            -32.0,
+            95.51316701949487,
+            6.8377223398316
+          ]
+        },
+        {
+          "face": 54,
+          "area_mm2": 117.6028975805919,
+          "center_mm": [
+            -36.75000000000001,
+            97.51621521763697,
+            0.9236129224136859
+          ],
+          "kind": "cylinder",
+          "radius_mm": 1.5,
+          "axis": [
+            0.0,
+            0.31622776601683805,
+            -0.9486832980505138
+          ],
+          "origin_mm": [
+            -36.75,
+            95.51316701949487,
+            6.8377223398316
+          ]
+        },
+        {
+          "face": 55,
+          "area_mm2": 978.0118581243528,
+          "center_mm": [
+            1.1624280092027363e-15,
+            105.0,
+            1.1125741132772053
+          ],
+          "kind": "plane",
+          "normal": [
+            0.0,
+            1.0,
+            0.0
+          ],
+          "origin_mm": [
+            0.0,
+            105.0,
+            2.499999999999996
+          ]
+        },
+        {
+          "face": 56,
+          "area_mm2": 7400.318723882434,
+          "center_mm": [
+            0.027530407995265516,
+            40.13446255193673,
+            -4.999999999999999
+          ],
+          "kind": "plane",
+          "normal": [
+            -0.0,
+            -0.0,
+            -1.0
+          ],
+          "origin_mm": [
+            -1.5e-15,
+            39.75871630799027,
+            -4.999999999999999
+          ]
+        },
+        {
+          "face": 57,
+          "area_mm2": 207.29646244448662,
+          "center_mm": [
+            27.3,
+            61.83415512623011,
+            -0.06801995502496239
+          ],
+          "kind": "plane",
+          "normal": [
+            -1.0,
+            -1.2e-16,
+            0.0
+          ],
+          "origin_mm": [
+            27.30000000000001,
+            3.16e-15,
+            -5.0
+          ]
+        },
+        {
+          "face": 58,
+          "area_mm2": 207.2964624444868,
+          "center_mm": [
+            -27.299999999999997,
+            61.8341551262301,
+            -0.06801995502496222
+          ],
+          "kind": "plane",
+          "normal": [
+            -1.0,
+            -1.2e-16,
+            0.0
+          ],
+          "origin_mm": [
+            -27.29999999999999,
+            -3.16e-15,
+            -5.0
+          ]
+        },
+        {
+          "face": 59,
+          "area_mm2": 343.0619177720054,
+          "center_mm": [
+            -1.3641673374200792e-15,
+            73.54647908947032,
+            3.546479089470327
+          ],
+          "kind": "cylinder",
+          "radius_mm": 4.0,
+          "axis": [
+            1.0,
+            0.0,
+            0.0
+          ],
+          "origin_mm": [
+            -27.299999999999997,
+            71.0,
+            1.0000000000000009
+          ]
+        },
+        {
+          "face": 60,
+          "area_mm2": 78.53981633974486,
+          "center_mm": [
+            -29.116901138162092,
+            46.81690113816209,
+            2.4030857593279895e-16
+          ],
+          "kind": "cylinder",
+          "radius_mm": 5.000000000000001,
+          "axis": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "origin_mm": [
+            -32.3,
+            49.99999999999999,
+            -5.0
+          ]
+        },
+        {
+          "face": 61,
+          "area_mm2": 34.07941399603856,
+          "center_mm": [
+            -34.003970699801926,
+            45.0,
+            1.0408340855860845e-16
+          ],
+          "kind": "plane",
+          "normal": [
+            0.0,
+            -1.0,
+            0.0
+          ],
+          "origin_mm": [
+            0.0,
+            45.0,
+            -5.0
+          ]
+        },
+        {
+          "face": 62,
+          "area_mm2": 73.08214319430093,
+          "center_mm": [
+            -38.756097625441726,
+            43.40044992440669,
+            2.0508444576661519e-16
+          ],
+          "kind": "cylinder",
+          "radius_mm": 4.999999999999997,
+          "axis": [
+            0.0,
+            0.0,
+            -1.0
+          ],
+          "origin_mm": [
+            -35.707941399603854,
+            40.0,
+            -5.0
+          ]
+        },
+        {
+          "face": 63,
+          "area_mm2": 322.3653435527234,
+          "center_mm": [
+            -42.43405787271022,
+            24.522342102247165,
+            8.265576037842871e-17
+          ],
+          "kind": "plane",
+          "normal": [
+            -0.9940486732021602,
+            0.10893684089886642,
+            0.0
+          ],
+          "origin_mm": [
+            -44.58597110910163,
+            4.886133820175499,
+            -5.0
+          ]
+        },
+        {
+          "face": 64,
+          "area_mm2": 1584.7441834066683,
+          "center_mm": [
+            -7.475501699142717e-15,
+            -25.096124849836063,
+            1.3450929365129552e-16
+          ],
+          "kind": "cylinder",
+          "radius_mm": 45.00000000000001,
+          "axis": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "origin_mm": [
+            0.0,
+            0.0,
+            -5.0
+          ]
+        },
+        {
+          "face": 65,
+          "area_mm2": 322.36534355272346,
+          "center_mm": [
+            42.43405787271024,
+            24.522342102247176,
+            2.204153610091432e-16
+          ],
+          "kind": "plane",
+          "normal": [
+            -0.9940486732021602,
+            -0.10893684089886642,
+            0.0
+          ],
+          "origin_mm": [
+            44.58597110910165,
+            4.886133820175502,
+            -5.0
+          ]
+        },
+        {
+          "face": 66,
+          "area_mm2": 73.08214319430093,
+          "center_mm": [
+            38.75609762544173,
+            43.40044992440671,
+            6.836148192220504e-17
+          ],
+          "kind": "cylinder",
+          "radius_mm": 5.000000000000001,
+          "axis": [
+            0.0,
+            0.0,
+            -1.0
+          ],
+          "origin_mm": [
+            35.70794139960386,
+            40.00000000000001,
+            -5.0
+          ]
+        },
+        {
+          "face": 67,
+          "area_mm2": 78.53981633974479,
+          "center_mm": [
+            29.1169011381621,
+            46.816901138162095,
+            2.1203697876423456e-17
+          ],
+          "kind": "cylinder",
+          "radius_mm": 4.999999999999997,
+          "axis": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "origin_mm": [
+            32.300000000000004,
+            50.0,
+            -5.0
+          ]
+        },
+        {
+          "face": 68,
+          "area_mm2": 34.07941399603856,
+          "center_mm": [
+            34.00397069980193,
+            45.00000000000001,
+            -6.93889390390723e-18
+          ],
+          "kind": "plane",
+          "normal": [
+            0.0,
+            1.0,
+            0.0
+          ],
+          "origin_mm": [
+            0.0,
+            45.00000000000001,
+            -5.0
+          ]
+        },
+        {
+          "face": 69,
+          "area_mm2": 795.4512598889356,
+          "center_mm": [
+            0.0,
+            9.79044153279176e-16,
+            -3.0
+          ],
+          "kind": "cylinder",
+          "radius_mm": 31.65,
+          "axis": [
+            -0.0,
+            -0.0,
+            -1.0
+          ],
+          "origin_mm": [
+            0.0,
+            0.0,
+            88.5197184982169
+          ]
+        },
+        {
+          "face": 70,
+          "area_mm2": 131.31340274562265,
+          "center_mm": [
+            -0.06447690408097798,
+            51.771583685267565,
+            -1.8822557346558903e-16
+          ],
+          "kind": "plane",
+          "normal": [
+            0.7071067811865511,
+            0.707106781186544,
+            0.0
+          ],
+          "origin_mm": [
+            -4.707106781186455,
+            56.414213562373085,
+            -18.000000000000007
+          ]
+        },
+        {
+          "face": 71,
+          "area_mm2": 56.844276909235006,
+          "center_mm": [
+            5.779324447888887,
+            49.70487434872741,
+            -1.048588738374972e-16
+          ],
+          "kind": "plane",
+          "normal": [
+            -0.9063077870366504,
+            0.4226182617406988,
+            0.0
+          ],
+          "origin_mm": [
+            6.980495922753279,
+            52.28079488929277,
+            -18.000000000000007
+          ]
+        },
+        {
+          "face": 72,
+          "area_mm2": 15.707963267949056,
+          "center_mm": [
+            -5.375473886403438,
+            56.800632632314205,
+            -3.9608377823940355e-16
+          ],
+          "kind": "cylinder",
+          "radius_mm": 1.9999999999999982,
+          "axis": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "origin_mm": [
+            -6.121320343559555,
+            55.0,
+            -18.000000000000007
+          ]
+        },
+        {
+          "face": 73,
+          "area_mm2": 44.1351167584997,
+          "center_mm": [
+            9.187251760678263,
+            52.28079488929277,
+            -1.8388068845354155e-16
+          ],
+          "kind": "plane",
+          "normal": [
+            0.0,
+            1.0,
+            0.0
+          ],
+          "origin_mm": [
+            11.394007598603249,
+            52.28079488929277,
+            -18.000000000000007
+          ]
+        },
+        {
+          "face": 74,
+          "area_mm2": 18.786796564404497,
+          "center_mm": [
+            -7.06066017177978,
+            56.99999999999999,
+            -9.714451465470121e-17
+          ],
+          "kind": "plane",
+          "normal": [
+            0.0,
+            1.0,
+            0.0
+          ],
+          "origin_mm": [
+            -8.000000000000005,
+            57.0,
+            -18.000000000000007
+          ]
+        },
+        {
+          "face": 75,
+          "area_mm2": 112.95616739888159,
+          "center_mm": [
+            9.007140642652907,
+            47.16214218392169,
+            -2.417021951246816e-16
+          ],
+          "kind": "plane",
+          "normal": [
+            0.9063077870366496,
+            -0.42261826174070033,
+            0.0
+          ],
+          "origin_mm": [
+            6.620273686702561,
+            42.0434894785506,
+            -18.000000000000007
+          ]
+        },
+        {
+          "face": 76,
+          "area_mm2": 31.41592653589793,
+          "center_mm": [
+            -9.273239544735167,
+            56.27323954473516,
+            4.417437057588218e-18
+          ],
+          "kind": "cylinder",
+          "radius_mm": 2.0,
+          "axis": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "origin_mm": [
+            -8.000000000000005,
+            55.0,
+            -18.000000000000007
+          ]
+        },
+        {
+          "face": 77,
+          "area_mm2": 14.748032179352123,
+          "center_mm": [
+            6.103704298958624,
+            41.554340996072675,
+            -1.504847333098242e-16
+          ],
+          "kind": "cylinder",
+          "radius_mm": 1.3000000000000025,
+          "axis": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "origin_mm": [
+            5.442073563554921,
+            42.59289321881351,
+            -18.000000000000007
+          ]
+        },
+        {
+          "face": 78,
+          "area_mm2": 129.99999999999997,
+          "center_mm": [
+            -10.000000000000004,
+            48.5,
+            -1.8388068845354155e-16
+          ],
+          "kind": "plane",
+          "normal": [
+            -1.0,
+            0.0,
+            0.0
+          ],
+          "origin_mm": [
+            -10.000000000000004,
+            55.0,
+            -18.000000000000007
+          ]
+        },
+        {
+          "face": 79,
+          "area_mm2": 1.4623661958927323,
+          "center_mm": [
+            5.368955253760284,
+            41.2928932188135,
+            -1.6653345369377348e-16
+          ],
+          "kind": "plane",
+          "normal": [
+            0.0,
+            -1.0,
+            0.0
+          ],
+          "origin_mm": [
+            5.442073563554921,
+            41.2928932188135,
+            -18.000000000000007
+          ]
+        },
+        {
+          "face": 80,
+          "area_mm2": 41.74854587293644,
+          "center_mm": [
+            -8.000000000000004,
+            42.597789851253516,
+            -9.29984911884444e-18
+          ],
+          "kind": "plane",
+          "normal": [
+            0.28637637012456135,
+            -0.95811720297377,
+            0.0
+          ],
+          "origin_mm": [
+            -10.000000000000004,
+            42.0,
+            -18.000000000000007
+          ]
+        },
+        {
+          "face": 81,
+          "area_mm2": 10.21017612416693,
+          "center_mm": [
+            4.811036746814168,
+            41.42248200780927,
+            -2.968613458689629e-16
+          ],
+          "kind": "cylinder",
+          "radius_mm": 1.3000000000000052,
+          "axis": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "origin_mm": [
+            5.295836943965649,
+            42.59289321881351,
+            -18.000000000000007
+          ]
+        },
+        {
+          "face": 82,
+          "area_mm2": 88.54672829187214,
+          "center_mm": [
+            -6.000000000000006,
+            47.622916117100644,
+            -1.665334536937735e-16
+          ],
+          "kind": "plane",
+          "normal": [
+            1.0,
+            0.0,
+            0.0
+          ],
+          "origin_mm": [
+            -6.000000000000006,
+            52.05025253169425,
+            -18.000000000000007
+          ]
+        },
+        {
+          "face": 83,
+          "area_mm2": 146.74725804511354,
+          "center_mm": [
+            -0.8117009357884394,
+            46.86195346748263,
+            -1.3125806163298442e-16
+          ],
+          "kind": "plane",
+          "normal": [
+            -0.7071067811865512,
+            -0.7071067811865439,
+            0.0
+          ],
+          "origin_mm": [
+            4.37659812842313,
+            41.673654403271,
+            -18.000000000000007
+          ]
+        },
+        {
+          "face": 84,
+          "area_mm2": 5198.94000260392,
+          "center_mm": [
+            0.03918756393831141,
+            18.99439451170536,
+            5.0
+          ],
+          "kind": "plane",
+          "normal": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "origin_mm": [
+            0.0,
+            0.0,
+            5.0
+          ]
+        },
+        {
+          "face": 85,
+          "area_mm2": 857.6547944300142,
+          "center_mm": [
+            4.774479637193861e-16,
+            70.0,
+            8.529022576272296e-15
+          ],
+          "kind": "cylinder",
+          "radius_mm": 2.500000000000002,
+          "axis": [
+            1.0,
+            1.5e-16,
+            0.0
+          ],
+          "origin_mm": [
+            -58.70000000000003,
+            69.99999999999999,
+            8.57e-15
+          ]
+        },
+        {
+          "face": 86,
+          "area_mm2": 857.6547944300142,
+          "center_mm": [
+            -1.13176998575468e-15,
+            60.0,
+            7.290659135824303e-15
+          ],
+          "kind": "cylinder",
+          "radius_mm": 2.500000000000002,
+          "axis": [
+            1.0,
+            1.5e-16,
+            0.0
+          ],
+          "origin_mm": [
+            -58.70000000000003,
+            59.99999999999999,
+            7.35e-15
+          ]
+        },
+        {
+          "face": 87,
+          "area_mm2": 2133.832562171259,
+          "center_mm": [
+            -1.0279869968470402e-13,
+            -1.9626554914006042e-14,
+            -1.0
+          ],
+          "kind": "plane",
+          "normal": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "origin_mm": [
+            0.0,
+            0.0,
+            -1.0
+          ]
+        },
+        {
+          "face": 88,
+          "area_mm2": 1280.3560859705206,
+          "center_mm": [
+            -1.7763568394002505e-15,
+            1.1580349610240983e-15,
+            8.25
+          ],
+          "kind": "cylinder",
+          "radius_mm": 31.35,
+          "axis": [
+            -0.0,
+            -0.0,
+            -1.0
+          ],
+          "origin_mm": [
+            0.0,
+            0.0,
+            10.0
+          ]
+        },
+        {
+          "face": 89,
+          "area_mm2": 1237.002107350981,
+          "center_mm": [
+            0.0,
+            2.877810312787165e-16,
+            5.250000000000001
+          ],
+          "kind": "cylinder",
+          "radius_mm": 15.75,
+          "axis": [
+            -0.0,
+            -0.0,
+            -1.0
+          ],
+          "origin_mm": [
+            0.0,
+            0.0,
+            10.0
+          ]
+        },
+        {
+          "face": 90,
+          "area_mm2": 235.61944901923476,
+          "center_mm": [
+            2.220446049250313e-16,
+            25.0,
+            5.25
+          ],
+          "kind": "cylinder",
+          "radius_mm": 3.0000000000000036,
+          "axis": [
+            -0.0,
+            -0.0,
+            -1.0
+          ],
+          "origin_mm": [
+            0.0,
+            25.0,
+            10.0
+          ]
+        },
+        {
+          "face": 91,
+          "area_mm2": 243.4734306532091,
+          "center_mm": [
+            -17.677669529663312,
+            17.67766952966307,
+            5.25
+          ],
+          "kind": "cylinder",
+          "radius_mm": 3.100000000000002,
+          "axis": [
+            -0.0,
+            -0.0,
+            -1.0
+          ],
+          "origin_mm": [
+            -17.677669529663312,
+            17.677669529663067,
+            10.0
+          ]
+        },
+        {
+          "face": 92,
+          "area_mm2": 243.47343065320888,
+          "center_mm": [
+            17.677669529663856,
+            17.6776695296644,
+            5.25
+          ],
+          "kind": "cylinder",
+          "radius_mm": 3.0999999999999988,
+          "axis": [
+            -0.0,
+            -0.0,
+            -1.0
+          ],
+          "origin_mm": [
+            17.677669529663856,
+            17.6776695296644,
+            10.0
+          ]
+        },
+        {
+          "face": 93,
+          "area_mm2": 243.47343065320888,
+          "center_mm": [
+            17.677669529665184,
+            -17.677669529662765,
+            5.25
+          ],
+          "kind": "cylinder",
+          "radius_mm": 3.0999999999999988,
+          "axis": [
+            -0.0,
+            -0.0,
+            -1.0
+          ],
+          "origin_mm": [
+            17.677669529665184,
+            -17.677669529662765,
+            10.0
+          ]
+        },
+        {
+          "face": 94,
+          "area_mm2": 235.61944901923465,
+          "center_mm": [
+            25.000000000000785,
+            1.0909864113327715e-12,
+            5.25
+          ],
+          "kind": "cylinder",
+          "radius_mm": 3.0000000000000027,
+          "axis": [
+            -0.0,
+            -0.0,
+            -1.0
+          ],
+          "origin_mm": [
+            25.000000000000785,
+            1.09094e-12,
+            10.0
+          ]
+        },
+        {
+          "face": 95,
+          "area_mm2": 235.6194490192347,
+          "center_mm": [
+            1.8771650900362147e-12,
+            -24.999999999999694,
+            5.25
+          ],
+          "kind": "cylinder",
+          "radius_mm": 3.000000000000003,
+          "axis": [
+            -0.0,
+            -0.0,
+            -1.0
+          ],
+          "origin_mm": [
+            1.87656e-12,
+            -24.999999999999694,
+            10.0
+          ]
+        },
+        {
+          "face": 96,
+          "area_mm2": 235.61944901923465,
+          "center_mm": [
+            -24.999999999998913,
+            -7.886718708370947e-13,
+            5.25
+          ],
+          "kind": "cylinder",
+          "radius_mm": 3.0000000000000027,
+          "axis": [
+            -0.0,
+            -0.0,
+            -1.0
+          ],
+          "origin_mm": [
+            -24.999999999998913,
+            -7.8869e-13,
+            10.0
+          ]
+        },
+        {
+          "face": 97,
+          "area_mm2": 243.4734306532091,
+          "center_mm": [
+            -17.677669529661976,
+            -17.677669529664097,
+            5.25
+          ],
+          "kind": "cylinder",
+          "radius_mm": 3.100000000000002,
+          "axis": [
+            -0.0,
+            -0.0,
+            -1.0
+          ],
+          "origin_mm": [
+            -17.67766952966198,
+            -17.677669529664097,
+            10.0
+          ]
+        },
+        {
+          "face": 98,
+          "area_mm2": 2074.4564610184116,
+          "center_mm": [
+            -1.0548580902921426e-13,
+            -2.2152435198982334e-14,
+            11.5
+          ],
+          "kind": "plane",
+          "normal": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "origin_mm": [
+            0.0,
+            0.0,
+            11.5
+          ]
+        },
+        {
+          "face": 99,
+          "area_mm2": 298.23539021549186,
+          "center_mm": [
+            -40.00000000000001,
+            92.42970889865649,
+            0.36505460148283364
+          ],
+          "kind": "plane",
+          "normal": [
+            -1.0,
+            -0.0,
+            -0.0
+          ],
+          "origin_mm": [
+            -40.00000000000001,
+            91.53402511777205,
+            0.1827916351733914
+          ]
+        }
+      ],
+      "face_count": 99
+    },
+    "Boolean.Shape.brp": {
+      "bounds_mm": [
+        -45.00000010000009,
+        -45.00000010000009,
+        -5.000000100000095,
+        45.00000010000009,
+        105.00000010000008,
+        11.500000100000085
+      ],
+      "volume_mm3": 94072.46439808294,
+      "faces": [],
+      "face_count": 47
+    },
+    "Boolean.SuppressedShape.brp": {
+      "readable": false,
+      "header": ""
+    },
+    "CopyPart__Feature.Shape.brp": {
+      "bounds_mm": [
+        -27.3000001,
+        74.9999999,
+        -5.0000001,
+        27.300000100000002,
+        75.0000001,
+        5.0000001
+      ],
+      "volume_mm3": 0.0,
+      "faces": [],
+      "face_count": 1
+    },
+    "CopyPart__Feature001.Shape.brp": {
+      "bounds_mm": [
+        -27.3000001,
+        74.9999999,
+        -5.0000001,
+        27.300000100000002,
+        75.0000001,
+        5.0000001
+      ],
+      "volume_mm3": 0.0,
+      "faces": [],
+      "face_count": 1
+    },
+    "DatumPlane.Shape.brp": {
+      "bounds_mm": [
+        -1e+100,
+        104.9999999,
+        -1e+100,
+        1e+100,
+        105.0000001,
+        1e+100
+      ],
+      "volume_mm3": 2.8e+102,
+      "faces": [],
+      "face_count": 1
+    },
+    "DatumPlane001.Shape.brp": {
+      "bounds_mm": [
+        -1e+100,
+        -1e+100,
+        -1e+100,
+        1e+100,
+        1e+100,
+        1e+100
+      ],
+      "volume_mm3": 0.0,
+      "faces": [],
+      "face_count": 1
+    },
+    "Fillet.AddSubShape.brp": {
+      "readable": false,
+      "header": ""
+    },
+    "Fillet.Shape.brp": {
+      "bounds_mm": [
+        -45.00000010000009,
+        -45.00000010000009,
+        -5.0000001000000855,
+        45.00000010000009,
+        105.00000010000008,
+        11.500000100000085
+      ],
+      "volume_mm3": 101534.98823362695,
+      "faces": [],
+      "face_count": 50
+    },
+    "Fillet.SuppressedShape.brp": {
+      "readable": false,
+      "header": ""
+    },
+    "Fillet001.AddSubShape.brp": {
+      "readable": false,
+      "header": ""
+    },
+    "Fillet001.Shape.brp": {
+      "bounds_mm": [
+        -45.00000010000009,
+        -45.00000010000009,
+        -5.0000001000000855,
+        45.00000010000009,
+        105.00000010000008,
+        11.500000100000085
+      ],
+      "volume_mm3": 101393.81945086629,
+      "faces": [],
+      "face_count": 51
+    },
+    "Fillet001.SuppressedShape.brp": {
+      "readable": false,
+      "header": ""
+    },
+    "Hole.AddSubShape.brp": {
+      "bounds_mm": [
+        -24.0000001,
+        84.60330899191396,
+        -20.896677522191233,
+        24.0000001,
+        104.8418862169916,
+        7.312064088856857
+      ],
+      "volume_mm3": 1073.029220905892,
+      "faces": [],
+      "face_count": 18
+    },
+    "Hole.Shape.brp": {
+      "bounds_mm": [
+        -45.000000100000115,
+        -45.000000100000115,
+        -6.04440485328529,
+        45.000000100000115,
+        105.00000010000011,
+        11.500000100000104
+      ],
+      "volume_mm3": 100935.29223886128,
+      "faces": [],
+      "face_count": 57
+    },
+    "Hole.SuppressedShape.brp": {
+      "readable": false,
+      "header": ""
+    },
+    "LinearPattern.Shape.brp": {
+      "bounds_mm": [
+        -45.000000100000115,
+        -45.000000100000115,
+        -6.04440485328529,
+        45.000000100000115,
+        105.00000010000011,
+        11.500000100000104
+      ],
+      "volume_mm3": 99330.44700568018,
+      "faces": [],
+      "face_count": 78
+    },
+    "LinearPattern.SuppressedShape.brp": {
+      "readable": false,
+      "header": ""
+    },
+    "LinearPattern001.Shape.brp": {
+      "bounds_mm": [
+        -45.000000100000115,
+        -45.000000100000115,
+        -6.04440485328529,
+        45.000000100000115,
+        105.00000010000011,
+        11.500000100000104
+      ],
+      "volume_mm3": 97725.60177992117,
+      "faces": [],
+      "face_count": 99
+    },
+    "LinearPattern001.SuppressedShape.brp": {
+      "readable": false,
+      "header": ""
+    },
+    "Pad.AddSubShape.brp": {
+      "bounds_mm": [
+        -40.000000100000086,
+        74.99999989999992,
+        -5.000000100000085,
+        40.000000100000086,
+        105.00000010000008,
+        10.000000100000085
+      ],
+      "volume_mm3": 24000.0,
+      "faces": [],
+      "face_count": 6
+    },
+    "Pad.Shape.brp": {
+      "bounds_mm": [
+        -45.00000010000009,
+        -45.00000010000009,
+        -5.0000001000000855,
+        45.00000010000009,
+        105.00000010000008,
+        11.500000100000085
+      ],
+      "volume_mm3": 101722.46439808293,
+      "faces": [],
+      "face_count": 49
+    },
+    "Pad.SuppressedShape.brp": {
+      "readable": false,
+      "header": ""
+    },
+    "Part__Feature.Shape.brp": {
+      "bounds_mm": [
+        -45.00000010000009,
+        -45.00000010000009,
+        -5.0000001000000855,
+        45.00000010000009,
+        75.00000010000008,
+        11.500000100000085
+      ],
+      "volume_mm3": 77722.4643980829,
+      "faces": [
+        {
+          "face": 1,
+          "area_mm2": 397.7256299444678,
+          "center_mm": [
+            4.333903781751598e-15,
+            -20.149015795433947,
+            -3.0
+          ],
+          "kind": "cylinder",
+          "radius_mm": 31.65,
+          "axis": [
+            -0.0,
+            -0.0,
+            -1.0
+          ],
+          "origin_mm": [
+            0.0,
+            0.0,
+            88.5197184982169
+          ]
+        },
+        {
+          "face": 2,
+          "area_mm2": 428.8273972150071,
+          "center_mm": [
+            7.868509385004906e-16,
+            70.0,
+            -1.591549430918946
+          ],
+          "kind": "cylinder",
+          "radius_mm": 2.500000000000002,
+          "axis": [
+            1.0,
+            1.5e-16,
+            0.0
+          ],
+          "origin_mm": [
+            -58.70000000000003,
+            69.99999999999999,
+            8.57e-15
+          ]
+        },
+        {
+          "face": 3,
+          "area_mm2": 428.8273972150071,
+          "center_mm": [
+            -1.0064898613862601e-16,
+            60.0,
+            -1.5915494309189473
+          ],
+          "kind": "cylinder",
+          "radius_mm": 2.500000000000002,
+          "axis": [
+            1.0,
+            1.5e-16,
+            0.0
+          ],
+          "origin_mm": [
+            -58.70000000000003,
+            59.99999999999999,
+            7.35e-15
+          ]
+        },
+        {
+          "face": 4,
+          "area_mm2": 85.51374464563062,
+          "center_mm": [
+            -44.729651541407996,
+            4.262835882091367,
+            -2.272021066490973e-16
+          ],
+          "kind": "cylinder",
+          "radius_mm": 45.00000000000001,
+          "axis": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "origin_mm": [
+            0.0,
+            0.0,
+            -5.0
+          ]
+        },
+        {
+          "face": 5,
+          "area_mm2": 1413.7166941154069,
+          "center_mm": [
+            -5.627597153711073e-15,
+            -28.64788975654117,
+            -4.272152461027539e-16
+          ],
+          "kind": "cylinder",
+          "radius_mm": 45.00000000000001,
+          "axis": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "origin_mm": [
+            0.0,
+            0.0,
+            -5.0
+          ]
+        },
+        {
+          "face": 6,
+          "area_mm2": 121.73671532660455,
+          "center_mm": [
+            -17.677669529661976,
+            -19.6511908240036,
+            5.25
+          ],
+          "kind": "cylinder",
+          "radius_mm": 3.100000000000002,
+          "axis": [
+            -0.0,
+            -0.0,
+            -1.0
+          ],
+          "origin_mm": [
+            -17.67766952966198,
+            -17.677669529664097,
+            10.0
+          ]
+        },
+        {
+          "face": 7,
+          "area_mm2": 117.80972450961733,
+          "center_mm": [
+            -24.999999999998913,
+            -1.9098593171035345,
+            5.25
+          ],
+          "kind": "cylinder",
+          "radius_mm": 3.0000000000000027,
+          "axis": [
+            -0.0,
+            -0.0,
+            -1.0
+          ],
+          "origin_mm": [
+            -24.999999999998913,
+            -7.8869e-13,
+            10.0
+          ]
+        },
+        {
+          "face": 8,
+          "area_mm2": 117.80972450961735,
+          "center_mm": [
+            1.876845467235766e-12,
+            -26.90985931710244,
+            5.25
+          ],
+          "kind": "cylinder",
+          "radius_mm": 3.000000000000003,
+          "axis": [
+            -0.0,
+            -0.0,
+            -1.0
+          ],
+          "origin_mm": [
+            1.87656e-12,
+            -24.999999999999694,
+            10.0
+          ]
+        },
+        {
+          "face": 9,
+          "area_mm2": 117.80972450961733,
+          "center_mm": [
+            25.000000000000785,
+            -1.9098593171016547,
+            5.25
+          ],
+          "kind": "cylinder",
+          "radius_mm": 3.0000000000000027,
+          "axis": [
+            -0.0,
+            -0.0,
+            -1.0
+          ],
+          "origin_mm": [
+            25.000000000000785,
+            1.09094e-12,
+            10.0
+          ]
+        },
+        {
+          "face": 10,
+          "area_mm2": 121.73671532660444,
+          "center_mm": [
+            17.677669529665184,
+            -19.651190824002267,
+            5.25
+          ],
+          "kind": "cylinder",
+          "radius_mm": 3.0999999999999988,
+          "axis": [
+            -0.0,
+            -0.0,
+            -1.0
+          ],
+          "origin_mm": [
+            17.677669529665184,
+            -17.677669529662765,
+            10.0
+          ]
+        },
+        {
+          "face": 11,
+          "area_mm2": 121.73671532660444,
+          "center_mm": [
+            17.677669529663856,
+            15.704148235324897,
+            5.25
+          ],
+          "kind": "cylinder",
+          "radius_mm": 3.0999999999999988,
+          "axis": [
+            -0.0,
+            -0.0,
+            -1.0
+          ],
+          "origin_mm": [
+            17.677669529663856,
+            17.6776695296644,
+            10.0
+          ]
+        },
+        {
+          "face": 12,
+          "area_mm2": 121.73671532660455,
+          "center_mm": [
+            -17.677669529663312,
+            15.704148235323563,
+            5.25
+          ],
+          "kind": "cylinder",
+          "radius_mm": 3.100000000000002,
+          "axis": [
+            -0.0,
+            -0.0,
+            -1.0
+          ],
+          "origin_mm": [
+            -17.677669529663312,
+            17.677669529663067,
+            10.0
+          ]
+        },
+        {
+          "face": 13,
+          "area_mm2": 117.80972450961735,
+          "center_mm": [
+            1.6161840384517231e-16,
+            23.090140682897253,
+            5.25
+          ],
+          "kind": "cylinder",
+          "radius_mm": 3.0000000000000036,
+          "axis": [
+            -0.0,
+            -0.0,
+            -1.0
+          ],
+          "origin_mm": [
+            0.0,
+            25.0,
+            10.0
+          ]
+        },
+        {
+          "face": 14,
+          "area_mm2": 618.5010536754907,
+          "center_mm": [
+            1.1974548337028473e-15,
+            -10.026761414789405,
+            5.25
+          ],
+          "kind": "cylinder",
+          "radius_mm": 15.75,
+          "axis": [
+            -0.0,
+            -0.0,
+            -1.0
+          ],
+          "origin_mm": [
+            0.0,
+            0.0,
+            10.0
+          ]
+        },
+        {
+          "face": 15,
+          "area_mm2": 640.1780429852603,
+          "center_mm": [
+            -6.443543200336429e-16,
+            19.958029863723674,
+            8.25
+          ],
+          "kind": "cylinder",
+          "radius_mm": 31.35,
+          "axis": [
+            -0.0,
+            -0.0,
+            -1.0
+          ],
+          "origin_mm": [
+            0.0,
+            0.0,
+            10.0
+          ]
+        },
+        {
+          "face": 16,
+          "area_mm2": 2074.4564610184116,
+          "center_mm": [
+            -1.0548580902921426e-13,
+            -2.2152435198982334e-14,
+            11.5
+          ],
+          "kind": "plane",
+          "normal": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "origin_mm": [
+            0.0,
+            0.0,
+            11.5
+          ]
+        },
+        {
+          "face": 17,
+          "area_mm2": 2133.832562171259,
+          "center_mm": [
+            -1.0279869968470402e-13,
+            -1.9626554914006042e-14,
+            -1.0
+          ],
+          "kind": "plane",
+          "normal": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "origin_mm": [
+            0.0,
+            0.0,
+            -1.0
+          ]
+        },
+        {
+          "face": 18,
+          "area_mm2": 640.1780429852603,
+          "center_mm": [
+            3.181045715692333e-15,
+            -19.95802986372367,
+            8.25
+          ],
+          "kind": "cylinder",
+          "radius_mm": 31.35,
+          "axis": [
+            -0.0,
+            -0.0,
+            -1.0
+          ],
+          "origin_mm": [
+            0.0,
+            0.0,
+            10.0
+          ]
+        },
+        {
+          "face": 19,
+          "area_mm2": 618.5010536754907,
+          "center_mm": [
+            2.334992869251321e-16,
+            10.026761414789405,
+            5.250000000000001
+          ],
+          "kind": "cylinder",
+          "radius_mm": 15.75,
+          "axis": [
+            -0.0,
+            -0.0,
+            -1.0
+          ],
+          "origin_mm": [
+            0.0,
+            0.0,
+            10.0
+          ]
+        },
+        {
+          "face": 20,
+          "area_mm2": 117.80972450961738,
+          "center_mm": [
+            -1.189731183940759e-16,
+            26.909859317102747,
+            5.25
+          ],
+          "kind": "cylinder",
+          "radius_mm": 3.0000000000000036,
+          "axis": [
+            -0.0,
+            -0.0,
+            -1.0
+          ],
+          "origin_mm": [
+            0.0,
+            25.0,
+            10.0
+          ]
+        },
+        {
+          "face": 21,
+          "area_mm2": 121.73671532660455,
+          "center_mm": [
+            -17.677669529663312,
+            19.65119082400257,
+            5.25
+          ],
+          "kind": "cylinder",
+          "radius_mm": 3.100000000000002,
+          "axis": [
+            -0.0,
+            -0.0,
+            -1.0
+          ],
+          "origin_mm": [
+            -17.677669529663312,
+            17.677669529663067,
+            10.0
+          ]
+        },
+        {
+          "face": 22,
+          "area_mm2": 121.73671532660447,
+          "center_mm": [
+            17.677669529663856,
+            19.6511908240039,
+            5.25
+          ],
+          "kind": "cylinder",
+          "radius_mm": 3.0999999999999988,
+          "axis": [
+            -0.0,
+            -0.0,
+            -1.0
+          ],
+          "origin_mm": [
+            17.677669529663856,
+            17.6776695296644,
+            10.0
+          ]
+        },
+        {
+          "face": 23,
+          "area_mm2": 121.73671532660447,
+          "center_mm": [
+            17.677669529665184,
+            -15.704148235323263,
+            5.25
+          ],
+          "kind": "cylinder",
+          "radius_mm": 3.0999999999999988,
+          "axis": [
+            -0.0,
+            -0.0,
+            -1.0
+          ],
+          "origin_mm": [
+            17.677669529665184,
+            -17.677669529662765,
+            10.0
+          ]
+        },
+        {
+          "face": 24,
+          "area_mm2": 117.80972450961733,
+          "center_mm": [
+            25.000000000000785,
+            1.9098593171038367,
+            5.25
+          ],
+          "kind": "cylinder",
+          "radius_mm": 3.0000000000000027,
+          "axis": [
+            -0.0,
+            -0.0,
+            -1.0
+          ],
+          "origin_mm": [
+            25.000000000000785,
+            1.09094e-12,
+            10.0
+          ]
+        },
+        {
+          "face": 25,
+          "area_mm2": 117.80972450961735,
+          "center_mm": [
+            1.876591185686246e-12,
+            -23.090140682896948,
+            5.25
+          ],
+          "kind": "cylinder",
+          "radius_mm": 3.000000000000003,
+          "axis": [
+            -0.0,
+            -0.0,
+            -1.0
+          ],
+          "origin_mm": [
+            1.87656e-12,
+            -24.999999999999694,
+            10.0
+          ]
+        },
+        {
+          "face": 26,
+          "area_mm2": 117.80972450961733,
+          "center_mm": [
+            -24.999999999998913,
+            1.9098593171019569,
+            5.25
+          ],
+          "kind": "cylinder",
+          "radius_mm": 3.0000000000000027,
+          "axis": [
+            -0.0,
+            -0.0,
+            -1.0
+          ],
+          "origin_mm": [
+            -24.999999999998913,
+            -7.8869e-13,
+            10.0
+          ]
+        },
+        {
+          "face": 27,
+          "area_mm2": 121.73671532660455,
+          "center_mm": [
+            -17.677669529661976,
+            -15.704148235324594,
+            5.25
+          ],
+          "kind": "cylinder",
+          "radius_mm": 3.100000000000002,
+          "axis": [
+            -0.0,
+            -0.0,
+            -1.0
+          ],
+          "origin_mm": [
+            -17.67766952966198,
+            -17.677669529664097,
+            10.0
+          ]
+        },
+        {
+          "face": 28,
+          "area_mm2": 322.3653435527234,
+          "center_mm": [
+            -42.43405787271022,
+            24.522342102247165,
+            8.265576037842871e-17
+          ],
+          "kind": "plane",
+          "normal": [
+            -0.9940486732021602,
+            0.10893684089886642,
+            0.0
+          ],
+          "origin_mm": [
+            -44.58597110910163,
+            4.886133820175499,
+            -5.0
+          ]
+        },
+        {
+          "face": 29,
+          "area_mm2": 34.07941399603856,
+          "center_mm": [
+            -34.003970699801926,
+            45.0,
+            1.0408340855860845e-16
+          ],
+          "kind": "plane",
+          "normal": [
+            0.0,
+            -1.0,
+            0.0
+          ],
+          "origin_mm": [
+            0.0,
+            45.0,
+            -5.0
+          ]
+        },
+        {
+          "face": 30,
+          "area_mm2": 210.7300918301276,
+          "center_mm": [
+            -27.299999999999997,
+            62.03412078183964,
+            -1.4809570008092104e-15
+          ],
+          "kind": "plane",
+          "normal": [
+            -1.0,
+            -1.2e-16,
+            0.0
+          ],
+          "origin_mm": [
+            -27.29999999999999,
+            -3.16e-15,
+            -5.0
+          ]
+        },
+        {
+          "face": 31,
+          "area_mm2": 545.9999999999999,
+          "center_mm": [
+            3.2862601528904635e-15,
+            75.0,
+            1.0408340855860844e-16
+          ],
+          "kind": "plane",
+          "normal": [
+            0.0,
+            -1.0,
+            0.0
+          ],
+          "origin_mm": [
+            0.0,
+            75.0,
+            -5.0
+          ]
+        },
+        {
+          "face": 32,
+          "area_mm2": 210.73009183012744,
+          "center_mm": [
+            27.300000000000004,
+            62.03412078183964,
+            -1.868715644592663e-15
+          ],
+          "kind": "plane",
+          "normal": [
+            -1.0,
+            -1.2e-16,
+            0.0
+          ],
+          "origin_mm": [
+            27.30000000000001,
+            3.16e-15,
+            -5.0
+          ]
+        },
+        {
+          "face": 33,
+          "area_mm2": 34.07941399603856,
+          "center_mm": [
+            34.00397069980193,
+            45.00000000000001,
+            -6.93889390390723e-18
+          ],
+          "kind": "plane",
+          "normal": [
+            0.0,
+            1.0,
+            0.0
+          ],
+          "origin_mm": [
+            0.0,
+            45.00000000000001,
+            -5.0
+          ]
+        },
+        {
+          "face": 34,
+          "area_mm2": 322.36534355272346,
+          "center_mm": [
+            42.43405787271024,
+            24.522342102247176,
+            2.204153610091432e-16
+          ],
+          "kind": "plane",
+          "normal": [
+            -0.9940486732021602,
+            -0.10893684089886642,
+            0.0
+          ],
+          "origin_mm": [
+            44.58597110910165,
+            4.886133820175502,
+            -5.0
+          ]
+        },
+        {
+          "face": 35,
+          "area_mm2": 85.51374464563068,
+          "center_mm": [
+            44.729651541407996,
+            4.262835882091364,
+            -2.9860848302452763e-16
+          ],
+          "kind": "cylinder",
+          "radius_mm": 45.00000000000001,
+          "axis": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "origin_mm": [
+            0.0,
+            0.0,
+            -5.0
+          ]
+        },
+        {
+          "face": 36,
+          "area_mm2": 5357.963901451075,
+          "center_mm": [
+            0.03802448047630652,
+            21.40625050144204,
+            -5.0
+          ],
+          "kind": "plane",
+          "normal": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "origin_mm": [
+            0.0,
+            0.0,
+            -5.0
+          ]
+        },
+        {
+          "face": 37,
+          "area_mm2": 5417.340002603922,
+          "center_mm": [
+            0.037607717748111474,
+            21.171629876842907,
+            5.0
+          ],
+          "kind": "plane",
+          "normal": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "origin_mm": [
+            0.0,
+            0.0,
+            5.0
+          ]
+        },
+        {
+          "face": 38,
+          "area_mm2": 15.707963267949056,
+          "center_mm": [
+            -5.375473886403438,
+            56.800632632314205,
+            -3.9608377823940355e-16
+          ],
+          "kind": "cylinder",
+          "radius_mm": 1.9999999999999982,
+          "axis": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "origin_mm": [
+            -6.121320343559555,
+            55.0,
+            -18.000000000000007
+          ]
+        },
+        {
+          "face": 39,
+          "area_mm2": 131.31340274562265,
+          "center_mm": [
+            -0.06447690408097798,
+            51.771583685267565,
+            -1.8822557346558903e-16
+          ],
+          "kind": "plane",
+          "normal": [
+            0.7071067811865511,
+            0.707106781186544,
+            0.0
+          ],
+          "origin_mm": [
+            -4.707106781186455,
+            56.414213562373085,
+            -18.000000000000007
+          ]
+        },
+        {
+          "face": 40,
+          "area_mm2": 56.844276909235006,
+          "center_mm": [
+            5.779324447888887,
+            49.70487434872741,
+            -1.048588738374972e-16
+          ],
+          "kind": "plane",
+          "normal": [
+            -0.9063077870366504,
+            0.4226182617406988,
+            0.0
+          ],
+          "origin_mm": [
+            6.980495922753279,
+            52.28079488929277,
+            -18.000000000000007
+          ]
+        },
+        {
+          "face": 41,
+          "area_mm2": 44.1351167584997,
+          "center_mm": [
+            9.187251760678263,
+            52.28079488929277,
+            -1.8388068845354155e-16
+          ],
+          "kind": "plane",
+          "normal": [
+            0.0,
+            1.0,
+            0.0
+          ],
+          "origin_mm": [
+            11.394007598603249,
+            52.28079488929277,
+            -18.000000000000007
+          ]
+        },
+        {
+          "face": 42,
+          "area_mm2": 112.95616739888159,
+          "center_mm": [
+            9.007140642652907,
+            47.16214218392169,
+            -2.417021951246816e-16
+          ],
+          "kind": "plane",
+          "normal": [
+            0.9063077870366496,
+            -0.42261826174070033,
+            0.0
+          ],
+          "origin_mm": [
+            6.620273686702561,
+            42.0434894785506,
+            -18.000000000000007
+          ]
+        },
+        {
+          "face": 43,
+          "area_mm2": 14.748032179352123,
+          "center_mm": [
+            6.103704298958624,
+            41.554340996072675,
+            -1.504847333098242e-16
+          ],
+          "kind": "cylinder",
+          "radius_mm": 1.3000000000000025,
+          "axis": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "origin_mm": [
+            5.442073563554921,
+            42.59289321881351,
+            -18.000000000000007
+          ]
+        },
+        {
+          "face": 44,
+          "area_mm2": 1.4623661958927323,
+          "center_mm": [
+            5.368955253760284,
+            41.2928932188135,
+            -1.6653345369377348e-16
+          ],
+          "kind": "plane",
+          "normal": [
+            0.0,
+            -1.0,
+            0.0
+          ],
+          "origin_mm": [
+            5.442073563554921,
+            41.2928932188135,
+            -18.000000000000007
+          ]
+        },
+        {
+          "face": 45,
+          "area_mm2": 10.21017612416693,
+          "center_mm": [
+            4.811036746814168,
+            41.42248200780927,
+            -2.968613458689629e-16
+          ],
+          "kind": "cylinder",
+          "radius_mm": 1.3000000000000052,
+          "axis": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "origin_mm": [
+            5.295836943965649,
+            42.59289321881351,
+            -18.000000000000007
+          ]
+        },
+        {
+          "face": 46,
+          "area_mm2": 146.74725804511354,
+          "center_mm": [
+            -0.8117009357884394,
+            46.86195346748263,
+            -1.3125806163298442e-16
+          ],
+          "kind": "plane",
+          "normal": [
+            -0.7071067811865512,
+            -0.7071067811865439,
+            0.0
+          ],
+          "origin_mm": [
+            4.37659812842313,
+            41.673654403271,
+            -18.000000000000007
+          ]
+        },
+        {
+          "face": 47,
+          "area_mm2": 88.54672829187214,
+          "center_mm": [
+            -6.000000000000006,
+            47.622916117100644,
+            -1.665334536937735e-16
+          ],
+          "kind": "plane",
+          "normal": [
+            1.0,
+            0.0,
+            0.0
+          ],
+          "origin_mm": [
+            -6.000000000000006,
+            52.05025253169425,
+            -18.000000000000007
+          ]
+        },
+        {
+          "face": 48,
+          "area_mm2": 41.74854587293644,
+          "center_mm": [
+            -8.000000000000004,
+            42.597789851253516,
+            -9.29984911884444e-18
+          ],
+          "kind": "plane",
+          "normal": [
+            0.28637637012456135,
+            -0.95811720297377,
+            0.0
+          ],
+          "origin_mm": [
+            -10.000000000000004,
+            42.0,
+            -18.000000000000007
+          ]
+        },
+        {
+          "face": 49,
+          "area_mm2": 129.99999999999997,
+          "center_mm": [
+            -10.000000000000004,
+            48.5,
+            -1.8388068845354155e-16
+          ],
+          "kind": "plane",
+          "normal": [
+            -1.0,
+            0.0,
+            0.0
+          ],
+          "origin_mm": [
+            -10.000000000000004,
+            55.0,
+            -18.000000000000007
+          ]
+        },
+        {
+          "face": 50,
+          "area_mm2": 31.41592653589793,
+          "center_mm": [
+            -9.273239544735167,
+            56.27323954473516,
+            4.417437057588218e-18
+          ],
+          "kind": "cylinder",
+          "radius_mm": 2.0,
+          "axis": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "origin_mm": [
+            -8.000000000000005,
+            55.0,
+            -18.000000000000007
+          ]
+        },
+        {
+          "face": 51,
+          "area_mm2": 18.786796564404497,
+          "center_mm": [
+            -7.06066017177978,
+            56.99999999999999,
+            -9.714451465470121e-17
+          ],
+          "kind": "plane",
+          "normal": [
+            0.0,
+            1.0,
+            0.0
+          ],
+          "origin_mm": [
+            -8.000000000000005,
+            57.0,
+            -18.000000000000007
+          ]
+        },
+        {
+          "face": 52,
+          "area_mm2": 78.53981633974479,
+          "center_mm": [
+            29.1169011381621,
+            46.816901138162095,
+            2.1203697876423456e-17
+          ],
+          "kind": "cylinder",
+          "radius_mm": 4.999999999999997,
+          "axis": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "origin_mm": [
+            32.300000000000004,
+            50.0,
+            -5.0
+          ]
+        },
+        {
+          "face": 53,
+          "area_mm2": 78.53981633974486,
+          "center_mm": [
+            -29.116901138162092,
+            46.81690113816209,
+            2.4030857593279895e-16
+          ],
+          "kind": "cylinder",
+          "radius_mm": 5.000000000000001,
+          "axis": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "origin_mm": [
+            -32.3,
+            49.99999999999999,
+            -5.0
+          ]
+        },
+        {
+          "face": 54,
+          "area_mm2": 428.8273972150071,
+          "center_mm": [
+            1.3942827119015e-16,
+            60.0,
+            1.5915494309189624
+          ],
+          "kind": "cylinder",
+          "radius_mm": 2.500000000000002,
+          "axis": [
+            1.0,
+            1.5e-16,
+            0.0
+          ],
+          "origin_mm": [
+            -58.70000000000003,
+            59.99999999999999,
+            7.35e-15
+          ]
+        },
+        {
+          "face": 55,
+          "area_mm2": 428.8273972150071,
+          "center_mm": [
+            1.566194559450994e-16,
+            70.0,
+            1.5915494309189637
+          ],
+          "kind": "cylinder",
+          "radius_mm": 2.500000000000002,
+          "axis": [
+            1.0,
+            1.5e-16,
+            0.0
+          ],
+          "origin_mm": [
+            -58.70000000000003,
+            69.99999999999999,
+            8.57e-15
+          ]
+        },
+        {
+          "face": 56,
+          "area_mm2": 73.08214319430093,
+          "center_mm": [
+            -38.756097625441726,
+            43.40044992440669,
+            2.0508444576661519e-16
+          ],
+          "kind": "cylinder",
+          "radius_mm": 4.999999999999997,
+          "axis": [
+            0.0,
+            0.0,
+            -1.0
+          ],
+          "origin_mm": [
+            -35.707941399603854,
+            40.0,
+            -5.0
+          ]
+        },
+        {
+          "face": 57,
+          "area_mm2": 73.08214319430093,
+          "center_mm": [
+            38.75609762544173,
+            43.40044992440671,
+            6.836148192220504e-17
+          ],
+          "kind": "cylinder",
+          "radius_mm": 5.000000000000001,
+          "axis": [
+            0.0,
+            0.0,
+            -1.0
+          ],
+          "origin_mm": [
+            35.70794139960386,
+            40.00000000000001,
+            -5.0
+          ]
+        },
+        {
+          "face": 58,
+          "area_mm2": 397.7256299444678,
+          "center_mm": [
+            -8.245116017002938e-16,
+            20.14901579543395,
+            -3.0
+          ],
+          "kind": "cylinder",
+          "radius_mm": 31.65,
+          "axis": [
+            -0.0,
+            -0.0,
+            -1.0
+          ],
+          "origin_mm": [
+            0.0,
+            0.0,
+            88.5197184982169
+          ]
+        }
+      ],
+      "face_count": 58
+    },
+    "Sketch.InternalShape.brp": {
+      "readable": false,
+      "header": ""
+    },
+    "Sketch.Shape.brp": {
+      "bounds_mm": [
+        -27.250000100000005,
+        74.9999999,
+        -5.000000100000001,
+        27.250000099999998,
+        75.0000001,
+        9.999999911182158e-08
+      ],
+      "volume_mm3": 0.0,
+      "faces": [],
+      "face_count": 0
+    },
+    "Sketch001.InternalShape.brp": {
+      "readable": false,
+      "header": ""
+    },
+    "Sketch001.Shape.brp": {
+      "bounds_mm": [
+        -27.2500001,
+        104.9999999,
+        -5.000000100000007,
+        27.2500001,
+        105.0000001,
+        10.000000099999992
+      ],
+      "volume_mm3": 0.0,
+      "faces": [],
+      "face_count": 0
+    },
+    "Sketch002.InternalShape.brp": {
+      "readable": false,
+      "header": ""
+    },
+    "Sketch002.Shape.brp": {
+      "bounds_mm": [
+        -24.250000100000005,
+        84.36613816740133,
+        3.122045989133752,
+        24.250000100000005,
+        97.17336289108327,
+        7.391121030361067
+      ],
+      "volume_mm3": 0.0,
+      "faces": [],
+      "face_count": 0
+    },
+    "Sketch003.InternalShape.brp": {
+      "readable": false,
+      "header": ""
+    },
+    "Sketch003.Shape.brp": {
+      "bounds_mm": [
+        -1.00000085e-07,
+        74.99999989999992,
+        -5.000000100000085,
+        1.00000085e-07,
+        105.00000010000008,
+        10.000000100000085
+      ],
+      "volume_mm3": 0.0,
+      "faces": [],
+      "face_count": 0
+    }
+  }
+}
