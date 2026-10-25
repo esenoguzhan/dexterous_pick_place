@@ -1,0 +1,55 @@
+# Camera poses from the hand-eye calibration (docs/perception_architecture.md, section 3.4).
+# Each camera entry is the TF transform parent_frame -> frame_id, the optical frame's pose in
+# parent_frame: the robot's world frame for a fixed camera, the flange for a camera on the hand.
+created: '2026-10-25T14:33:17'
+world_frame: world
+flange_frame: lara5_flange
+board: {squares_x: 5, squares_y: 7, square_mm: 36.0, marker_mm: 27.0, dictionary: DICT_4X4_50}
+board_pose:
+  location: table
+  parent_frame: world
+  translation: [-0.017116, 0.474126, 0.916143]
+  rotation_xyzw: [0.92381307, 0.38283248, -0.00216534, 0.00200595]
+cameras:
+  '262722075125':
+    name: camera_2
+    mount: hand
+    parent_frame: lara5_flange
+    frame_id: camera_2_color_optical_frame
+    translation: [-0.07293, -0.059914, 0.034243]
+    rotation_xyzw: [0.07955462, 0.12872514, 0.82781078, 0.54021311]
+    samples_used: 13
+    samples_total: 18
+    reprojection_rms_px: 1.749
+    board_position_rms_mm: 2.19
+    board_rotation_rms_deg: 0.903
+    intrinsics:
+      fx: 913.1778564453125
+      fy: 911.6613159179688
+      cx: 639.13916015625
+      cy: 382.6207275390625
+      width: 1280
+      height: 720
+      model: distortion.inverse_brown_conrady
+      coeffs: [0.0, 0.0, 0.0, 0.0, 0.0]
+  '263522073705':
+    name: camera_1
+    mount: fixed
+    parent_frame: world
+    frame_id: camera_1_color_optical_frame
+    translation: [0.349949, -0.114001, 1.848934]
+    rotation_xyzw: [0.87142085, 0.38213413, -0.0954272, -0.2923916]
+    samples_used: 14
+    samples_total: 21
+    reprojection_rms_px: 0.258
+    board_position_rms_mm: 0.41
+    board_rotation_rms_deg: 0.053
+    intrinsics:
+      fx: 912.5430297851562
+      fy: 910.8471069335938
+      cx: 655.2319946289062
+      cy: 375.61895751953125
+      width: 1280
+      height: 720
+      model: distortion.inverse_brown_conrady
+      coeffs: [0.0, 0.0, 0.0, 0.0, 0.0]
