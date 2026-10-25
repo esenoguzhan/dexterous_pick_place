@@ -7,6 +7,9 @@ This repository contains the LARA5 robot stack and a two-camera RealSense worksp
   environment and robot build instructions.
 - [`ws/`](ws/src/neurahackathon_cameras): two D435 cameras with color, depth, and
   left/right infrared streams, built for **ROS 2 Humble** in the Docker setup below.
+- [Object-pose approach task](src/robot/lara5_object_approach/README.md):
+  independent `/arm/approach/target` command, supplied perception pose, direct
+  NEURA IK motion and completion status. Grasping is a separate future task.
 
 Use the Docker setup below to run both workspaces in **Ubuntu 22.04 / ROS 2
 Humble**. The host needs Linux Docker Engine and Docker Compose; **neither ROS 2
