@@ -12,6 +12,7 @@ rosidl_generate_interfaces(${PROJECT_NAME}
   "msg/SceneSnapshot.msg"
   "srv/CaptureScene.srv"
   "srv/RegisterObject.srv"
+  "action/Restore.action"
   DEPENDENCIES std_msgs geometry_msgs sensor_msgs
 )
 

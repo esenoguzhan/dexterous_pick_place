@@ -1,0 +1,113 @@
+# Orchestrator parameters (docs/task_architecture.md, section 11).
+# The defaults live in restore_task/core/config.py; a file only has to list what it changes, and an
+# unknown key is an error. "measure" marks placeholders to measure on the robot and the real hand.
+
+world_frame: world
+flange_frame: lara5_flange
+tcp_frame: right_hand_base_link
+flange_to_tcp: {xyz: [0.0, 0.0, 0.0], rpy: [0.0, 0.0, -1.5707963]}   # URDF; TF replaces it when available
+
+# The observe pose: both cameras see the table, the arm is out of their views. Measure, and use
+# the same values as perception's observe.joints.
+observe_joints: {lara5_joint1: 0.0, lara5_joint2: 0.0, lara5_joint3: 1.5708,
+                 lara5_joint4: 0.0, lara5_joint5: 1.5708, lara5_joint6: 0.0}
+observe_tolerance_rad: 0.01
+joint_speed_rad_s: 0.5
+
+reach_area: {min: [-0.55, -0.35], max: [0.55, 0.35]}   # world xy the hand can reach; measure
+default_primitive: wrap_top                              # objects with no grasp in objects.yaml
+
+diff:                                  # section 5
+  moved_distance_m: 0.015
+  moved_yaw_deg: 10.0
+  noise_changed: 0.1                   # change-mask share under which small displacements are noise
+  min_confidence: 0.5
+  unknown_min_cosine: 0.7
+  unknown_size_tolerance: 0.3
+  icp_iterations: 30
+  icp_ambiguity: 0.2                   # residuals closer than this share: the 180-degree turn is unclear
+  icp_min_points: 30
+
+order:                                 # section 6
+  home_clearance_m: 0.01
+  grid_m: 0.005
+  parking_step_m: 0.02
+
+pick_place:                            # section 7
+  approach_mode: move_to_pose          # or approach_node: lara5_object_approach for the hover pose
+  pre_distance_m: 0.10                 # pre-grasp, lift, pre-place, retreat
+  descend_duration_s: 3.0
+  release_height_m: 0.005
+  max_attempts: 2
+  hand_radius_m: 0.06                  # neighbours this close to the grasp centre rank a grasp last
+  hand_close_s: 1.0
+  hand_open_s: 1.0
+  slow_open_s: 2.5                     # objects that roll
+
+# Grasp primitives (section 7.2). Every number is a placeholder: measure each primitive by closing
+# the hand on blocks of known width and recording the palm height and the finger angles.
+#   approach: top or side      palm_height_m: palm frame above the object's top (top)
+#   palm_distance_m: palm frame from the object's surface (side)
+#   tcp_rpy: palm frame in the object frame at grasp yaw 0     yaws_deg: grasp yaws of the primitive
+#   fingers: the fingers whose stopping is checked             open_margin_m: pre-shape opening
+#   squeeze_m: close this far past the object's width         width_to_angles: [width, 6 angles]
+#   angle order: thumb rotation, thumb bend, index, middle, ring, little finger [rad], 0 = open
+primitives:
+  wrap_top:
+    approach: top
+    palm_height_m: 0.15
+    tcp_rpy: [3.1415927, 0.0, 0.0]
+    yaws_deg: [0.0, 180.0]
+    fingers: [thumb, index, middle, ring, pinky]
+    open_margin_m: 0.025
+    squeeze_m: 0.008
+    width_to_angles: [[0.02, [1.16, 0.50, 1.30, 1.30, 1.30, 1.30]], [0.10, [1.16, 0.10, 0.30, 0.30, 0.30, 0.30]]]
+  wrap_wide:
+    approach: top
+    palm_height_m: 0.13
+    tcp_rpy: [3.1415927, 0.0, 0.0]
+    yaws_deg: [0.0, 180.0]
+    fingers: [thumb, index, middle, ring, pinky]
+    open_margin_m: 0.025
+    squeeze_m: 0.012
+    width_to_angles: [[0.04, [1.16, 0.45, 1.20, 1.20, 1.20, 1.20]], [0.12, [1.16, 0.05, 0.10, 0.10, 0.10, 0.10]]]
+  pinch_wide:
+    approach: top
+    palm_height_m: 0.16
+    tcp_rpy: [3.1415927, 0.0, 0.0]
+    yaws_deg: [0.0, 180.0]
+    fingers: [thumb, index, middle]
+    open_margin_m: 0.025
+    squeeze_m: 0.008
+    width_to_angles: [[0.02, [1.16, 0.50, 1.20, 1.20, 1.43, 1.43]], [0.10, [1.16, 0.10, 0.25, 0.25, 1.43, 1.43]]]
+  tripod_top:
+    approach: top
+    palm_height_m: 0.16
+    tcp_rpy: [3.1415927, 0.0, 0.0]
+    yaws_deg: [0.0, 180.0]
+    fingers: [thumb, index, middle]
+    open_margin_m: 0.02
+    squeeze_m: 0.006
+    width_to_angles: [[0.02, [1.16, 0.50, 1.25, 1.25, 1.43, 1.43]], [0.08, [1.16, 0.15, 0.40, 0.40, 1.43, 1.43]]]
+  wrap_body:                           # the mug, from the side, away from the handle (its long axis)
+    approach: side
+    palm_distance_m: 0.05
+    tcp_rpy: [0.0, -1.5707963, 0.0]
+    yaws_deg: [90.0, -90.0]
+    fingers: [thumb, index, middle, ring, pinky]
+    open_margin_m: 0.03
+    squeeze_m: 0.008
+    width_to_angles: [[0.04, [1.16, 0.45, 1.20, 1.20, 1.20, 1.20]], [0.10, [1.16, 0.10, 0.30, 0.30, 0.30, 0.30]]]
+
+objects:                               # per label: primitive and squeeze overrides
+  sponge: {squeeze_m: 0.004}           # it gives
+  yellow_bottle: {squeeze_m: 0.012}    # heavy
+
+grasp_check:                           # section 7.6, as shares of each finger's squeeze span
+  held_ratio: 0.5
+  missed_ratio: 0.2
+  drop_ratio: 0.5
+  settle_s: 0.3
+
+budget_s: 600.0
+capture_retries: 2

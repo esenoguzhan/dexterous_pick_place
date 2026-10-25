@@ -1,0 +1,18 @@
+# Capture the tidy reference, or put every moved object back (docs/task_architecture.md, 9.1).
+
+string MODE_REFERENCE=reference
+string MODE_RESTORE=restore
+
+string mode
+bool dry_run                     # restore only: capture, diff and plan, publish markers, move nothing
+---
+bool success
+string message
+string report_json               # per object: label, outcome, attempts, final dxy and dyaw
+---
+string phase                     # e.g. "pick: descend"
+string object_id
+string label
+uint32 index                     # task number in this run
+uint32 remaining                 # tasks left in the latest plan
+string detail

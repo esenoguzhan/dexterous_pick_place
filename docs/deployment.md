@@ -43,7 +43,7 @@ flowchart LR
 | Machine | Runs | Why there |
 |---|---|---|
 | **Ubuntu PC** (x86_64, Ubuntu 22.04, Docker) | [`controller_manager.launch.py`](../src/robot/lara5_controller_manager/launch/controller_manager.launch.py) as it is: `robot_state_publisher`, the controller manager with the arm driver (`neura_driver`) and the hand driver (`inspire_dftp_e2`), the arm and hand controllers, `lara5_safety_filter`, and MuJoCo in simulation mode | `neura_driver` needs `neura_cpp_api`, which NEURA ships only for x86_64. The safety filter needs NEURA's `robot_model` and `inverse_kinematics`, also x86_64 only. The hand driver is a plugin in the same controller manager, so it runs here too; it reaches the hand over Modbus TCP, so its location does not matter. |
-| **Jetson Orin Nano** | Both D435 cameras, perception, scene diff, task and grasp planning, the supervisor, camera calibration, `foxglove_bridge`, the perception test bench | It has the GPU for SAM 2.1 and DINOv2, and the cameras are plugged into it. |
+| **Jetson Orin Nano** | Both D435 cameras, perception, the orchestrator (scene diff, task and grasp planning, the supervisor; see [`task_architecture.md`](task_architecture.md)), camera calibration, `foxglove_bridge`, the perception test bench | It has the GPU for SAM 2.1 and DINOv2, and the cameras are plugged into it. |
 | **Windows PC** | Foxglove desktop app, a browser for the test bench, SSH, the `wendy` CLI and Docker Desktop for building Jetson images | Connection and visualisation only. No ROS: the robot stack does not support Windows or WSL. |
 
 ### Simulation runs on the Ubuntu PC too

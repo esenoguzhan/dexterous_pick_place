@@ -27,6 +27,9 @@ The rest of the system only consumes snapshots:
 | Grasp planner | Size, shape and grasp primitive (from `objects.yaml`) |
 | Supervisor | The capture service, called for the reference, the current scene and after every placement |
 
+The diff, the planners and the supervisor form the orchestrator, described in
+[`task_architecture.md`](task_architecture.md).
+
 ## 2. Design principles
 
 1. **Snapshots, not tracking.** The scene is captured at a few moments only: the tidy reference,

@@ -3,7 +3,7 @@
 <package format="3">
   <name>restore_interfaces</name>
   <version>0.1.0</version>
-  <description>Messages and services of the scene-restoring system (scene snapshots, capture, registration).</description>
+  <description>Messages, services and actions of the scene-restoring system (scene snapshots, capture, registration, restore).</description>
   <maintainer email="ogguzhanesen@gmail.com">Oguzhan Esen</maintainer>
   <license>Apache-2.0</license>
 
@@ -12,6 +12,7 @@
   <depend>std_msgs</depend>
   <depend>geometry_msgs</depend>
   <depend>sensor_msgs</depend>
+  <depend>action_msgs</depend>
   <exec_depend>rosidl_default_runtime</exec_depend>
   <member_of_group>rosidl_interface_packages</member_of_group>
 
