@@ -8,8 +8,21 @@ This repository contains the LARA5 robot stack and a two-camera RealSense worksp
 - [`ws/`](ws/src/neurahackathon_cameras): two D435 cameras with color, depth, and
   left/right infrared streams, built for **ROS 2 Humble** in the Docker setup below.
 - [Object-pose approach task](src/robot/lara5_object_approach/README.md):
-  independent `/arm/approach/target` command, supplied perception pose, direct
-  NEURA IK motion and completion status. Grasping is a separate future task.
+  independent `/arm/approach/target` command, manually supplied pose, 20 cm flange
+  offset, direct NEURA IK motion and completion status.
+- [Grasp frame and simulation UI test](docs/grasp_frame_simulation.md):
+  static open-hand preview, calculated flange target and ordered Docker/ROS commands.
+- [Two-phase trajectory planning UI test](docs/trajectory_planning_simulation.md):
+  30 cm aligned pregrasp, native planning/checks and RViz paths; planning only.
+- [Independent grabbing motion](src/robot/lara5_grasp/README.md):
+  `/arm/grasp/target` closes the hand through its own controller, with separate
+  status and no arm motion.
+- [Simulated external and wrist D435 cameras](src/robot/lara5_mujoco_sim/README.md):
+  CAD holder, nominal photo-based wrist mount, RGB-D topics, optical TF and EGL camera rendering.
+- [Camera holder CAD and mounting photo](docs/wrist_camera_holder.md):
+  left/right screw pair, mechanical datums, nominal optical pose and current depth-range limit.
+- [Next steps for better grasping](docs/grasping_next_steps.md):
+  steps 1–2 are implemented for review; positioning execution and contact improvements remain proposals.
 
 Use the Docker setup below to run both workspaces in **Ubuntu 22.04 / ROS 2
 Humble**. The host needs Linux Docker Engine and Docker Compose; **neither ROS 2

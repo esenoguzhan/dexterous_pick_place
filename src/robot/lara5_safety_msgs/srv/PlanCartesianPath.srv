@@ -1,0 +1,10 @@
+# Empty start_state uses measured joints. Otherwise specify all six arm joints.
+# This service plans only; it never dispatches a command.
+sensor_msgs/JointState start_state
+geometry_msgs/PoseStamped target
+bool relative
+float64 duration
+---
+bool success
+string message
+trajectory_msgs/JointTrajectory trajectory

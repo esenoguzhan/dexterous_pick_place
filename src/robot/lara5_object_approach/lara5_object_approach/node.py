@@ -24,9 +24,9 @@ class ObjectApproach(Node):
         super().__init__("object_approach", **kwargs)
         self.world_frame = self.declare_parameter("world_frame", "world").value
         self.offset = finite_vector(self.declare_parameter(
-            "object_to_flange_xyz", [0.0, 0.0, 0.40]).value, 3, "object_to_flange_xyz")
+            "object_to_flange_xyz", [0.0, 0.0, 0.20]).value, 3, "object_to_flange_xyz")
         self.rpy = finite_vector(self.declare_parameter(
-            "object_to_flange_rpy", [math.pi, 0.0, 0.0]).value, 3, "object_to_flange_rpy")
+            "object_to_flange_rpy", [-math.pi/2, math.pi/2, 0.0]).value, 3, "object_to_flange_rpy")
         quaternion_from_rpy(self.rpy)
         self.duration = self.declare_parameter("duration", 0.0).value
         if not self.world_frame or not math.isfinite(self.duration) or self.duration < 0:
@@ -45,7 +45,7 @@ class ObjectApproach(Node):
         # Commands are deliberately volatile: node startup cannot replay a latched pose.
         self.command = self.create_subscription(
             PoseStamped, "/arm/approach/target", self.on_target, QoSProfile(depth=1))
-        self.report("idle", "Waiting for a selected object pose")
+        self.report("idle", "Waiting for a manually supplied object pose")
 
     def report(self, state, message, request_id=None):
         event = {"state": state, "message": message, "request_id": request_id,

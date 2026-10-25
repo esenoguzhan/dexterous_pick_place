@@ -138,9 +138,11 @@ def test_pose_topic_reaches_absolute_native_goal_and_completes(harness):
     assert goal.target.header.frame_id == "world"
     assert goal.target.pose.position.x == pytest.approx(0.2)
     assert goal.target.pose.position.y == pytest.approx(-0.1)
-    assert goal.target.pose.position.z == pytest.approx(1.35)
-    assert goal.target.pose.orientation.x == pytest.approx(math.sqrt(0.5))
-    assert goal.target.pose.orientation.y == pytest.approx(math.sqrt(0.5))
+    assert goal.target.pose.position.z == pytest.approx(1.15)
+    assert goal.target.pose.orientation.x == pytest.approx(-math.sqrt(0.5))
+    assert goal.target.pose.orientation.y == pytest.approx(0.0, abs=1e-12)
+    assert goal.target.pose.orientation.z == pytest.approx(math.sqrt(0.5))
+    assert goal.target.pose.orientation.w == pytest.approx(0.0, abs=1e-12)
 
 
 def test_busy_command_is_discarded_and_next_command_can_run(harness):

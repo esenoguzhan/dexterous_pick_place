@@ -9,10 +9,10 @@ from lara5_object_approach.geometry import object_to_flange
 class GeometryTest(unittest.TestCase):
     def test_identity_yaw_stops_above_object_centre(self):
         position, q = object_to_flange((0.2, -0.3, 0.95), (0, 0, 0, 1),
-                                       (0, 0, 0.4), (math.pi, 0, 0))
-        for actual, expected in zip(position, (0.2, -0.3, 1.35)):
+                                       (0, 0, 0.2), (-math.pi/2, math.pi/2, 0))
+        for actual, expected in zip(position, (0.2, -0.3, 1.15)):
             self.assertAlmostEqual(actual, expected)
-        for actual, expected in zip(q, (1, 0, 0, 0)):
+        for actual, expected in zip(q, (-0.5, 0.5, 0.5, 0.5)):
             self.assertAlmostEqual(actual, expected)
 
     def test_object_yaw_rotates_offset_and_hand_together(self):

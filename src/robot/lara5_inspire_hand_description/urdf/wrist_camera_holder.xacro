@@ -1,0 +1,28 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://wiki.ros.org/xacro">
+  <!-- User-supplied Cam_Extension STL, native FreeCAD coordinates in mm.
+       Align its tool-side annular face (CAD z=11.5 mm) with the existing hand
+       base plane. CAD +Y extends toward the palm side; CAD +Z follows hand +Z.
+       This is a nominal assembly datum, not a measured flange calibration.
+       The hand mounting joint and grasp kinematics are not changed. -->
+  <xacro:macro name="wrist_camera_holder" params="parent_link name">
+    <link name="${name}">
+      <visual>
+        <geometry>
+          <mesh filename="package://lara5_inspire_hand_description/meshes/camera_holder/tcp_cam_holder_v2.stl"
+                scale="0.001 0.001 0.001"/>
+        </geometry>
+        <material name="camera_holder_plastic">
+          <color rgba="0.12 0.12 0.14 1"/>
+        </material>
+      </visual>
+      <!-- Visual only: no measured material, inertia or collision decomposition
+           was supplied. A convex hull would incorrectly fill the wrist opening. -->
+    </link>
+    <joint name="${name}_mount_joint" type="fixed">
+      <parent link="${parent_link}"/>
+      <child link="${name}"/>
+      <origin xyz="0 0 -0.0115" rpy="0 0 0"/>
+    </joint>
+  </xacro:macro>
+</robot>

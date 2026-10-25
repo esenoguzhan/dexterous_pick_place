@@ -1,0 +1,8 @@
+# Read-only NEURA forward kinematics. Empty start_state uses measured joints.
+sensor_msgs/JointState start_state
+string frame
+string reference_frame
+---
+bool success
+string message
+geometry_msgs/PoseStamped pose
