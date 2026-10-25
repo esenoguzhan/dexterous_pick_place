@@ -95,6 +95,10 @@ All machines connect to one switch on the robot subnet `192.168.2.0/24`.
 The real cameras are not published as ROS image streams. Perception reads them directly on the
 Jetson, so camera images never cross the network on the robot.
 
+**Camera calibration** uses HTTP until the Jetson runs ROS: `calibrate_cameras.py` on the Ubuntu PC
+reads the flange pose from TF and posts it to `http://<jetson>:8090/api/calib/sample`. See section 3.4
+of [`perception_architecture.md`](perception_architecture.md).
+
 ## 5. Software on each machine
 
 ### 5.1 Ubuntu PC
@@ -102,8 +106,8 @@ Jetson, so camera images never cross the network on the robot.
 - The existing robot image, built from [`src/docker/Dockerfile`](../src/docker/Dockerfile), run with
   `--net=host --ipc=host` and the real-time options described in `src/README.md`.
 - Launch with `deployment_mode:=robot`, or `deployment_mode:=simulation` for development.
-- **Obstacles:** add the camera mounts to `lara5_safety_filter/config/obstacles.yaml`, so the
-  safety filter keeps the arm away from them.
+- **Obstacles:** add the fixed camera's mount to `lara5_safety_filter/config/obstacles.yaml`, and the
+  hand camera to the hand's collision geometry in the URDF, so the safety filter keeps them clear.
 - The RealSense container in [`compose.realsense.yaml`](../compose.realsense.yaml) is not used here,
   because the cameras are on the Jetson.
 
@@ -156,7 +160,9 @@ header stamp, so a clock offset cannot block captures.
    `restore` app.
 4. **Windows PC:** connect Foxglove and check the TF tree: robot links from the Ubuntu PC and camera
    frames from the Jetson.
-5. **Calibration:** recalibrate the cameras if a camera was moved or the change mask reports a bump.
+5. **Calibration:** recalibrate the cameras if a camera was moved or the change mask reports a bump:
+   run `calibrate_cameras.py` on the Ubuntu PC and watch `http://<jetson>:8090/calibration` (see
+   [`wendy/perception_test/README.md`](../wendy/perception_test/README.md#camera-calibration)).
 
 ## 8. Open questions
 

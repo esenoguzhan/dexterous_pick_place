@@ -1,7 +1,12 @@
 # Perception architecture
 
-> **Status: proposal.** Nothing in this document is implemented yet, apart from the SAM 2.1 and
-> DINOv2 test bench in [`wendy/perception_test`](../wendy/perception_test/README.md). All parameter
+> **Status: implemented, not yet run on the robot.** Sections 5 to 8 are implemented in
+> [`src/restore`](../src/restore/README.md) (`restore_interfaces`, `restore_perception`). The
+> pipeline is tested on ray-cast two-camera scenes and on one real D435 capture. The node is built and
+> tested end to end in a ROS 2 Humble container (x86), with saved captures from a fixed and a hand
+> camera and with simulated camera topics. Still missing are the Jetson image (`wendy/restore`), the
+> simulated MuJoCo cameras, and a run with both real cameras calibrated. The calibration (3.4) and the SAM 2.1 / DINOv2
+> test bench live in [`wendy/perception_test`](../wendy/perception_test/README.md). All parameter
 > values are starting points to tune in simulation and on the real cameras.
 >
 > Perception runs on the Jetson Orin Nano, with both cameras plugged into it. See
@@ -45,15 +50,18 @@ The rest of the system only consumes snapshots:
 
 ### 3.1 Cameras
 
-Two fixed D435 cameras looking at the table (eye-to-hand). Mounting guidelines:
+One D435 is fixed and sees the whole workspace; the other rides on the hand. Both plug into the
+Jetson's USB 3 ports; the hand camera's cable runs along the arm.
 
-- Angle both cameras roughly 30 to 60 degrees from vertical. Looking straight down at a can lid
-  reflects the camera's own infrared pattern back and destroys the depth on metal.
-- Keep every object at least 0.3 m from the camera (D435 minimum range at 848x480). About 0.6 to
+- **Fixed camera:** angle it roughly 30 to 60 degrees from vertical. Looking straight down at a can
+  lid reflects the camera's own infrared pattern back and destroys the depth on metal. About 0.6 to
   1.0 m from the table centre works well.
-- Place the cameras on different sides of the table so each one sees what the other cannot.
-- Use rigid mounts. A bumped camera invalidates the calibration (the change mask in section 6 detects it).
-- Plug both cameras into the Jetson's USB 3 ports.
+- **Hand camera:** it captures from the observe pose (5.0), so it sees the scene from the same
+  viewpoint every time. The hand covers part of its view; keep the objects in the free part.
+- Keep every object at least 0.3 m from each camera (D435 minimum depth range at 848x480).
+- Use rigid mounts. A camera that shifts invalidates its calibration (the change mask in section 6
+  detects it).
+- Add the hand camera to the hand's collision geometry: the safety filter does not know about it.
 
 ### 3.2 Frame sources
 
@@ -73,6 +81,9 @@ vendored ROS driver could also feed `RosTopicSource` if a camera ever moved to a
 | `/cameras/camera_N/color/image_raw` | `sensor_msgs/Image` | `rgb8` |
 | `/cameras/camera_N/aligned_depth_to_color/image_raw` | `sensor_msgs/Image` | `16UC1`, millimetres, on the colour pixel grid |
 | `/cameras/camera_N/color/camera_info` | `sensor_msgs/CameraInfo` | Intrinsics `fx, fy, cx, cy` |
+
+A simulated camera has no entry in the calibration file, so its pose comes from TF: `world` to the
+`frame_id` of its colour image, published by the simulation.
 
 The real cameras are not published as ROS image streams. Two colour and depth streams at 1280x720
 would load the network with no consumer; the perception node publishes debug overlays only when it
@@ -98,14 +109,52 @@ is not used by perception.
 
 ### 3.4 Calibration
 
-The camera poses are stored on the Jetson in `/data/calibration/extrinsics.yaml`: one transform from
-`world` to `camera_N_color_optical_frame` per camera, keyed by serial number so that swapping USB
-ports cannot swap calibrations. The perception node loads the file at start-up, uses it for
-back-projection and publishes it as static TF, so Foxglove shows the cameras.
+The camera poses are stored on the Jetson in `/data/calibration/extrinsics.yaml`, keyed by serial
+number so that swapping USB ports cannot swap calibrations: the fixed camera as `world` to
+`camera_N_color_optical_frame`, the hand camera as `lara5_flange` to `camera_N_color_optical_frame`.
+The perception node loads the file at start-up and publishes both as static TF, so TF gives the hand
+camera's world pose at any moment and Foxglove shows both cameras.
 
-A calibration script on the Jetson produces the file: a ChArUco board on the hand, OpenCV
-`calibrateRobotWorldHandEye`, and flange poses read from the TF that the Ubuntu PC publishes. It is a
-separate module.
+**Method.** A ChArUco board lies flat on the table where the fixed camera sees it, and the robot moves
+the hand camera over it. Each pose gives the flange pose from TF and the board's pose in each camera:
+
+- The hand camera's poses give, in closed form (OpenCV `calibrateRobotWorldHandEye`, Shah's method),
+  both the camera's pose on the flange and the board's pose in `world`.
+- The fixed camera's pose follows from its view of the same board.
+- All unknowns are then refined together by minimising the corner reprojection error in every camera.
+  Samples above max(2 px, 3 times the median) are dropped once.
+- A partly covered board is fine: every ChArUco corner is identified by its neighbouring markers, and a
+  view needs 8 of the 24 corners.
+
+The board can instead be fixed to the hand, which calibrates fixed cameras only.
+
+**Two halves** (how to run it: [the test bench README](../wendy/perception_test/README.md#camera-calibration)):
+
+- **Jetson:** the test bench's calibration page (`/calibration`,
+  [`calibration.py`](../wendy/perception_test/calibration.py)) sets the board location and each
+  camera's mount, shows live board detection, keeps the samples in `/data/calibration/session.json`,
+  solves, and saves the file.
+- **Ubuntu PC:** `ros2 run lara5_controller_manager calibrate_cameras.py` reads the flange pose from TF
+  at every pose and sends it to the Jetson over HTTP (port 8090). It records while you move the arm,
+  or replays saved `robot.joints` from an exported session through the safety filter's public
+  `FollowJointTrajectory` action, verifying measured joints before every capture. The explicit
+  `auto --random` mode visits poses around a start pose through the safety filter's `MoveToPose`,
+  tilting about a point in front of the hand so the hand camera keeps the board in view.
+  Until the Jetson runs ROS, this HTTP
+  call is the only link the calibration needs.
+
+**Accuracy on synthetic renders** (D435 intrinsics, the hand covering part of the hand camera's view,
+22 poses, one of them corrupted and dropped):
+
+| Estimated | Position error | Rotation error |
+|---|---|---|
+| Hand camera on the flange | 0.6 mm | 0.13° |
+| Board in `world` | 0.2 mm | 0.06° |
+| Fixed camera in `world` | 2.3 mm | 0.1° |
+
+The fixed camera inherits the board's orientation error, so spread the hand camera's poses widely,
+with tilts up to 25 to 30 degrees. With half that spread its rotation error was 0.24 degrees, about
+6 mm at 1.4 m.
 
 ## 4. Pipeline overview
 
@@ -129,12 +178,12 @@ flowchart TD
 | Observe pose | Fixed joint configuration | Supervisor (Jetson), controllers (Ubuntu PC) | No |
 | Capture | Aligned framesets, per-pixel median | `pyrealsense2`, NumPy | No |
 | Back-project | Pinhole model + calibration file | NumPy | No |
-| Remove table | RANSAC plane fit | Open3D | No |
-| Cluster | DBSCAN | Open3D | No |
+| Remove table | RANSAC plane fit | NumPy | No |
+| Cluster | DBSCAN | SciPy (KD-tree, connected components) | No |
 | Refine masks | Box- and point-prompted segmentation | SAM 2.1 (`facebook/sam2.1-hiera-small`) | No |
-| Fuse views | 3D association + outlier removal | Open3D, SciPy | No |
+| Fuse views | Footprint association + outlier removal | SciPy | No |
 | Identify | Embedding nearest neighbour against a gallery | DINOv2 (`facebook/dinov2-small`) via `transformers` | No (gallery registration only) |
-| Describe | Footprint rectangle on the table plane | OpenCV, Shapely | No |
+| Describe | Footprint rectangle on the table plane | OpenCV | No |
 
 ## 5. Stages
 
@@ -146,7 +195,9 @@ flowchart TD
   capture when the arm is not at the observe pose (parameter `require_observe_pose`). It judges
   freshness by when a message arrives on the Jetson, not by its header stamp, so a clock offset
   between the two machines cannot block captures.
-- **Why:** the arm would otherwise be clustered as an object and would hide objects behind it.
+- **Why:** the arm would otherwise be clustered as an object and would hide objects behind it. The
+  observe pose also places the hand camera; the arm returns to it precisely, so the hand camera sees
+  the scene from the same viewpoint at every capture.
 - **Later option:** a robot self-filter that renders the URDF into each depth image and masks the
   arm, so captures work with the arm in view.
 
@@ -165,19 +216,25 @@ flowchart TD
 
 - **Method:** for each valid pixel `(u, v)` with depth `Z`:
   `X = (u - cx) * Z / fx`, `Y = (v - cy) * Z / fy`. Transform the points to `world` with the
-  camera's pose from the calibration file (3.4), then crop to the workspace box.
+  camera's pose from the calibration file (3.4), then crop to the workspace box. For the hand camera
+  that pose is the flange pose from TF at capture time times its calibrated pose on the flange.
 - **Keep:** the source `(camera, v, u)` of every point, so 2D masks can select 3D points and 3D
   blobs can be projected back into the images.
+- **Pixel stride:** every 2nd pixel in each direction is back-projected (`workspace.pixel_stride`).
+  At 1 m that is still a point every 2 mm, finer than the 4 mm clustering voxels, and four times
+  fewer points for the Jetson's CPU. Masks stay at full resolution.
 - **Workspace box (simulation):** x from -0.6 to 0.6, y from -0.4 to 0.4, z from 0.88 to 1.30 m
   (see [`mujoco_sim.yaml`](../src/robot/lara5_mujoco_sim/config/mujoco_sim.yaml)). Measure the real
   table and set the same parameters for the robot.
 
 ### 5.3 Remove the table
 
-- **Method:** voxel-downsample to 5 mm, then `segment_plane(distance_threshold=0.008, ransac_n=3,
-  num_iterations=1000)`. Keep points more than 0.01 m above the plane.
-- **Checks:** the plane normal must be within 10 degrees of world up, and the table height must
-  match the previous capture within 0.01 m. Otherwise report "table not found or camera moved".
+- **Method:** voxel-downsample to 5 mm, then RANSAC with a 0.008 m inlier distance: 1000
+  three-point hypotheses scored on 5000 random voxels, the best refined by least squares on all its
+  inliers. Keep points more than 0.01 m above the plane.
+- **Checks:** the plane normal must be within 10 degrees of world up, otherwise the capture fails
+  with "table not found or camera moved". A table height more than 0.01 m from the previous capture
+  is reported as a warning in the reply.
 - **Output:** plane coefficients, table height, the above-table point cloud.
 - **Why:** anything resting on a table sticks out of its plane, whatever the object is. A new table
   only needs a new plane fit. The plane also provides the true "up" direction and the surface used
@@ -185,8 +242,10 @@ flowchart TD
 
 ### 5.4 Cluster into object candidates
 
-- **Method:** `cluster_dbscan(eps=0.015, min_points=30)` on the above-table points. Drop clusters
-  with fewer than 50 points, an extent above 0.30 m, or a height under 0.015 m.
+- **Method:** DBSCAN on the above-table points downsampled to 4 mm voxels, with `eps = 0.015 m`; a
+  voxel is a core voxel when at least 20 voxels lie within `eps`, itself included. A surface seen at
+  4 mm has about 44 voxels within 15 mm, so object surfaces are core and stray edge pixels are noise.
+  Drop clusters with fewer than 50 points, an extent above 0.30 m, or a height under 0.015 m.
 - **Output:** candidates, each with its 3D points and a padded 2D box (10 px) per camera, obtained
   by projecting the points into that image.
 - **Known weaknesses, handled in 5.5:** touching objects merge into one cluster; flat, shiny or
@@ -195,26 +254,35 @@ flowchart TD
 ### 5.5 Refine masks with SAM 2.1
 
 - **Method:** per camera, call `SAM2ImagePredictor.set_image` once, then `predict(box=...,
-  multimask_output=True)` for each candidate visible in that camera. Choose the output mask that
-  best covers the candidate's projected pixels.
+  multimask_output=True)` for each candidate visible in that camera. Choose the output mask with the
+  highest IoU with the candidate's projected pixels. A pixel belongs to one object per camera: a
+  later mask loses the pixels an earlier one already took. This also joins an object that depth
+  split into two clusters (the steel mug), because the second cluster's mask is then empty.
 - **Mask to points:** an object's points are the points whose source pixel is inside the mask and
   that lie at least 0.005 m above the table. This removes table bleed and shadows at the edges.
 - **Splitting touching objects:** if the chosen mask covers less than 70 % of the candidate's
   projected pixels, the cluster probably holds more than one object. Prompt SAM again with a point
   at the centre of the uncovered pixels, and split the cluster by mask membership. Repeat until
   coverage is reached or no new mask appears.
-- **Objects with bad depth:** run `SAM2AutomaticMaskGenerator` on the workspace part of the image.
-  A mask of plausible size that overlaps no candidate becomes a depth-poor candidate. Its footprint
-  comes from intersecting the rays of the mask's lower-edge pixels with the table plane, and its
-  height comes from the gallery once it is identified (5.7).
+- **Objects with bad depth:** run `SAM2AutomaticMaskGenerator` on the image. A mask of plausible
+  size (0.05 % to 5 % of the image) that overlaps no candidate by more than 10 % becomes a
+  depth-poor candidate. For associating cameras, its footprint is its outline projected onto the
+  plane 3 cm above the table. Once identified, the known-size fallback (5.8) places it; an
+  unidentified one is dropped, since nothing gives it a size. This step is off by default
+  (`segment.depth_poor.enabled`): it took 7.6 s per camera on the Orin Nano. Turn it on, perhaps
+  for the fixed camera only, if the steel mug or the can lids go missing.
 - **Why SAM:** it outlines objects it has never seen, it follows the prompt, so it never has to
   guess which object is meant, and it works on colour, where depth fails (the steel mug, can lids).
 
 ### 5.6 Fuse the two camera views
 
-- **Method:** associate per-camera objects with the Hungarian algorithm on 3D centroid distance,
-  accepting pairs within 0.02 m or with a voxel overlap (IoU) of at least 0.3. Merge the points of
-  each pair, then `remove_statistical_outlier(nb_neighbors=20, std_ratio=2.0)`.
+- **Method:** associate per-camera objects with the Hungarian algorithm on their footprints on the
+  table: cost `1 - IoU` of the occupied 5 mm cells plus the centre distance in metres. Accept pairs
+  with an IoU of at least 0.3 or centres within 0.02 m. Merge the points of each pair, then drop
+  statistical outliers (20 neighbours, 2 standard deviations).
+- **Why footprints, not 3D centroids:** two cameras see opposite halves of an object, so their 3D
+  centroids differ by up to the object's radius (4.5 cm for a lying can seen from both sides). Both
+  halves stand on the same footprint.
 - **Objects seen by one camera** are kept and marked in `cameras_seen`.
 - **Why:** one camera sees the front of an object and the other its back. The fuller shape gives a
   better centre, a better footprint and a better ICP alignment in the scene diff.
@@ -233,7 +301,12 @@ flowchart TD
 - **Acceptance:** accept a match when the score is at least 0.6, the margin over the second-best
   object is at least 0.05, and the measured size fits the gallery size within 30 % per dimension
   (any axis order, because an object may lie on a different side). Otherwise the label is `unknown`.
-- **Tie-break:** an HSV colour histogram of the masked pixels, compared with the gallery views.
+  The size check is skipped for objects marked `depth_reliable: false`, whose measured size is not
+  trusted. The reference size is `size_m` from `objects.yaml`, else the size measured at
+  registration.
+- **Tie-break:** a hue-saturation histogram of the masked pixels, compared with the gallery views
+  (Bhattacharyya coefficient). When the score passes but the margin does not, the match is still
+  accepted if its histogram is at least 0.1 closer than the runner-up's.
 - **Why DINOv2:** its features recognise the same object across viewpoint and lighting changes
   without training, and they separate objects of similar colour.
 
@@ -244,22 +317,31 @@ flowchart TD
   stored for the planner.
 - **Height:** the 95th percentile of the point heights above the table.
 - **Pose:** position at the footprint centre with `z = table height + height / 2`, orientation as
-  the yaw about the table normal.
+  the yaw about the table normal. The yaw is that of the footprint rectangle's long side.
 - **Yaw ambiguity:** a rectangle's yaw is only defined modulo 180 degrees (90 for a square). The
   full orientation of asymmetric objects (mouse, mug handle, bottle cap) is resolved in the scene
   diff, by ICP of the current cloud against the reference cloud.
-- **Known-size fallback:** when `depth_reliable` is false for the object, or it has too few points,
-  fit a rectangle of the gallery size to the mask-derived footprint instead.
+- **Known-size fallback:** when `depth_reliable` is false for the object, or it has fewer than 200
+  points, place a box of the gallery size from the masks instead. Each camera's mask outline is
+  projected onto the plane at the object's mid-height, and the projections are intersected like a
+  visual hull. The centre and yaw of the intersection give the pose. With one camera the projection
+  is stretched away from the camera, but roughly about the centre.
 - **Which side is up:** gallery views are tagged with the side facing up (for example the sponge's
   yellow or dark side). The best-matching view's tag gives the side.
-- **Support:** an object whose bottom is more than 0.015 m above the table and whose footprint
-  overlaps another object's footprint rests on that object. Otherwise it rests on `table`.
+- **Support:** an object rests on another when three things hold:
+  - its lowest points (1st percentile) are more than 0.015 m above the table,
+  - at least 20 % of its footprint lies over the other's,
+  - the other's top is within 2 cm of those lowest points.
+
+  Its height then starts there. Otherwise it rests on `table`. The lowest visible point alone is not
+  enough, because the lower half of a lying can is hidden from above.
 - **Confidence:** combines the SAM score, the gallery score, the point count and the number of
   cameras that saw the object.
 
 ## 6. Change mask
 
-The cameras do not move, so the reference and current images can be compared pixel by pixel.
+The fixed camera does not move and the hand camera always captures from the same observe pose, so
+the reference and current images can be compared pixel by pixel.
 
 - **Method:** a pixel has changed when its depth differs by more than 0.01 m, or its colour differs
   by more than a threshold in Lab space. Clean up with a morphological opening and drop regions
@@ -434,13 +516,26 @@ Runs on the Jetson, in the `restore` container ([`deployment.md`](deployment.md)
 | Subscribes | `/joint_states` (from the Ubuntu PC) | Observe-pose guard |
 | Service | `/perception/capture_scene` | `CaptureScene` |
 | Service | `/perception/register_object` | `RegisterObject` |
-| Publishes | `/tf_static` | `world` to `camera_N_color_optical_frame`, from the calibration file |
+| Publishes | `/tf_static` | From the calibration file: `world` to a fixed camera's optical frame, `lara5_flange` to the hand camera's |
 | Publishes | `/perception/snapshot` | `SceneSnapshot`, transient local |
 | Publishes | `/perception/markers` | `visualization_msgs/MarkerArray`: boxes, labels, footprints |
 | Publishes | `/perception/debug/camera_N/overlay` | `sensor_msgs/Image`: masks and labels drawn on colour, once per capture |
 
 Models are loaded once at start-up and warmed up with one dummy inference, so the first capture is
-not slow.
+not slow. A model that fails to load leaves the node running without it (no SAM: masks from depth;
+no DINOv2: every label `unknown`), and every reply says so.
+
+- **Camera poses at capture time:**
+  - a calibrated fixed camera: from the calibration file;
+  - a calibrated hand camera: the file times the flange pose from TF;
+  - any other camera: TF of its image's `frame_id`.
+- **Reference:** a capture named `reference` and saved to disk becomes the change-mask reference (6)
+  for later captures.
+- **Concurrency:** the services run one at a time, in their own callback group, while
+  `/joint_states`, TF and the simulated camera topics keep being received.
+
+Launch arguments, parameters and example calls are in the
+[package README](../src/restore/README.md).
 
 Only one program can open a camera: the test bench (`wendy/perception_test`) and this node cannot
 run at the same time.
@@ -449,8 +544,10 @@ run at the same time.
 
 ```text
 data/
+  calibration/extrinsics.yaml      # camera poses (3.4)
   snapshots/<snapshot_id>/
-    snapshot.json                  # everything in SceneSnapshot except clouds
+    snapshot.json                  # everything in SceneSnapshot except clouds, plus each camera's
+                                   # intrinsics and pose, so a capture can be run again offline
     objects/<id>.ply               # per-object point cloud
     camera_N/color.png
     camera_N/depth.png             # 16-bit, millimetres
@@ -466,38 +563,44 @@ data/
 ## 9. Code layout
 
 ```text
-src/restore/restore_perception/          # ament_python package
-  package.xml
-  setup.py
-  config/
-    perception.yaml                       # all parameters in this document
-    objects.yaml
-  restore_perception/
-    core/                                 # no ROS imports
-      types.py                            # dataclasses: Frame, Candidate, ObjectState
-      sources.py                          # RealSenseSource, FileSource (RosTopicSource lives in node.py)
-      capture.py                          # median depth
-      geometry.py                         # back-projection, plane, clustering, footprint
-      segment.py                          # SAM 2.1 wrapper, splitting, depth-poor objects
-      fuse.py                             # cross-camera association
-      embed.py                            # DINOv2 wrapper
-      gallery.py                          # registration, matching
-      describe.py                         # pose, height, support, confidence
-      change.py                           # change mask
-      snapshot_io.py                      # read and write data/
-    node.py                               # ROS 2 wrapper
-  scripts/
-    record_captures.py                    # save captures from both cameras in the 8.3 format
-    offline_eval.py                       # run core on saved captures, write overlays and a report
-  test/
+src/restore/
+  restore_interfaces/                     # ament_cmake: the messages and services of 8.1
+  restore_perception/                     # ament_python package
+    package.xml, setup.py
+    config/
+      perception.yaml                     # all parameters in this document
+      objects.yaml
+    launch/perception.launch.py
+    restore_perception/
+      core/                               # no ROS imports
+        config.py                         # parameter defaults, perception.yaml and objects.yaml
+        types.py                          # dataclasses: CameraFrame, ObjectState, Snapshot
+        sources.py                        # RealSenseSource, FileSource (RosTopicSource lives in node.py)
+        extrinsics.py                     # calibration file: camera poses by serial number
+        capture.py                        # median depth
+        geometry.py                       # back-projection, plane, DBSCAN, table frame, rays
+        segment.py                        # SAM 2.1 wrapper, splitting, depth-poor objects
+        fuse.py                           # cross-camera association
+        embed.py                          # masked crops, DINOv2 wrapper, colour histograms
+        gallery.py                        # registration, matching
+        describe.py                       # pose, height, known-size fallback, support, confidence
+        change.py                         # change mask
+        pipeline.py                       # the stages in order: frames in, Snapshot out
+        overlay.py                        # debug overlays
+        snapshot_io.py                    # read and write data/, read test bench downloads
+      node.py                             # ROS 2 wrapper
+      offline_eval.py                     # run core on saved captures, write overlays and a report
+    test/                                 # ray-cast scenes with ground truth
 
-wendy/restore/                           # Wendy app that runs all our code on the Jetson
+wendy/restore/                           # (to do) Wendy app that runs all our code on the Jetson
   build.stagefile.yaml                    # ubuntu:22.04 + ROS 2 Humble + Jetson PyTorch; builds src/restore
   wendy.json                              # entitlements: host network, GPU, USB, camera, /data, ports
 ```
 
-`core/` imports neither ROS nor `pyrealsense2` at module level, so `offline_eval.py` also runs on a
-PC with saved captures.
+`core/` imports neither ROS nor `pyrealsense2`, `torch` or SAM 2 at module level, so `offline_eval.py`
+and the tests also run on a PC with saved captures. Captures for offline tests come from the test
+bench downloads, or from `capture_scene` with `save_to_disk`, which keeps everything needed to run a
+capture again.
 
 ## 10. Software stack
 
@@ -508,7 +611,7 @@ runs, except where marked.
 | Package | Version and source | Used for |
 |---|---|---|
 | Base image | `ubuntu:22.04`, arm64 | Matches ROS 2 Humble and the Jetson wheels |
-| ROS 2 Humble | apt `ros-humble-ros-base` (new) | `rclpy`, `tf2_ros`, `sensor_msgs_py` |
+| ROS 2 Humble | apt `ros-humble-ros-base` (new) | `rclpy`, `tf2_ros`, `launch_ros`, the message packages |
 | `foxglove_bridge` | apt `ros-humble-foxglove-bridge` (new) | Visualisation from the Windows PC |
 | PyTorch | `torch==2.8.0`, `torchvision==0.23.0` from the Jetson wheel index (CUDA 12.6) | Runs SAM 2.1 and DINOv2 on the GPU |
 | `pyrealsense2` | `2.59.1.11053`, aarch64 wheel | Reads the cameras |
@@ -516,17 +619,16 @@ runs, except where marked.
 | DINOv2 | `transformers==4.56.2`, `facebook/dinov2-small` baked into the image | Embeddings |
 | OpenCV | `opencv-python-headless==4.10.0.84` | `minAreaRect`, morphology, drawing |
 | NumPy | `1.26.4` | Everything |
-| SciPy | pip | Hungarian assignment |
-| Shapely | pip (new) | Footprint polygons |
-| Open3D | pip (new; aarch64 wheel to be confirmed) | Downsampling, plane fit, DBSCAN, outlier removal |
+| SciPy | pip | KD-tree (DBSCAN, outliers), connected components, Hungarian assignment |
+| PyYAML | pip | `perception.yaml`, `objects.yaml`, the calibration file |
+
+No Open3D and no Shapely: plane fit, voxel downsampling, DBSCAN and outlier removal are a few dozen
+lines of NumPy and SciPy, which avoids a large aarch64 wheel; footprints use OpenCV.
 
 Pitfalls:
 
 - **Pin NumPy 1.26.4 in every pip group.** The groups install into the same tree, so an unpinned
   group pulls NumPy 2 underneath and breaks OpenCV and SciPy (found while building the test bench).
-- **Confirm Open3D on aarch64.** Check that a wheel exists for Python 3.10 and works with NumPy
-  1.26.4. Fallback: the plane fit in NumPy, DBSCAN from `scikit-learn`, and a small ICP on a SciPy
-  KD-tree for the scene diff.
 - **Skip `cv_bridge`.** Convert `sensor_msgs/Image` to and from NumPy directly (`rgb8` and `16UC1`
   are simple), so pip's OpenCV is never mixed with the OpenCV that ROS installs from apt.
 - **Mind the shared memory.** The Orin Nano shares 8 GB between CPU and GPU. Keep SAM's automatic
@@ -538,11 +640,11 @@ Pitfalls:
 
 ### 11.1 Offline test on real captures (first)
 
-Record about 20 captures from both cameras with the test bench (colour and 16-bit depth downloads)
-or with `record_captures.py`: each object alone, and groups arranged like the real task, including
-the touching pairs. Run `offline_eval.py` and inspect the overlays. The test bench answers the
-three questions below directly on the Jetson, and `offline_eval.py` answers them with the geometry
-stages added, before any ROS integration:
+Record about 20 captures from both cameras: with the test bench (the `capture.zip` downloads), or
+with `capture_scene` and `save_to_disk`. Include each object alone, and groups arranged like the
+real task, including the touching pairs. Run `offline_eval.py` and inspect the overlays and
+`report.md`. The test bench answers the three questions below directly on the Jetson, and
+`offline_eval.py` answers them with the geometry stages added:
 
 1. Does SAM give a clean mask for the steel mug?
 2. Does SAM split the touching pairs?

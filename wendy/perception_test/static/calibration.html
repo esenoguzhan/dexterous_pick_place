@@ -1,0 +1,311 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Camera calibration</title>
+<style>
+  :root {
+    --bg: #0f1115; --panel: #171a21; --line: #2a2f3a; --text: #e6e8ee; --muted: #9aa3b2;
+    --accent: #4f9dff; --ok: #3ecf8e; --warn: #f5a524; --bad: #f45b69; --field: #222733;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; font: 14px/1.45 system-ui, -apple-system, Segoe UI, sans-serif; background: var(--bg); color: var(--text); }
+  header { display: flex; gap: 8px; align-items: center; padding: 10px 16px; border-bottom: 1px solid var(--line); flex-wrap: wrap; }
+  h1 { font-size: 16px; margin: 0 12px 0 0; font-weight: 600; }
+  h2 { font-size: 12px; text-transform: uppercase; letter-spacing: .05em; color: var(--muted); margin: 0 0 8px; font-weight: 600; }
+  .pill { padding: 2px 10px; border-radius: 999px; background: var(--field); color: var(--muted); font-size: 12px; }
+  .pill.ok { color: var(--ok); } .pill.warn { color: var(--warn); } .pill.bad { color: var(--bad); }
+  main { display: grid; grid-template-columns: minmax(300px, 420px) minmax(0, 1fr); gap: 12px; padding: 12px; }
+  @media (max-width: 1000px) { main { grid-template-columns: minmax(0, 1fr); } }
+  section { background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 12px; min-width: 0; }
+  .stack > * + * { margin-top: 12px; }
+  button, select, input { font: inherit; color: var(--text); background: var(--field); border: 1px solid var(--line); border-radius: 6px; padding: 5px 10px; }
+  input[type=number] { width: 76px; }
+  button { cursor: pointer; }
+  button.primary { background: var(--accent); border-color: var(--accent); color: #fff; }
+  button:disabled { opacity: .45; cursor: default; }
+  a { color: var(--accent); }
+  .row { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; margin-bottom: 8px; }
+  .hint { color: var(--muted); font-size: 12px; }
+  .msg { font: 12px ui-monospace, Consolas, monospace; color: var(--muted); min-height: 1.5em; white-space: pre-wrap; }
+  .msg.error { color: var(--bad); }
+  .cams { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 10px; }
+  .cams figure { margin: 0; }
+  .cams img { width: 100%; aspect-ratio: 16 / 9; object-fit: contain; background: #000; border-radius: 6px; display: block; }
+  .cams figcaption { color: var(--muted); font-size: 12px; margin-top: 4px; }
+  table { width: 100%; border-collapse: collapse; font-size: 12.5px; }
+  th, td { padding: 4px 6px; border-bottom: 1px solid var(--line); text-align: left; white-space: nowrap; }
+  th { color: var(--muted); font-weight: 500; }
+  .table-wrap { max-height: 320px; overflow: auto; }
+  .good { color: var(--ok); } .fair { color: var(--warn); } .poor { color: var(--bad); }
+  .x { padding: 0 6px; }
+  pre { font: 12px ui-monospace, Consolas, monospace; background: var(--field); padding: 8px; border-radius: 6px; overflow: auto; max-height: 260px; }
+</style>
+</head>
+<body>
+<header>
+  <h1>Camera calibration</h1>
+  <span id="pill-cams" class="pill">cameras: …</span>
+  <span id="pill-samples" class="pill">samples: …</span>
+  <span id="pill-saved" class="pill">extrinsics.yaml: …</span>
+  <a href="/" class="pill">← perception test</a>
+</header>
+
+<main>
+  <div class="stack">
+    <section>
+      <h2>Board</h2>
+      <div class="row">
+        <label class="hint">squares <input id="b-sx" type="number" min="3" max="20"> × <input id="b-sy" type="number" min="3" max="20"></label>
+      </div>
+      <div class="row">
+        <label class="hint">square mm <input id="b-sq" type="number" step="0.1"></label>
+        <label class="hint">marker mm <input id="b-mk" type="number" step="0.1"></label>
+      </div>
+      <div class="row">
+        <select id="b-dict" aria-label="ArUco dictionary">
+          <option>DICT_4X4_50</option><option>DICT_5X5_100</option><option>DICT_6X6_250</option>
+        </select>
+        <button id="b-apply">Apply</button>
+        <a href="/api/calib/board.pdf" id="b-pdf">board.pdf</a>
+      </div>
+      <div class="hint">Print the PDF at 100 % (actual size), glue it flat on a rigid plate, measure one
+        square with a ruler and enter the measured size before recording. Changing the board needs an empty
+        sample list.</div>
+    </section>
+
+    <section>
+      <h2>Setup</h2>
+      <div class="row">
+        <label class="hint">board
+          <select id="s-loc" aria-label="Board location">
+            <option value="table">on the table</option><option value="hand">on the hand</option>
+          </select>
+        </label>
+      </div>
+      <div id="s-mounts"></div>
+      <div id="s-hint" class="hint"></div>
+    </section>
+
+    <section>
+      <h2>Samples</h2>
+      <div class="hint">The robot side records samples:
+        <code>ros2 run lara5_controller_manager calibrate_cameras.py --jetson http://&lt;jetson&gt;:8090 auto --session /ws/calibration_session.json</code>
+        replays the exported session's joint poses. Preview with <code>--dry-run</code>.
+        To generate new Cartesian poses use <code>auto --random --pivot 0.4</code>
+        (<code>--pivot</code> about the hand camera's distance to the board; leave it out with the board on the hand).
+        Aim for 15 to 25 poses, tilted 10 to 30° in different directions. A partly covered board is fine.</div>
+      <div class="table-wrap"><table>
+        <thead><tr><th>#</th><th>flange x, y, z [m]</th><th>cameras: corners · px · m</th><th></th></tr></thead>
+        <tbody id="samples"></tbody>
+      </table></div>
+      <div class="row" style="margin-top: 8px">
+        <button id="solve" class="primary">Solve</button>
+        <button id="save" disabled>Save extrinsics.yaml</button>
+        <a href="/api/calib/extrinsics.yaml" id="dl-yaml" hidden>download</a>
+        <a href="/api/calib/session.json">export session</a>
+        <button id="clear">Clear samples</button>
+      </div>
+      <div id="msg" class="msg"></div>
+    </section>
+  </div>
+
+  <div class="stack">
+    <section>
+      <h2>Live board detection</h2>
+      <div id="cams" class="cams"><span class="hint">Looking for cameras…</span></div>
+    </section>
+    <section>
+      <h2>Result</h2>
+      <div id="result" class="hint">Solve once every camera has at least the minimum number of samples.</div>
+    </section>
+  </div>
+</main>
+
+<script>
+const $ = (id) => document.getElementById(id);
+let status = null, camIds = "";
+
+async function api(path, options = {}) {
+  const res = await fetch(path, { headers: { "Content-Type": "application/json" }, ...options });
+  const body = await res.json().catch(() => ({}));
+  if (!res.ok) {
+    const d = body.detail;
+    throw new Error(typeof d === "string" ? d : (d && d.message) || `${res.status} ${res.statusText}`);
+  }
+  return body;
+}
+
+function esc(text) {
+  return String(text ?? "").replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+}
+
+function say(text, isError = false) {
+  $("msg").textContent = text;
+  $("msg").className = isError ? "msg error" : "msg";
+}
+
+function grade(value, good, fair) {
+  return value <= good ? "good" : value <= fair ? "fair" : "poor";
+}
+
+function setPill(id, text, level) {
+  $(id).textContent = text;
+  $(id).className = `pill ${level || ""}`;
+}
+
+async function refresh() {
+  try {
+    status = await api("/api/calib/status");
+  } catch (err) {
+    setPill("pill-cams", `status failed: ${err.message}`, "bad");
+    return;
+  }
+  const s = status;
+  const online = s.cameras.filter((c) => c.online);
+  setPill("pill-cams", `cameras: ${online.length} online`, online.length ? "ok" : "bad");
+  setPill("pill-samples", `samples: ${s.samples.length} (min ${s.min_samples} per camera)`,
+          s.samples.length >= s.min_samples ? "ok" : "warn");
+  setPill("pill-saved", s.saved.exists ? `extrinsics.yaml saved ${new Date(s.saved.modified * 1000).toLocaleString()}`
+                                       : "extrinsics.yaml: not saved", s.saved.exists ? "ok" : "warn");
+  $("dl-yaml").hidden = !s.saved.exists;
+  $("save").disabled = !(s.result && Object.keys(s.result.cameras).length);
+
+  const b = s.board;
+  if (document.activeElement.tagName !== "INPUT" && document.activeElement.tagName !== "SELECT") {
+    $("b-sx").value = b.squares_x; $("b-sy").value = b.squares_y;
+    $("b-sq").value = b.square_mm; $("b-mk").value = b.marker_mm; $("b-dict").value = b.dictionary;
+  }
+  $("b-apply").disabled = s.samples.length > 0;
+  renderSetup(s);
+
+  $("samples").innerHTML = s.samples.slice().reverse().map((x) => {
+    const cams = Object.entries(x.cameras).map(([serial, c]) => {
+      const name = (s.cameras.find((k) => k.id === serial) || {}).name || serial;
+      return `<span class="${grade(c.reproj_px, 0.5, 1.0)}">${esc(name)}: ${c.corners} · ${c.reproj_px.toFixed(2)} · ${c.distance_m.toFixed(2)}</span>`;
+    }).join("<br>");
+    return `<tr><td>${x.id}</td><td>${x.flange.map((v) => v.toFixed(3)).join(", ")}</td><td>${cams}</td>
+      <td><button class="x" title="Delete sample" onclick="removeSample(${x.id})">×</button></td></tr>`;
+  }).join("") || `<tr><td colspan="4" class="hint">No samples yet.</td></tr>`;
+
+  const ids = online.map((c) => `${c.id}:${c.mount}`).join(",");
+  if (ids !== camIds) {
+    camIds = ids;
+    $("cams").innerHTML = online.map((c) =>
+      `<figure><img id="ov-${esc(c.id)}" alt="Board detection in ${esc(c.name)}"><figcaption>${esc(c.name)} · ${esc(c.id)} · ${c.mount === "hand" ? "on the hand" : "fixed"}</figcaption></figure>`
+    ).join("") || `<span class="hint">No RealSense camera is streaming.</span>`;
+    online.forEach((c) => pollOverlay(c.id));
+  }
+  renderResult(s.result);
+}
+
+function renderSetup(s) {
+  if (document.activeElement.tagName !== "SELECT") {
+    $("s-loc").value = s.setup.board_location;
+    $("s-mounts").innerHTML = s.cameras.map((c) =>
+      `<div class="row"><label class="hint">${esc(c.name)} · ${esc(c.id)}${c.online ? "" : " (offline)"}
+        <select data-serial="${esc(c.id)}" aria-label="Mount of ${esc(c.name)}">
+          <option value="fixed"${c.mount === "fixed" ? " selected" : ""}>fixed</option>
+          <option value="hand"${c.mount === "hand" ? " selected" : ""}>on the hand</option>
+        </select></label></div>`).join("") || `<span class="hint">No cameras yet.</span>`;
+    document.querySelectorAll("#s-mounts select").forEach((el) => { el.onchange = applySetup; });
+  }
+  const hand = s.cameras.filter((c) => c.mount === "hand").length;
+  $("s-hint").textContent = s.setup.board_location === "table"
+    ? "Lay the board flat where the fixed cameras see it and keep it still. The robot moves the hand camera over it: "
+      + "that camera locates the board, and the fixed cameras follow from it." + (hand ? "" : " Mark the camera on the hand first.")
+    : "Fix the board to the hand so it cannot shift against the flange. Only fixed cameras can be calibrated this way.";
+}
+
+async function applySetup() {
+  const mounts = {};
+  document.querySelectorAll("#s-mounts select").forEach((el) => { mounts[el.dataset.serial] = el.value; });
+  try {
+    await api("/api/calib/setup", { method: "POST", body: JSON.stringify({ board_location: $("s-loc").value, mounts }) });
+    say("Setup saved. Solve again to apply it.");
+  } catch (err) { say(err.message, true); }
+  document.activeElement.blur();
+  refresh();
+}
+$("s-loc").onchange = applySetup;
+
+function pollOverlay(id) {
+  const img = $(`ov-${id}`);
+  if (!img) return;
+  const next = () => setTimeout(() => pollOverlay(id), 400);
+  img.onload = next;
+  img.onerror = () => setTimeout(() => pollOverlay(id), 2000);
+  img.src = `/api/calib/overlay/${encodeURIComponent(id)}.jpg?t=${Date.now()}`;
+}
+
+function renderResult(r) {
+  if (!r) return;
+  const parts = Object.entries(r.cameras).map(([serial, c]) => {
+    const rows = c.per_sample.map((p) =>
+      `<tr${p.used ? "" : ' class="poor"'}><td>${p.id}${p.used ? "" : " (dropped)"}</td>
+       <td class="${grade(p.rms_px, 0.5, 1.0)}">${p.rms_px.toFixed(2)}</td>
+       <td class="${grade(p.position_mm, 2, 4)}">${p.position_mm.toFixed(1)}</td><td>${p.rotation_deg.toFixed(2)}</td></tr>`).join("");
+    return `<h2 style="margin-top: 8px">${esc(c.name)} · ${esc(serial)} · ${c.mount === "hand" ? "on the hand" : "fixed"}:
+        ${esc(c.parent_frame)} → ${esc(c.frame_id)}</h2>
+      <div>position in ${esc(c.parent_frame)}: <b>${c.translation.map((v) => v.toFixed(4)).join(", ")}</b> m ·
+        ${c.distance_from_parent_origin_m.toFixed(3)} m from its origin</div>
+      <div class="hint">rotation xyzw ${c.rotation_xyzw.map((v) => v.toFixed(5)).join(", ")}</div>
+      <div>samples ${c.samples_used}/${c.samples_total}${c.dropped.length ? ` (dropped ${c.dropped.join(", ")})` : ""} ·
+        reprojection <span class="${grade(c.reprojection_rms_px, 0.5, 1.0)}">${c.reprojection_rms_px.toFixed(2)} px</span> ·
+        board <span class="${grade(c.board_position_rms_mm, 2, 4)}">${c.board_position_rms_mm.toFixed(1)} mm</span>,
+        ${c.board_rotation_rms_deg.toFixed(2)}° RMS</div>
+      <div class="table-wrap"><table><thead><tr><th>sample</th><th>px</th><th>mm</th><th>deg</th></tr></thead>
+        <tbody>${rows}</tbody></table></div>`;
+  });
+  const skipped = Object.entries(r.skipped || {}).map(([k, v]) => `<div class="fair">${esc(k)} not solved: ${esc(v)}</div>`);
+  $("result").innerHTML = parts.join("") + skipped.join("") +
+    `<div class="hint" style="margin-top: 8px">board (${esc(r.board_pose.location)}) in ${esc(r.board_pose.parent_frame)}:
+     ${r.board_pose.translation.map((v) => v.toFixed(4)).join(", ")} m.
+     Solved ${new Date(r.solved_at * 1000).toLocaleString()}. Save writes /data/calibration/extrinsics.yaml.</div>`;
+}
+
+async function removeSample(id) {
+  try { await api(`/api/calib/samples/${id}`, { method: "DELETE" }); say(`Sample ${id} deleted.`); }
+  catch (err) { say(err.message, true); }
+  refresh();
+}
+
+$("solve").onclick = async () => {
+  say("Solving…");
+  try {
+    const r = await api("/api/calib/solve", { method: "POST" });
+    const n = Object.keys(r.cameras).length;
+    say(`Solved ${n} camera${n === 1 ? "" : "s"}. Check the numbers, then save.`);
+  } catch (err) { say(err.message, true); }
+  refresh();
+};
+
+$("save").onclick = async () => {
+  try { const r = await api("/api/calib/save", { method: "POST" }); say(`Saved ${r.path}`); }
+  catch (err) { say(err.message, true); }
+  refresh();
+};
+
+$("clear").onclick = async () => {
+  if (!confirm("Delete all calibration samples?")) return;
+  try { await api("/api/calib/samples", { method: "DELETE" }); say("Samples cleared."); }
+  catch (err) { say(err.message, true); }
+  refresh();
+};
+
+$("b-apply").onclick = async () => {
+  const body = {
+    squares_x: Number($("b-sx").value), squares_y: Number($("b-sy").value),
+    square_mm: Number($("b-sq").value), marker_mm: Number($("b-mk").value), dictionary: $("b-dict").value,
+  };
+  try { await api("/api/calib/board", { method: "POST", body: JSON.stringify(body) }); say("Board updated."); }
+  catch (err) { say(err.message, true); }
+  refresh();
+};
+
+refresh();
+setInterval(refresh, 2000);
+</script>
+</body>
+</html>
