@@ -1,0 +1,16 @@
+# Scene perception on aras PC (scene.py). World frame of main's URDF (arm base at (-0.32, 0, 0.915)).
+# The white sheet measured from the fixed camera on 2026-10-27: corners (-0.04, 0.36), (0.53, 0.33),
+# (0.51, -0.36), (-0.07, -0.33).
+workspace:            # box the perception looks into: the white sheet, from the table up
+  min: [-0.03, -0.32, 0.88]
+  max: [0.50, 0.31, 1.25]
+table:
+  object_min_height_m: 0.012
+cluster:
+  eps_m: 0.012
+  max_extent_m: 0.25
+filter:               # drop candidates that cannot be graspable objects
+  min_height_m: 0.035
+  max_extent_m: 0.22
+  min_points: 150
+top_band_m: 0.02      # object centre from the points within this distance of its top

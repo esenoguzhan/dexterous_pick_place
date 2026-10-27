@@ -1,0 +1,18 @@
+# Side grasp (side.py). Hand frame: +z fingers, +y out of the palm, +x little finger; thumb up.
+palm_gap_m: 0.022          # object surface from the palm plane at the grasp
+side_off_m: 0.015          # extra distance off the object while sliding in
+grip_z: 0.125              # object axis along the fingers (palm centre 0.12, finger roots 0.156)
+back_m: 0.15               # pre-approach: this far behind the grasp along the fingers
+origin_height_m: 0.085     # hand origin above the table (the wrist camera hangs below it)
+min_origin_height_m: 0.075
+top_wrap_m: 0.02           # the object top must be this far above the hand origin
+headings_deg: [0, 30, -30, 60, -60, 90, -90]   # approach directions around radial
+open: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+close: [0.0, 1.3, 1.3, 1.3, 1.3, 0.0]          # four fingers wrap, thumb stays open (it jams on the lid from above)
+close_s: 2.0
+missed_rad: 1.22           # fingers past this closed on nothing
+lift_m: 0.12
+refine_window_m: 0.04      # wrist depth points within radius + this of the prior axis
+max_refine_shift_m: 0.04
+high_m: 0.20               # waypoint above the pre-approach (joint moves stay above the objects)
+place_drop_m: 0.008         # put the object down this far above where it stood

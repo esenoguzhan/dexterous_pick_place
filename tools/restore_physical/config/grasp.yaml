@@ -1,0 +1,14 @@
+# Top grasp with the Inspire hand (grasp.py). Hand frame: +z fingers, +y out of the palm, +x little finger.
+# The object's top centre goes to grip_point, the claw point where the closing thumb tip meets the
+# index and middle fingertips, or lower if the hand underside (config/hand_shape_open.npz, from
+# hand_shape.py, plus the wrist camera box) reaches deeper over the object's disk (radius + side_margin).
+grip_point: [-0.025, 0.062, 0.125]
+side_margin_m: 0.010
+top_margin_m: 0.008
+palm_y_max: 0.080           # deeper than this the fingertips no longer reach the object's side
+# Wrist D435 + holder keep-out (no collision shape in the URDF): x, y, z ranges in the hand frame.
+# The can touched it at ~5.5 cm along the fingers on 2026-10-27.
+camera_box: [[-0.04, 0.075], [0.06, 0.11], [-0.05, 0.055]]
+hover_clearance_m: 0.15     # above the object before descending
+lift_m: 0.12                # straight up after closing
+open: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0]  # thumb yaw, index, middle, ring, pinky, thumb pitch [rad]
