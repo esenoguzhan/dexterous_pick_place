@@ -25,6 +25,7 @@ setup(
         "console_scripts": [
             "scene_perception_node = restore_perception.node:main",
             "offline_eval = restore_perception.offline_eval:main",
+            "sim_eval = restore_perception.sim_eval:main",
         ],
     },
 )

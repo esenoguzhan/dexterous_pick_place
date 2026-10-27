@@ -34,6 +34,8 @@ This repository contains the LARA5 robot stack and a two-camera RealSense worksp
   CAD holder, nominal photo-based wrist mount, RGB-D topics, optical TF and EGL camera rendering.
 - [Camera holder CAD and mounting photo](docs/wrist_camera_holder.md):
   left/right screw pair, mechanical datums, nominal optical pose and current depth-range limit.
+- [Perception accuracy in simulation](docs/perception_simulation_eval.md):
+  perception on the MuJoCo cameras, scored against the simulator's true object poses.
 - [Next steps for better grasping](docs/grasping_next_steps.md):
   positioning, contact-limited closure and verified lifting are implemented;
   repeatability across manual poses is the next review step.

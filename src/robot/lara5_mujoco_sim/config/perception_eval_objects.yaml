@@ -1,0 +1,38 @@
+# Free objects for the perception evaluation in simulation (docs/perception_simulation_eval.md).
+# Replaces the objects of mujoco_sim.yaml via sim_objects_file:=... All of them lie inside the
+# fixed camera's view (world rpy 0, 45, 90 from (0.26, -0.42, 1.82): the table from y = -0.17
+# to its far edge) and inside perception's simulation workspace (x > -0.15, away from the arm
+# base). Same keys as mujoco_sim.yaml, plus an optional yaw_deg about world Z.
+objects:
+  - name: red_cube
+    type: box
+    size: [0.025, 0.025, 0.025]
+    pos: [-0.08, 0.22, 0.95]
+    yaw_deg: 20.0
+    rgba: [0.85, 0.15, 0.15, 1.0]
+    mass: 0.1
+  - name: green_cylinder
+    type: cylinder
+    size: [0.03, 0.05]
+    pos: [0.30, 0.10, 0.97]
+    rgba: [0.15, 0.7, 0.2, 1.0]
+    mass: 0.15
+  - name: blue_ball
+    type: sphere
+    size: [0.03]
+    pos: [0.05, 0.32, 0.95]
+    rgba: [0.15, 0.3, 0.85, 1.0]
+    mass: 0.08
+  - name: orange_box              # elongated: checks the yaw of the long side
+    type: box
+    size: [0.05, 0.02, 0.015]
+    pos: [0.45, 0.22, 0.94]
+    yaw_deg: -35.0
+    rgba: [0.95, 0.55, 0.1, 1.0]
+    mass: 0.1
+  - name: grey_can                # tuna-can sized
+    type: cylinder
+    size: [0.0425, 0.02]
+    pos: [0.10, 0.05, 0.95]
+    rgba: [0.6, 0.6, 0.62, 1.0]
+    mass: 0.15

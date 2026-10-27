@@ -47,7 +47,14 @@ ros2 launch restore_perception perception.launch.py source:=ros
 
 # replay saved captures without cameras or models
 ros2 launch restore_perception perception.launch.py source:=file file_source_path:=/data/snapshots/reference load_models:=false
+
+# MuJoCo: the simulated camera topics remapped, then score against the true poses
+ros2 launch restore_perception perception_sim.launch.py
+ros2 run restore_perception sim_eval --captures 5 --observe-joints 0 0 0 0 0 0
 ```
+
+[`docs/perception_simulation_eval.md`](../../docs/perception_simulation_eval.md) walks through the
+simulation test and its reference result.
 
 | Launch argument | Default | Meaning |
 |---|---|---|

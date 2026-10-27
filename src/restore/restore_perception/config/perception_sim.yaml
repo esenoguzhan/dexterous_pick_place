@@ -1,0 +1,9 @@
+# Overrides for the simulated MuJoCo cameras (docs/perception_simulation_eval.md). Merged over the
+# defaults of perception.yaml; everything not listed here is unchanged.
+capture:
+  frames: 3            # the simulated depth has no noise; 10 frames at 10 Hz only cost time
+  timeout_s: 20.0      # software-rendered cameras can run well below 10 Hz
+
+workspace:             # world frame; the arm's mounting plate and base casting sit at x = -0.32
+  min: [-0.15, -0.4, 0.88]
+  max: [0.6, 0.4, 1.30]

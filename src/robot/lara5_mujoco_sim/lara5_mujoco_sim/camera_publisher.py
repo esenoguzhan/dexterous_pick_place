@@ -11,6 +11,23 @@ from sensor_msgs.msg import CameraInfo, Image
 from lara5_mujoco_sim.camera import camera_pose, depth_limits, intrinsics, mask_depth
 
 
+class StaticTransformSet:
+    """Latched static transforms that accumulate.
+
+    Humble's StaticTransformBroadcaster publishes each sendTransform() call as its own message on
+    a depth-1 transient-local topic, so a node that starts later only receives the last call. Every
+    camera's optical transform is therefore re-sent together whenever one is added."""
+
+    def __init__(self, node):
+        from tf2_ros import StaticTransformBroadcaster
+        self._broadcaster = StaticTransformBroadcaster(node)
+        self.transforms = []
+
+    def sendTransform(self, transform):  # noqa: N802 - tf2 naming
+        self.transforms.extend(transform if isinstance(transform, list) else [transform])
+        self._broadcaster.sendTransform(list(self.transforms))
+
+
 class RgbdCameraPublisher:
     """A fixed optical mount relative to world or a moving robot TF link."""
 

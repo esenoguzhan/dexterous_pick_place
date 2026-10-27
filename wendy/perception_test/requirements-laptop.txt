@@ -1,0 +1,26 @@
+# Native x86_64 laptop setup (NVIDIA GPU). Mirrors build.stagefile.yaml but with
+# PyTorch CUDA 12.6 wheels from pytorch.org instead of the Jetson index.
+#
+#   python3.10 -m venv .venv
+#   .venv/bin/pip install --upgrade pip wheel setuptools
+#   .venv/bin/pip install --index-url https://download.pytorch.org/whl/cu126 torch torchvision
+#   .venv/bin/pip install -r requirements-laptop.txt
+#   SAM2_BUILD_CUDA=0 .venv/bin/pip install --no-build-isolation \
+#       "git+https://github.com/facebookresearch/sam2.git@2b90b9f5ceec907a1c18123530e92e794ad901a4"
+#
+# Models (same URLs and hashes as build.stagefile.lock.yaml):
+#   models/sam2.1_hiera_small.pt
+#   models/dinov2-small/config.json
+#   models/dinov2-small/model.safetensors
+numpy<2
+opencv-python-headless==4.10.0.84
+pyrealsense2==2.59.1.11053
+transformers==4.56.2
+hydra-core==1.3.2
+iopath==0.1.10
+pillow
+tqdm
+scipy
+fastapi
+uvicorn
+pydantic

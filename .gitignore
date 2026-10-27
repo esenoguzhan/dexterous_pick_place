@@ -13,3 +13,7 @@ log/
 *.bag
 *.db3
 *.mcap
+
+# Local perception test bench: virtualenv and downloaded model weights (the Stagefile fetches them)
+wendy/perception_test/.venv/
+wendy/perception_test/models/
