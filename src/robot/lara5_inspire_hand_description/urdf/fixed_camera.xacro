@@ -19,7 +19,9 @@
     </link>
     <joint name="${name}_mount_joint" type="fixed">
       <parent link="${parent}"/><child link="${name}_link"/>
-      <origin xyz="-0.555 -0.450 0.900" rpy="0 ${pi/4} 0"/>
+      <!-- Yaw -15 deg in the base frame: the base is yawed 105 deg in world, so the
+           camera body ends up at world rpy (0, 45, 90) degrees, heading +Y. -->
+      <origin xyz="-0.555 -0.450 0.900" rpy="0 ${pi/4} ${-pi/12}"/>
     </joint>
     <link name="${name}_color_optical_frame"/>
     <joint name="${name}_color_optical_joint" type="fixed">

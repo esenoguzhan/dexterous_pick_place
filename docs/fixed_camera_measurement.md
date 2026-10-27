@@ -5,7 +5,8 @@ mounting plate, along that frame's signed axes. It is not relative to the
 pedestal `base_link` or to world axes.
 
 - Translation: X = -0.555 m, Y = -0.450 m, Z = 0.900 m.
-- Camera body roll = 0, pitch = +45 degrees downward, yaw = 0.
+- Camera body roll = 0, pitch = +45 degrees downward, yaw = -15 degrees, so that the
+  body is at roll 0, pitch 45, yaw 90 degrees in the world frame (the base is yawed 105).
 - The measured camera point is treated as the color optical origin. The housing
   is an approximate visual; this measurement is not a calibrated optical pose.
 

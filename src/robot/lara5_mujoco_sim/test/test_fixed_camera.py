@@ -42,9 +42,10 @@ def test_measured_mount_and_optical_forward_use_arm_base_axes():
     np.testing.assert_allclose(body_pose[:3, 3], [-.555, -.450, .900])
     base_optical = body_pose @ joint_pose(optical)
     s = math.sqrt(.5)
-    # Optical Z looks forward and down, with no yaw or roll of the housing.
-    np.testing.assert_allclose(base_optical[:3, 2], [s, 0, -s], atol=1e-12)
-    np.testing.assert_allclose(base_optical[:3, 0], [0, -1, 0], atol=1e-12)
+    c15, s15 = math.cos(math.pi/12), math.sin(math.pi/12)
+    # Optical Z looks 45 deg down and 15 deg clockwise of base forward (world heading 90 deg).
+    np.testing.assert_allclose(base_optical[:3, 2], [s*c15, -s*s15, -s], atol=1e-12)
+    np.testing.assert_allclose(base_optical[:3, 0], [-s15, -c15, 0], atol=1e-12)
     np.testing.assert_allclose(base_optical[:3, 3], [-.555, -.450, .900])
     # The pedestal's rotated mounting plate changes world X/Y, not just Z.
     world_base = joint_pose(root.find("joint[@name='mount_frame_neg_y_joint']"))
