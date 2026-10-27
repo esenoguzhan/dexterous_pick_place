@@ -10,6 +10,24 @@ See [the ordered Docker/MuJoCo/RViz test](../../../docs/contact_closure_simulati
 The approach task remains separately triggered through `/arm/approach/target`.
 No perception, object-pose selection, wrist-camera correction or learning is used.
 
+The [wrist-only hardware port](../../../docs/wrist_grasp_hardware.md) launches this
+executor in explicit `feedback_mode: hardware`, consuming stamped physical
+`/right_hand/measured_state`. Before any finger command it claims one verified
+wrist approach through the [exclusive handoff](../../../docs/wrist_closure_handoff.md)
+service `/arm/wrist/closure_handoff` (state `claiming`). It releases the claim
+after every terminal outcome. It uses configured raw actuator-force limits with
+no simulation preload. It checks every new measurement against those limits.
+Success needs `hardware_contact_stable_samples` (5) bilateral measurements with
+distinct source times, spanning `hardware_contact_stable_time`. Calibration,
+force characterization and explicit execution enablement are required. The
+read-only [force check](../../../docs/hand_force_check.md) records unloaded and
+loaded channel behavior and checks candidate settings:
+
+```bash
+ros2 launch lara5_grasp force_check.launch.py grasp_config_file:=/config/hardware.yaml
+```
+`/arm/grasp/cancel` is an independent cancellation topic in all modes.
+
 ## Interfaces
 
 | Interface | Type | Purpose |
@@ -62,7 +80,8 @@ physical hand force interface.
 
 Normal states: `requested`, `opposing_thumb`, `closing`, `preloading_hold` (or
 `holding` without bilateral simulation contact), then a terminal
-`succeeded` or `failed`. Short intermediate events can pass before a retained
+`succeeded` or `failed`. Hardware mode first reports `claiming` while it obtains
+the wrist handoff. Short intermediate events can pass before a retained
 status subscriber connects. Status always carries `request_id`,
 `active_request_id`, `feedback_mode` and **`retention_verified: false`**.
 

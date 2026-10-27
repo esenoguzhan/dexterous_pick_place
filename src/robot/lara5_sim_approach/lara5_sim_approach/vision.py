@@ -80,11 +80,13 @@ def detect_objects(rgb, depth, k, rotation, translation, objects, min_pixels=20)
     return result
 
 
-def image_array(msg):
+def image_array(msg, depth_scale=0.001):
     """Decode ROS Image row stride and byte order without cv_bridge."""
-    formats = {"rgb8": (np.uint8, 3), "32FC1": (np.dtype(">f4" if msg.is_bigendian else "<f4"), 1)}
+    formats = {"rgb8": (np.uint8, 3), "bgr8": (np.uint8, 3),
+               "16UC1": (np.dtype(">u2" if msg.is_bigendian else "<u2"), 1),
+               "32FC1": (np.dtype(">f4" if msg.is_bigendian else "<f4"), 1)}
     if msg.encoding not in formats:
-        raise ValueError(f"Unsupported simulation image encoding: {msg.encoding}")
+        raise ValueError(f"Unsupported RGB-D image encoding: {msg.encoding}")
     dtype, channels = formats[msg.encoding]
     dtype = np.dtype(dtype)
     row_bytes = msg.width * channels * dtype.itemsize
@@ -93,4 +95,11 @@ def image_array(msg):
     rows = np.frombuffer(bytes(msg.data), dtype=np.uint8).reshape(msg.height, msg.step)
     pixels = np.ascontiguousarray(rows[:, :row_bytes]).view(dtype)
     shape = (msg.height, msg.width, channels) if channels > 1 else (msg.height, msg.width)
-    return pixels.reshape(shape)
+    result = pixels.reshape(shape)
+    if msg.encoding == '16UC1':
+        if not np.isfinite(depth_scale) or depth_scale <= 0:
+            raise ValueError('depth_scale must be positive metres per integer unit')
+        return result.astype(np.float32)*depth_scale
+    if msg.encoding == 'bgr8':
+        return result[:, :, ::-1].copy()
+    return result

@@ -1,0 +1,24 @@
+wrist_depth_check:
+  ros__parameters:
+    color_topic: /cameras/wrist/color/image_raw
+    depth_topic: /cameras/wrist/aligned_depth_to_color/image_raw
+    info_topic: /cameras/wrist/color/camera_info
+    optical_frame: wrist_color_optical_frame
+    depth_scale: 0.001  # 16UC1 mm -> metres; 32FC1 is already metres
+    # A small patch INSIDE the visible object, excluding hand/table/edges.
+    # Change live with ros2 param set /wrist_depth_check roi '[l, t, r, b]'.
+    roi: [0.45, 0.45, 0.55, 0.55]
+    capture_seconds: 3.0
+    min_frames: 30
+    feedback_max_age: 0.5
+    synchronization_slop: 0.03
+    min_valid_fraction: 0.80
+    max_spatial_spread_m: 0.02  # per-frame ROI p95 - p05
+    max_temporal_spread_m: 0.005  # p95 - p05 of frame medians
+    # Context from docs/wrist_camera_holder.md; NOT a measured surface distance,
+    # a pixel location, camera calibration, or a sensor working-range guarantee.
+    nominal_grasp_depth_m: 0.1293
+    # Optional independent optical-axis distance to the selected surface patch.
+    # Zero means unknown. Never infer accuracy from stability alone.
+    expected_surface_depth_m: 0.0
+    max_reference_error_m: 0.01

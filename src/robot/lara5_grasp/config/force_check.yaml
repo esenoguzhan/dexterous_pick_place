@@ -1,0 +1,21 @@
+hand_force_check:
+  ros__parameters:
+    measured_topic: /right_hand/measured_state
+    feedback_max_age: 0.5
+    # unloaded_open ends automatically; motion and loaded recordings end on stop.
+    open_capture_seconds: 3.0
+    min_capture_seconds: 1.0
+    max_capture_seconds: 60.0
+    min_samples: 30  # distinct source times; cached republishes never count
+    stationary_tolerance: 0.02  # rad, open recording
+    loaded_motion_tolerance: 0.05  # rad, a pressed position-held digit may yield
+    # Free-air motion must reach this fraction of each close_positions ceiling
+    # and at least the closure's nominal peak segment speed on every joint.
+    coverage_fraction: 0.9
+    speed_window_seconds: 0.2
+    # Required threshold >= factor * worst unloaded deviation + margin (raw units).
+    threshold_margin_factor: 1.5
+    threshold_margin_raw: 2.0
+    # Live: ros2 param set /hand_force_check loaded_channel <joint name>
+    loaded_channel: ''
+    loaded_reference_n: 0.0  # optional gauge reading at the peak; 0 = unknown

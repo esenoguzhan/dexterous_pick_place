@@ -39,6 +39,28 @@ This repository contains the LARA5 robot stack and a two-camera RealSense worksp
 - [Next steps for better grasping](docs/grasping_next_steps.md):
   positioning, contact-limited closure and verified lifting are implemented;
   repeatability across manual poses is the next review step.
+- [Real robot wrist-only approach and grasp](docs/wrist_grasp_hardware.md):
+  manually position the open hand, preview wrist RGB-D corrections, execute final
+  approach and separately trigger physical force-limited closure. Includes Humble
+  Docker commands, required calibration and hardware validation limits.
+- [Camera-only close-range depth check](docs/wrist_depth_check.md):
+  visual ROI, separate start/grasp recordings, raw depth stability and comparison
+  with the approach cutoff; no robot backend or motion commands.
+- [Wrist object selection and grasp reference](docs/wrist_object_selection.md):
+  color-independent depth selection, adjustable hand exclusions, optional table
+  removal and a measured surface-to-grasp offset in a camera-only preview.
+- [Wrist camera alignment](docs/wrist_camera_alignment.md):
+  shared CAD/URDF mounting chain, driver depth-to-color geometry, and a read-only
+  overlay of the grasp reference and proposed correction.
+- [Tracked wrist approach](docs/wrist_approach_tracking.md):
+  fixed surface/reference association across bounded corrections and completion
+  evidence from several distinct camera measurements.
+- [Exclusive approach-to-grasp handoff](docs/wrist_closure_handoff.md):
+  one closure consumes each verified approach and blocks arm commands until it
+  ends. Includes the explicit robot-UI-to-ROS handoff procedure.
+- [Physical closure validation](docs/hand_force_check.md):
+  read-only force recordings (open, free-air motion, loaded fingertips) to choose
+  raw thresholds and limits; stability from distinct new hand measurements.
 - [Simulation pick and place](src/robot/lara5_sim_approach/PICK_AND_PLACE.md):
   obstacle-free scene, wrist refinement, contact-verified grasp, transfer and release.
 

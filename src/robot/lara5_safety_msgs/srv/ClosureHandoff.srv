@@ -1,0 +1,11 @@
+# Exclusive hand-off of one verified wrist approach to one hand closure.
+# 'claim' consumes the current verified result once and blocks new wrist arm
+# commands until 'release' names the same closure. Hardware tasks only.
+string operation
+string closure_request_id
+---
+bool success
+string message
+# Set on a successful claim: the consumed approach and its measured arm joints.
+string approach_request_id
+float64[] arm_positions

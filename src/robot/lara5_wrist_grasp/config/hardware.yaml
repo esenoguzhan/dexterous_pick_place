@@ -1,0 +1,101 @@
+# Copy this file to a host-mounted config directory. Restart tasks after edits.
+wrist_approach:
+  ros__parameters:
+    execution_enabled: false
+    # User confirmed the previously reported base-frame discrepancy is resolved.
+    base_alignment_confirmed: true
+    # Shared nominal CAD DEPTH optical pose + fixed URDF flange/holder chain
+    # + the RealSense driver's T_depth_optical_color_optical (capture-time TF).
+    # Empty path uses lara5_mujoco_sim/config/mujoco_sim.yaml; no pose is duplicated.
+    camera_mount_mode: nominal_cad
+    nominal_mount_config_file: ''
+    depth_optical_frame: wrist_depth_optical_frame
+    # False allows READ-ONLY alignment/planning previews. Set true only after
+    # independent checks against the actual assembly, optical axes and depth.
+    camera_calibration_confirmed: false
+    # For a measured replacement: camera_mount_mode: measured_color, then supply
+    # camera_to_flange_xyz / camera_to_flange_xyzw as measured T_flange_color.
+    # p_flange = R_flange_color * p_color + t_flange_color (metres, ROS xyzw).
+    optical_frame: wrist_color_optical_frame
+    base_frame: lara5_root_link
+    color_topic: /cameras/wrist/color/image_raw
+    depth_topic: /cameras/wrist/aligned_depth_to_color/image_raw
+    info_topic: /cameras/wrist/color/camera_info
+    # One depth-isolated object fully inside ROI. Color is never used to select it.
+    roi: [0.1, 0.1, 0.9, 0.9]
+    # Flattened normalized hand/holder rectangles [l,t,r,b, l,t,r,b, ...].
+    # Adjust to the actual open-hand silhouette; this left strip is an EXAMPLE.
+    exclusion_rois: [0.0, 0.0, 0.1, 1.0]
+    min_pixels: 80
+    depth_connectivity_m: 0.008
+    # Reference = median visible XYZ + this measured offset in COLOR OPTICAL axes.
+    # Zero is a preview placeholder, NOT an inferred object centre/finger placement.
+    surface_to_grasp_xyz: [0.0, 0.0, 0.0]
+    grasp_reference_confirmed: false
+    # Optional: fit/remove a plane from a deliberately selected visible table patch.
+    # Leave disabled when the table is absent. Failed fits fall back to depth isolation.
+    remove_support_plane: false
+    support_plane_roi: [0.0, 0.8, 1.0, 1.0]
+    plane_distance_m: 0.004
+    plane_min_fraction: 0.8
+    # Existing simulation grasp-region offset in right_hand_base_link.
+    hand_to_grasp_xyz: [-0.025, 0.085, 0.15]
+    depth_scale: 0.001  # 16UC1 millimetres -> metres; 32FC1 already metres
+    min_depth: 0.20
+    max_depth: 0.80
+    max_depth_spread: 0.12
+    # Lock the initial visible surface in robot-base coordinates. Association
+    # requires bidirectional overlap and similar metric extent; never re-anchor.
+    tracking_surface_tolerance: 0.006
+    tracking_min_overlap: 0.7
+    tracking_extent_fraction: 0.3
+    target_motion_tolerance: 0.02
+    # Initial acquisition and final completion both require NEW source frames
+    # spanning this interval, with consistent reference XYZ. Rechecks do not count.
+    target_confirm_frames: 3
+    target_confirm_duration: 0.15
+    target_consistency_tolerance: 0.002
+    max_step: 0.01
+    max_initial_error: 0.08
+    max_travel: 0.10
+    max_path_length: 0.12
+    max_iterations: 20
+    max_cartesian_speed: 0.005
+    max_joint_speed: 0.15
+    position_tolerance: 0.003
+    angle_tolerance: 0.02
+    # Example final-approach envelope in robot-base coordinates. Match the bench.
+    workspace_min: [-0.8, -0.8, 0.05]
+    workspace_max: [0.8, 0.8, 1.0]
+
+hand_grasp:
+  ros__parameters:
+    feedback_mode: hardware
+    hardware_execution_enabled: false
+    hardware_force_limits_confirmed: false
+    # REQUIRED: measured values in raw actuator-force units, NOT newtons.
+    # Order: thumb yaw, index, middle, ring, pinky, thumb pitch.
+    # Values are reordered by joint NAME from the driver's measured_state topic.
+    # Derive them with the read-only force check (docs/hand_force_check.md):
+    # baseline/thresholds from unloaded open + free-air motion recordings,
+    # detectability from loaded recordings. Maximum forces remain YOUR decision
+    # from loaded evidence and object/hand tolerance; unloaded data cannot set them.
+    hardware_force_baseline: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+    hardware_force_contact_thresholds: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+    hardware_force_limits: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+    # Success needs this many NEW source-stamped bilateral measurements spanning
+    # the stable time. Re-checking one cached measurement never counts twice.
+    hardware_contact_stable_time: 0.25
+    hardware_contact_stable_samples: 5
+    close_positions: [1.1, 1.3, 1.3, 1.3, 1.3, 0.5]
+    thumb_opposition: 0.8
+    max_joint_step: 0.02
+    max_joint_speed: 0.10
+    max_joint_acceleration: 0.25
+    min_segment_duration: 0.4
+    feedback_max_age: 0.5
+    # Hardware never applies either simulation preload.
+    contact_preload: 0.001
+    hold_preload: 0.001
+    verification_timeout: 2.0
+    closure_timeout: 120.0

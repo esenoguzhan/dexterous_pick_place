@@ -13,9 +13,11 @@ from action_msgs.msg import GoalStatus
 from builtin_interfaces.msg import Duration
 from control_msgs.action import FollowJointTrajectory
 from lara5_safety_msgs.msg import SimGraspFeedback
+from lara5_safety_msgs.srv import ClosureHandoff
 from rclpy.action import ActionClient
 from rclpy.node import Node
 from rclpy.qos import DurabilityPolicy, QoSProfile
+from rclpy.qos import qos_profile_sensor_data
 from rclpy.signals import SignalHandlerOptions
 from sensor_msgs.msg import JointState
 from std_msgs.msg import Empty, String
@@ -23,6 +25,7 @@ from trajectory_msgs.msg import JointTrajectory, JointTrajectoryPoint
 
 from .configuration import DEFAULT_CLOSE, HAND_JOINTS, UPPER_LIMITS, validate_closure
 from .policy import contact_digits, freeze_contacts, next_positions, reached
+from .hardware import ForceEvidence, physical_contacts, source_time, validate_force_limits
 
 ARM_JOINTS = tuple(f'lara5_joint{i}' for i in range(1, 7))
 
@@ -63,8 +66,22 @@ class HandGrasp(Node):
             raise ValueError('The finite simulation holding preload must not exceed 0.25 rad')
         self.feedback_mode = param('feedback_mode', 'simulation')
         self.target_object = param('target_object_name', 'green_cylinder')
-        if self.feedback_mode not in ('simulation', 'joint_only') or not self.target_object:
-            raise ValueError('feedback_mode must be simulation or joint_only; target fixture must be named')
+        if self.feedback_mode not in ('simulation', 'joint_only', 'hardware') or not self.target_object:
+            raise ValueError('feedback_mode must be simulation, joint_only or hardware')
+        self.hardware_enabled = param('hardware_execution_enabled', False)
+        self.force_confirmed = param('hardware_force_limits_confirmed', False)
+        self.force_baseline = param('hardware_force_baseline', [0.]*6)
+        self.force_thresholds = param('hardware_force_contact_thresholds', [0.]*6)
+        self.force_limits = param('hardware_force_limits', [0.]*6)
+        self.force_stable_time = param('hardware_contact_stable_time', .25)
+        self.force_stable_samples = param('hardware_contact_stable_samples', 5)
+        if not math.isfinite(self.force_stable_time) or self.force_stable_time <= 0:
+            raise ValueError('hardware_contact_stable_time must be positive')
+        # Validate the evidence rule at startup rather than at the first closure.
+        ForceEvidence(self.force_stable_samples, self.force_stable_time, self.feedback_max_age)
+        self.physical = None
+        self.handoff = None
+        self.releasing = None
         self.samples, self.history, self.contact = {}, deque(), None
         self.active = None
         self.stopping = False
@@ -74,8 +91,16 @@ class HandGrasp(Node):
         self.status = self.create_publisher(String, '/arm/grasp/status',
             QoSProfile(depth=1, durability=DurabilityPolicy.TRANSIENT_LOCAL))
         self.command = self.create_subscription(Empty, '/arm/grasp/target', self.on_trigger, 1)
+        self.cancel_command = self.create_subscription(Empty, '/arm/grasp/cancel',
+            lambda _: self.abort('operator cancellation'), 1)
         self.states = self.create_subscription(JointState, '/joint_states', self.on_state, 20)
-        self.contacts = self.create_subscription(SimGraspFeedback, '/sim/grasp_feedback', self.on_contact, 20)
+        self.contacts = None
+        if self.feedback_mode == 'hardware':
+            self.contacts = self.create_subscription(JointState, '/right_hand/measured_state',
+                self.on_physical, qos_profile_sensor_data)
+            self.handoff = self.create_client(ClosureHandoff, '/arm/wrist/closure_handoff')
+        else:
+            self.contacts = self.create_subscription(SimGraspFeedback, '/sim/grasp_feedback', self.on_contact, 20)
         self.timer = self.create_timer(.02, self.on_timer)
         self.report('idle', 'Waiting for explicit closure; require open hand and stationary arm')
 
@@ -121,6 +146,25 @@ class HandGrasp(Node):
         except ValueError:
             self.contact = None
 
+    def on_physical(self, msg):
+        # Keep the physical source stamp. A newly received cached sample is old.
+        self.physical = (copy.deepcopy(msg), time.monotonic())
+        ctx = self.active
+        if ctx is None or ctx['force_fault']:
+            return
+        try:
+            # Check every measurement, not only those the 50 Hz timer samples.
+            # Stability counts only new source times; cached repeats add nothing.
+            _, digits = physical_contacts(msg, self.force_baseline, self.force_thresholds, self.force_limits)
+            ctx['forces'].add(source_time(msg), 'thumb' in digits and bool(digits-{'thumb'}))
+        except ValueError as error:
+            ctx['force_fault'] = str(error)
+
+    def hardware_ready(self):
+        if not self.hardware_enabled or not self.force_confirmed:
+            raise ValueError('Enable hardware execution and validate physical force limits in the hardware config')
+        validate_force_limits(self.force_baseline, self.force_thresholds, self.force_limits)
+
     def measured(self, names=HAND_JOINTS):
         now = time.monotonic()
         ros_now = self.get_clock().now().nanoseconds/1e9
@@ -137,6 +181,22 @@ class HandGrasp(Node):
         return values
 
     def feedback(self):
+        if self.feedback_mode == 'hardware':
+            validate_force_limits(self.force_baseline, self.force_thresholds, self.force_limits)
+            if not self.physical:
+                raise ValueError('Missing stamped physical hand feedback; rebuild inspire_dftp_e2')
+            msg, receipt = self.physical
+            stamp = msg.header.stamp.sec+msg.header.stamp.nanosec/1e9
+            age = self.get_clock().now().nanoseconds/1e9-stamp
+            if stamp <= 0 or time.monotonic()-receipt > self.feedback_max_age or not -.1 <= age <= self.feedback_max_age:
+                raise ValueError('Stale physical hand force/angle measurement')
+            if self.active and self.active['force_fault']:
+                raise ValueError(self.active['force_fault'])
+            _, digits = physical_contacts(msg, self.force_baseline, self.force_thresholds, self.force_limits)
+            positions = dict(zip(msg.name, msg.position))
+            if distance(self.measured(), [positions[n] for n in HAND_JOINTS]) > self.tracking_tolerance:
+                raise ValueError('Physical hand and joint-state feedback disagree')
+            return msg, digits
         if self.feedback_mode == 'joint_only':
             return None, set()
         if not self.contact:
@@ -153,6 +213,20 @@ class HandGrasp(Node):
             raise ValueError('Target contact normal-force limit exceeded')
         return msg, contact_digits(msg.contact_links, msg.contact_normal_forces, self.contact_threshold_n)
 
+    def preconditions(self):
+        q, arm = self.measured(), self.measured(ARM_JOINTS)
+        if self.feedback_mode == 'hardware':
+            self.hardware_ready()
+        if max(abs(v) for v in q) > self.open_start_tolerance:
+            raise ValueError('Hand must start open; reopen explicitly before a new closure')
+        if (not self.history or time.monotonic()-self.history[0][0] < self.arm_stationary_window
+                or any(distance(arm, past) > self.arm_stationary_tolerance for _, past in self.history)):
+            raise ValueError('Arm is not measured stationary; wait for positioning to finish')
+        self.feedback()
+        if self.feedback_mode == 'hardware' and self.feedback()[1]:
+            raise ValueError('Hand is already loaded before closure; check baseline or contact')
+        return q, arm
+
     def on_trigger(self, _):
         request_id = str(uuid.uuid4())
         if self.active or self.stopping:
@@ -162,23 +236,92 @@ class HandGrasp(Node):
         if not self.hand.server_is_ready():
             self.report('unavailable', 'Hand action unavailable; trigger discarded')
             return
+        if self.handoff is not None and not self.handoff.service_is_ready():
+            self.report('unavailable', 'Wrist approach handoff unavailable; trigger discarded')
+            return
         try:
-            q, arm = self.measured(), self.measured(ARM_JOINTS)
-            if max(abs(v) for v in q) > self.open_start_tolerance:
-                raise ValueError('Hand must start open; reopen explicitly before a new closure')
-            if (not self.history or time.monotonic()-self.history[0][0] < self.arm_stationary_window
-                    or any(distance(arm, past) > self.arm_stationary_tolerance for _, past in self.history)):
-                raise ValueError('Arm is not measured stationary; wait for positioning to finish')
-            self.feedback()
+            q, arm = self.preconditions()
         except ValueError as error:
             self.report('rejected_state', str(error))
             return
         self.active = dict(id=request_id, arm=arm, phase='opposing_thumb', state='ready',
             frozen={}, seen=set(), handle=None, failure=None, cancel_reason=None, cancel_sent=False,
             stop_reported=False, global_deadline=time.monotonic()+self.closure_timeout,
-            step=0, stalled=0, previous=q, controller_motion_completed=False)
+            step=0, stalled=0, previous=q, controller_motion_completed=False,
+            handoff=None, approach_request_id=None, force_fault=None,
+            forces=ForceEvidence(self.force_stable_samples, self.force_stable_time, self.feedback_max_age))
+        if self.handoff is not None:
+            self.claim()
+            return
         self.report('requested', 'Starting bounded, measured hand closure')
         self.advance()
+
+    def claim(self):
+        # The wrist task grants each verified approach result to one closure and
+        # blocks its arm commands until this closure releases it.
+        ctx = self.active
+        ctx.update(state='claiming', handoff='requested', deadline=time.monotonic()+self.goal_response_timeout)
+        self.report('claiming', 'Claiming the verified wrist approach for this closure; no hand command yet')
+        try:
+            self.handoff.call_async(ClosureHandoff.Request(operation='claim', closure_request_id=ctx['id'])
+                ).add_done_callback(lambda future: self.on_claim(ctx, future))
+        except Exception as error:
+            self.abort(f'Handoff claim delivery unknown: {error}')
+
+    def on_claim(self, ctx, future):
+        if self.active is not ctx:
+            return
+        try:
+            response = future.result()
+        except Exception as error:
+            self.abort(f'Handoff claim result unknown: {error}')
+            return
+        if response is None or not response.success:
+            ctx['handoff'] = None
+            self.finish('rejected_state', 'Wrist approach handoff refused: '
+                        + (response.message if response else 'no response'))
+            return
+        ctx.update(handoff='held', approach_request_id=response.approach_request_id)
+        try:
+            positions = list(response.arm_positions)
+            if (not response.approach_request_id or len(positions) != 6
+                    or any(not math.isfinite(v) for v in positions)):
+                raise ValueError('Malformed wrist approach handoff')
+            # Re-check after the round trip; the wrist result must match this arm.
+            q, arm = self.preconditions()
+            if distance(arm, positions) > self.arm_stationary_tolerance:
+                raise ValueError('Arm moved since the verified wrist approach')
+        except ValueError as error:
+            self.abort(str(error))
+            return
+        ctx.update(state='ready', arm=arm, previous=q)
+        self.report('requested', 'Starting bounded, measured hand closure',
+                    approach_request_id=response.approach_request_id)
+        self.advance()
+
+    def release(self, ctx):
+        # Requests from one client reach the wrist in order, so this also releases
+        # a claim granted after its local timeout.
+        held = ctx['handoff'] == 'held'
+        try:
+            future = self.handoff.call_async(ClosureHandoff.Request(
+                operation='release', closure_request_id=ctx['id']))
+        except Exception as error:
+            self.get_logger().error(f'Handoff release delivery failed; restart both tasks: {error}')
+            return
+        self.releasing = future
+        future.add_done_callback(lambda done: self.on_release(ctx['id'], held, done))
+
+    def on_release(self, request_id, held, future):
+        if self.releasing is future:
+            self.releasing = None
+        try:
+            response = future.result()
+        except Exception:
+            response = None
+        if held and (response is None or not response.success):
+            self.get_logger().error(f'Handoff release for {request_id} unconfirmed; '
+                                    'wrist commands stay blocked until both tasks restart')
 
     def observe(self):
         ctx = self.active
@@ -187,7 +330,8 @@ class HandGrasp(Node):
             raise ValueError('Arm moved during independent closure')
         msg, digits = self.feedback()
         ctx['seen'].update(digits)
-        freeze_contacts(ctx['frozen'], digits, q, self.positions, self.contact_preload)
+        freeze_contacts(ctx['frozen'], digits, q, self.positions,
+                        0. if self.feedback_mode == 'hardware' else self.contact_preload)
         return q, msg, digits
 
     def advance(self):
@@ -301,6 +445,15 @@ class HandGrasp(Node):
             return
         if ctx['phase'] in ('holding', 'preloading_hold'):
             ctx['controller_motion_completed'] = True
+            if self.feedback_mode == 'hardware' and not ctx['failure']:
+                if not ('thumb' in digits and digits-{'thumb'}):
+                    self.finish('failed', 'No bilateral physical force evidence; retention unverified',
+                                closure_outcome='no_bilateral_force', hold_mode='measured_position')
+                    return
+                if not ctx['forces'].stable():
+                    ctx['verification_error'] = ('Bilateral force not confirmed by enough new physical '
+                                                 'measurements spanning the stable time')
+                    return
             if ctx['failure']:
                 self.finish('canceled' if ctx['failure'] == 'operator cancellation' else 'failed',
                             ctx['failure'], hold_mode='measured_position', measured_hold_verified=True)
@@ -312,8 +465,10 @@ class HandGrasp(Node):
                     else 'Joint motion completed; contact and retention unverified',
                     closure_outcome='contact_limited' if digits else 'motion_only',
                     contact_evidence=bool(digits), current_contact_digits=sorted(digits),
-                    contact_links=list(msg.contact_links) if msg else [],
-                    contact_normal_forces_n=list(msg.contact_normal_forces) if msg else [],
+                    contact_links=list(msg.contact_links) if msg and self.feedback_mode == 'simulation' else [],
+                    contact_normal_forces_n=list(msg.contact_normal_forces) if msg and self.feedback_mode == 'simulation' else [],
+                    actuator_forces_raw=list(msg.effort) if msg and self.feedback_mode == 'hardware' else [],
+                    force_evidence_only=self.feedback_mode == 'hardware',
                     holding_preload_rad=self.hold_preload if preloaded else 0.,
                     measured_positions=q, hold_mode='contact_preload' if preloaded else 'measured_position',
                     measured_hold_verified=True)
@@ -343,6 +498,10 @@ class HandGrasp(Node):
             return
         if ctx['failure'] is None:
             ctx['failure'] = reason
+        if ctx['state'] == 'claiming':
+            # No hand command was sent; finish() releases any late claim grant.
+            self.finish('canceled' if ctx['failure'] == 'operator cancellation' else 'failed', ctx['failure'])
+            return
         if ctx['state'] in ('ready', 'verifying'):
             self.after_stop()
             return
@@ -377,6 +536,10 @@ class HandGrasp(Node):
         if ctx is None:
             return
         now = time.monotonic()
+        if ctx['state'] == 'claiming':
+            if now > ctx['deadline']:
+                self.abort('Wrist approach handoff claim unconfirmed')
+            return
         if ctx['state'] == 'canceling':
             if now > ctx['deadline'] and not ctx['stop_reported']:
                 ctx['stop_reported'] = True
@@ -402,7 +565,13 @@ class HandGrasp(Node):
             values.setdefault('contact_evidence', False)
             values['contacted_digits_during_closure'] = sorted(ctx['seen'])
             values['segments'] = ctx['step']
+            if ctx['approach_request_id']:
+                values['approach_request_id'] = ctx['approach_request_id']
+            if self.feedback_mode == 'hardware':
+                values['force_evidence'] = ctx['forces'].report()
         self.report(state, message, **values)
+        if ctx and ctx['handoff']:
+            self.release(ctx)
 
     def cancel_active(self):
         self.stopping = True
@@ -425,7 +594,8 @@ def main():
         if node is not None:
             node.cancel_active()
             deadline = time.monotonic()+node.cancel_timeout
-            while rclpy.ok() and node.active_request is not None and time.monotonic()<deadline:
+            while (rclpy.ok() and (node.active_request is not None or node.releasing is not None)
+                    and time.monotonic()<deadline):
                 rclpy.spin_once(node, timeout_sec=.05)
             if node.active_request is not None:
                 node.get_logger().error('Hand stop not confirmed before exit; check controller')

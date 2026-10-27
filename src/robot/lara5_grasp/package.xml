@@ -17,6 +17,9 @@
   <exec_depend>lara5_safety_msgs</exec_depend>
   <exec_depend>launch_ros</exec_depend>
   <exec_depend>ament_index_python</exec_depend>
+  <exec_depend>rcl_interfaces</exec_depend>
+  <exec_depend>python3-numpy</exec_depend>
+  <exec_depend>python3-yaml</exec_depend>
   <test_depend>ament_cmake_pytest</test_depend>
   <test_depend>lara5_object_approach</test_depend>
   <test_depend>lara5_mujoco_sim</test_depend>

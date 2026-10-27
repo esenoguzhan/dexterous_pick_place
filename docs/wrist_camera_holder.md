@@ -89,6 +89,12 @@ Under the stated nominal URDF datums, this gives optical XYZ relative to:
 | `right_hand_base_link` | `[0.017500, 0.088951, 0.015023]` |
 | `lara5_flange` | `[0.088951, -0.017500, 0.015023]` |
 
+These values describe the **depth** optical origin. The hardware wrist task now
+reads the same nominal pose from `lara5_mujoco_sim/config/mujoco_sim.yaml`, composes
+the fixed URDF chain with the driver's depth/color optical TF, and offers a
+[read-only alignment preview](wrist_camera_alignment.md). Aligned color-depth
+processing must not treat this depth origin as the color optical origin.
+
 The optical quaternion replaces the former look-at orientation. Rendering and
 the optical TF read the same configured pose. The representative housing's rear
 face is positioned on the selected mounting pair; its physical centre is offset
