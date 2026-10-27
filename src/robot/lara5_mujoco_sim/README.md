@@ -17,10 +17,12 @@ and optical offsets still need measurement; this is not calibrated extrinsics.
 See [the mechanical audit and pose derivation](../../../docs/wrist_camera_holder.md).
 The existing flange-to-hand joint and grasp kinematics are unchanged.
 
-The representative D435 housing has four front windows and is approximately
-90 × 25 × 25 mm. The holder mesh is in the shared URDF, while the housing is drawn
-in MuJoCo. Both remain visual-only; no measured mass/inertia or collision
-decomposition was supplied. Rendering and optical TF use one camera pose.
+Both cameras are drawn with the Intel D435 model of the vendored
+`realsense2_description` package, copied into `lara5_inspire_hand_description`
+(`urdf/d435_camera.xacro`, `meshes/realsense/`). The holder mesh and both camera
+bodies are in the shared URDF and remain visual-only; no measured mass/inertia or
+collision decomposition was supplied. Rendering and optical TF use one camera pose.
+`show_body` (the older approximate housing drawn by MuJoCo) is now off by default.
 
 Static previews: [mount](../../../docs/images/wrist_cad_holder_mount.png) and
 [wrist view](../../../docs/images/wrist_cad_holder_view.png). The green sphere is a QA
@@ -125,9 +127,9 @@ zero even when RGB sees the region. Do not move the camera away from the CAD
 platform or silently lower this cutoff to imply reliable hardware depth. Validate
 the actual sensor profile and working distance separately.
 
-The approximately 90 × 25 × 25 mm housing is a visual placeholder based on the
-D435 description already in `ws/src/realsense-ros/realsense2_description`.
-It has no mass or collision geometry. The bracket visual is now in the shared
+The D435 body is the mesh of `ws/src/realsense-ros/realsense2_description`
+(`d435.dae` for RViz, a 51k-face `d435.stl` for MuJoCo). It has no mass or
+collision geometry. The bracket visual is now in the shared
 URDF; collision decomposition and measured mass/inertia remain separate work.
 
 ## Build and view the wrist feed live

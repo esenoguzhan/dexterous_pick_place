@@ -144,9 +144,19 @@ class WristCameraTests(unittest.TestCase):
         parent = mujoco.mj_name2id(model, mujoco.mjtObj.mjOBJ_BODY, self.config["wrist_camera"]["parent_frame"])
         self.assertEqual(model.cam_bodyid[camera], parent)
         case = mujoco.mj_name2id(model, mujoco.mjtObj.mjOBJ_GEOM, "wrist_camera_case")
-        self.assertGreaterEqual(case, 0)
-        self.assertEqual(model.geom_contype[case], 0)
-        self.assertEqual(model.geom_conaffinity[case], 0)
+        if self.config["wrist_camera"].get("show_body", False):
+            self.assertGreaterEqual(case, 0)
+            self.assertEqual(model.geom_contype[case], 0)
+            self.assertEqual(model.geom_conaffinity[case], 0)
+        else:
+            self.assertEqual(case, -1)
+        # The D435 body comes from the URDF (camera_2_link, d435_camera.xacro), visual only.
+        body = mujoco.mj_name2id(model, mujoco.mjtObj.mjOBJ_BODY, "camera_2_link")
+        self.assertGreaterEqual(body, 0)
+        self.assertGreaterEqual(model.body_geomnum[body], 1)
+        for geom in range(model.body_geomadr[body], model.body_geomadr[body] + model.body_geomnum[body]):
+            self.assertEqual(model.geom_contype[geom], 0)
+            self.assertEqual(model.geom_conaffinity[geom], 0)
 
     def test_cad_mount_frames_grasp_region_but_exposes_short_depth_distance(self):
         config = self.config["wrist_camera"]

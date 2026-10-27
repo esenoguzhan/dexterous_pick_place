@@ -1,0 +1,30 @@
+<?xml version="1.0"?>
+<!-- Intel RealSense D435 body, taken from the vendored realsense2_description
+     package (ws/src/realsense-ros, Apache-2.0, Copyright 2023 RealSense, Inc.).
+     The mesh and the offsets are the ones of its sensor_d435 macro; the robot
+     image does not contain that package, so the mesh is copied into this one.
+     meshes/realsense/d435.dae is the original (RViz); d435.stl is the same mesh
+     decimated to 51k faces for MuJoCo, which cannot load COLLADA and falls back
+     to the sibling .stl. -->
+<robot xmlns:xacro="http://wiki.ros.org/xacro">
+  <!-- parent/origin: pose of the D435 depth frame (realsense "camera_link":
+       +X forward, +Y left, +Z up, on the left infrared imager at the front glass).
+       Visual only: the real D435 collision box is left out so that the safety
+       filter's self-collision pairs stay as they are. -->
+  <xacro:macro name="d435_body" params="parent name *origin">
+    <link name="${name}">
+      <visual>
+        <!-- mesh origin: front plate, between the two infrared imagers -->
+        <origin xyz="${4.2e-3 + 0.1e-3} -0.0175 0" rpy="${pi/2} 0 ${pi/2}"/>
+        <geometry>
+          <mesh filename="package://lara5_inspire_hand_description/meshes/realsense/d435.dae"/>
+        </geometry>
+      </visual>
+    </link>
+    <joint name="${name}_joint" type="fixed">
+      <xacro:insert_block name="origin"/>
+      <parent link="${parent}"/>
+      <child link="${name}"/>
+    </joint>
+  </xacro:macro>
+</robot>
