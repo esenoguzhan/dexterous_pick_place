@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Fast DDS profile for the robot container on the robot PC (host network): UDP between the
+     nodes on this machine plus one TCP connection to the perception app on the Jetson
+     (169.254.211.202:7410 over the USB link, declared in the app's wendy.json).
+     With an initialPeersList set, Fast DDS no longer finds local participants by itself, so the
+     local UDP peers are listed explicitly (127.0.0.1 covers every node on the host network). -->
+<profiles xmlns="http://www.eprosima.com">
+  <transport_descriptors>
+    <transport_descriptor><transport_id>robot_pc_udp</transport_id><type>UDPv4</type></transport_descriptor>
+    <transport_descriptor><transport_id>robot_pc_tcp</transport_id><type>TCPv4</type></transport_descriptor>
+  </transport_descriptors>
+  <participant profile_name="robot_pc_network" is_default_profile="true">
+    <rtps>
+      <userTransports>
+        <transport_id>robot_pc_udp</transport_id>
+        <transport_id>robot_pc_tcp</transport_id>
+      </userTransports>
+      <useBuiltinTransports>false</useBuiltinTransports>
+      <builtin>
+        <initialPeersList>
+          <locator><tcpv4><address>169.254.211.202</address><physical_port>7410</physical_port><port>7410</port></tcpv4></locator>
+          <locator><udpv4><address>127.0.0.1</address></udpv4></locator>
+        </initialPeersList>
+      </builtin>
+    </rtps>
+  </participant>
+</profiles>

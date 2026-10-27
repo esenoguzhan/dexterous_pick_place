@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Fast DDS profile for scene_perception_node on the Jetson: a TCP server on the port the app
+     declares in wendy.json. The robot PC connects to 169.254.211.202:7410 over the USB link;
+     WendyOS allows that port only because the app declares it. TCP only: a UDP transport in the
+     same participant breaks discovery (verified 27 Oct 2026, Fast DDS 2.6). Only one process can
+     own the port, so the ros2 CLI inside the container uses jetson_cli.xml instead. -->
+<profiles xmlns="http://www.eprosima.com">
+  <transport_descriptors>
+    <transport_descriptor>
+      <transport_id>jetson_tcp</transport_id>
+      <type>TCPv4</type>
+      <listening_ports><port>7410</port></listening_ports>
+    </transport_descriptor>
+  </transport_descriptors>
+  <participant profile_name="perception_network" is_default_profile="true">
+    <rtps>
+      <userTransports><transport_id>jetson_tcp</transport_id></userTransports>
+      <useBuiltinTransports>false</useBuiltinTransports>
+      <builtin>
+        <metatrafficUnicastLocatorList>
+          <locator><tcpv4><address>169.254.211.202</address><physical_port>7410</physical_port><port>7410</port></tcpv4></locator>
+        </metatrafficUnicastLocatorList>
+      </builtin>
+    </rtps>
+  </participant>
+</profiles>

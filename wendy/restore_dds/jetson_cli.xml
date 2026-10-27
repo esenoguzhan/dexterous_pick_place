@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Fast DDS profile for ros2 CLI commands inside the Jetson app container (service calls, topic
+     echo): a TCP client of the perception node's server. Use it with
+     FASTRTPS_DEFAULT_PROFILES_FILE=/perception_ws/jetson_cli.xml ros2 service call ... -->
+<profiles xmlns="http://www.eprosima.com">
+  <transport_descriptors>
+    <transport_descriptor><transport_id>cli_tcp</transport_id><type>TCPv4</type></transport_descriptor>
+  </transport_descriptors>
+  <participant profile_name="perception_cli" is_default_profile="true">
+    <rtps>
+      <userTransports><transport_id>cli_tcp</transport_id></userTransports>
+      <useBuiltinTransports>false</useBuiltinTransports>
+      <builtin>
+        <initialPeersList>
+          <locator><tcpv4><address>169.254.211.202</address><physical_port>7410</physical_port><port>7410</port></tcpv4></locator>
+        </initialPeersList>
+      </builtin>
+    </rtps>
+  </participant>
+</profiles>
