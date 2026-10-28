@@ -92,6 +92,24 @@ If the robot and its table are moved together under the camera, re-pose the came
 `board_shift.py after`. If only the robot base moves, the table model and the sheet area must shift
 too.
 
+### Two objects (28 October, later)
+
+The can and the bottle were displaced together, and one `restore.py run` put back both: the can 5 mm
+and the bottle 8 mm from home, with the mug, which was not moved, 13 mm off. Four changes:
+
+- IK on the URDF chain (`kin.py`, 0.03 ms per FK) instead of the safety filter's FK service. That
+  service refuses near-collision states, so the IK gave up near the table. Planning dropped from
+  40-60 s to 5-10 s per object, and far placements solve.
+- Tall objects are held 3.5 cm below their top (`grip_below_top_m`), so the arm stays higher on far
+  reaches; the bottle's home is 75 cm from the base.
+- The place pose corrects the in-hand shift (`held_shift_m`: 15 mm along the palm normal and along
+  the fingers), which was measured from the two can placements that ended 22 and 27 mm off.
+- Object boxes for the safety filter have a 1 cm margin (it was 2 cm), on top of the filter's 20 mm.
+  Parking now happens only when a home is taken.
+
+The arm stops following after a long idle (about 12 minutes without commands, with no fault shown).
+Restart the stack before a run (`stack.sh restart`).
+
 ## Next steps
 
 1. Place accuracy (22 mm): the object shifts in the hand while gripping. Measure it with the wrist

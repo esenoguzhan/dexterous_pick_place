@@ -6,7 +6,7 @@ back_m: 0.15               # pre-approach: this far behind the grasp along the f
 origin_height_m: 0.085     # hand origin above the table (the wrist camera hangs below it)
 min_origin_height_m: 0.075
 top_wrap_m: 0.02           # the object top must be this far above the hand origin
-headings_deg: [0, 30, -30, 60, -60, 90, -90]   # approach directions around radial
+headings_deg: [0, 30, -30, 60, -60, 15, -15, 45, -45, 75, -75, 90, -90]   # approach directions around radial
 open: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
 preshape: [1.16, 0.0, 0.0, 0.0, 0.0, 0.0]     # thumb turned into opposition before the approach (it jams on the lid if it swings in at the grasp)
 close: [1.16, 1.3, 1.3, 1.3, 1.3, 0.6]        # fingers and thumb pitch together
@@ -18,3 +18,5 @@ max_refine_shift_m: 0.04
 high_m: 0.20               # waypoint above the pre-approach (joint moves stay above the objects)
 place_drop_m: 0.008         # put the object down this far above where it stood
 lift_speed_m_s: 0.02        # slow lift: a fast payload change can trip the arm's collision detection
+grip_below_top_m: 0.035      # tall objects: hand origin this far below the top (the bottle: 12.5 cm instead of 8.5)
+held_shift_m: [0.015, 0.015]  # the gripped object sits this much further along the palm normal and the fingers (two can placements, 22 and 27 mm off)

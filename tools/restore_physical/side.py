@@ -63,7 +63,10 @@ def origin_height(obj_height, table, cfg):
     finger (hand x = -0.01, 1 cm above the origin) still wraps the object."""
     lo = table + cfg["min_origin_height_m"]
     hi = table + obj_height - cfg["top_wrap_m"]
-    return max(lo, min(hi, table + cfg["origin_height_m"])), hi >= lo
+    # Tall objects are held near their top: the whole arm then stays higher, which keeps the forearm
+    # off the table and over the other objects when it reaches far out.
+    want = max(cfg["origin_height_m"], obj_height - cfg["grip_below_top_m"])
+    return max(lo, min(hi, table + want)), hi >= lo
 
 
 def wrist_refine(r, prior_xy, top_z, table, radius, cfg, save=None):
@@ -233,14 +236,16 @@ class SideGrasp:
         oz = origin_height(obj["size"][2], table, cfg)[0] + cfg["place_drop_m"]
         radial = gr.radial_yaw(home_xy)
         current = self.r.arm_joints()
+        dy, dz = cfg["held_shift_m"]
         for off in cfg["headings_deg"]:
             yaw = radial + math.radians(off)
             if not all(self.camera_clear(hand_pose(home_xy, yaw, oz, radius, cfg, back=b, off=o), others)
                        for b, o in ((0.0, 0.0), (0.0, cfg["side_off_m"]), (cfg["back_m"], cfg["side_off_m"]))):
                 continue
-            T_fin = self.flange(hand_pose(home_xy, yaw, oz, radius, cfg))
+            T_fin = self.flange(hand_pose(home_xy, yaw, oz, radius, cfg, back=dz, off=dy))
             T_high = T_fin.copy()
             T_high[2, 3] += lift
+            why = "no IK for the carry pose"
             for seed in [current] + mo.load_seeds()[:6]:
                 q, ep, er = ik.solve(self.r, T_high, seed)
                 if not (ep < 2e-3 and er < 0.01):
@@ -248,24 +253,30 @@ class SideGrasp:
                 q = mo.wrap_near(q, current)
                 down = self.r.plan_pose(T_fin, start=q)
                 if not down.success:
+                    why = "descent: " + down.message[:80]
                     continue
                 q_fin = np.array(down.trajectory.points[-1].positions)
-                T_out = self.flange(hand_pose(home_xy, yaw, oz, radius, cfg, off=cfg["side_off_m"]))
+                T_out = self.flange(hand_pose(home_xy, yaw, oz, radius, cfg, back=dz, off=dy + cfg["side_off_m"]))
                 out = self.r.plan_pose(T_out, start=q_fin)
                 if not out.success:
+                    why = "off the object: " + out.message[:80]
                     continue
                 T_out_up = T_out.copy()
                 T_out_up[2, 3] += max(lift, cfg["high_m"])
-                if not self.r.plan_pose(T_out_up, start=np.array(out.trajectory.points[-1].positions)).success:
+                up = self.r.plan_pose(T_out_up, start=np.array(out.trajectory.points[-1].positions))
+                if not up.success:
+                    why = "up: " + up.message[:80]
                     continue
                 return q, yaw, oz, lift
+            log(f"place heading {off:+.0f}: {why}")
         return None
 
     def place(self, home_xy, obj, q_high, yaw, oz, lift, log=print):
         """From holding (lifted after the pick): carry, lower, release, slide out, go up."""
         cfg, r = self.cfg, self.r
         radius = obj["top_radius"]
-        T_fin = self.flange(hand_pose(home_xy, yaw, oz, radius, cfg))
+        dy, dz = cfg["held_shift_m"]
+        T_fin = self.flange(hand_pose(home_xy, yaw, oz, radius, cfg, back=dz, off=dy))
         T_high = T_fin.copy()
         T_high[2, 3] += lift
         try:
@@ -277,7 +288,7 @@ class SideGrasp:
         self.release()
         # Straight up first: the open fingers are beside the object and the open thumb above it, so
         # nothing catches; a low slide back along the fingers swept the arm towards the table.
-        T_near = self.flange(hand_pose(home_xy, yaw, oz, radius, cfg, off=cfg["side_off_m"]))
+        T_near = self.flange(hand_pose(home_xy, yaw, oz, radius, cfg, back=dz, off=dy + cfg["side_off_m"]))
         r.move_pose(T_near, speed=0.02)
         T_up = T_near.copy()
         T_up[2, 3] += max(lift, cfg["high_m"])

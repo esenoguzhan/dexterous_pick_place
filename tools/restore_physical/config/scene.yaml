@@ -3,7 +3,7 @@
 # (0.51, -0.36), (-0.07, -0.33).
 workspace:            # box the perception looks into: the white sheet, from the table up
   min: [0.0, -0.32, 0.88]     # x >= 0 keeps the teach pendant on the black table out
-  max: [0.50, 0.31, 1.25]
+  max: [0.50, 0.35, 1.25]
 table:
   object_min_height_m: 0.012
 cluster:

@@ -32,7 +32,7 @@ REFERENCE = RUN / "reference.json"
 # Arm folded up beside the base: out of the fixed camera's view of the sheet.
 OBSERVE = [-1.0654, -0.4808, 1.4492, 3.3252, 0.1777, -1.6418]
 SHEET = {"min": [0.0, -0.29], "max": [0.47, 0.28]}   # where objects may be put (parking)
-BOX_MARGIN = 0.02       # around other objects for the safety filter [m]
+BOX_MARGIN = 0.01       # around other objects, on top of the safety filter's 20 mm minimum distance [m]
 # Wrist D435 + holder keep-out, hand frame (the URDF has no collision shape for them). Measured by
 # where the can touched it on 2026-10-27: the body reaches ~5.5 cm along the fingers.
 CAMERA_BOX = np.array([[x, y, z] for x, y, z in np.array(np.meshgrid(*gr.settings()["camera_box"])).reshape(3, -1).T])
@@ -262,12 +262,13 @@ def cmd_run(args):
                 break
             objects = cur["objects"]
             homes = [(r_["position"][0], r_["position"][1], r_["top_radius"]) for r_, _ in todo]
-            progress = False
+            progress, blocked = False, []
             for r_, c in sorted(todo, key=lambda rc: mt.displacement(*rc)):
                 home = r_["position"][:2]
                 if not free_at(home, c["top_radius"], objects, ignore=(c["name"],)):
                     blockers = [o for o in objects if o["name"] != c["name"] and not free_at(home, c["top_radius"], [o])]
                     log(f"{c['name']}: home taken by {[b['name'] for b in blockers]}; later")
+                    blocked.append((r_, c))
                     continue
                 others = [o for o in objects if o["name"] != c["name"]]
                 log(f"{c['name']} -> home ({home[0]:.3f}, {home[1]:.3f})")
@@ -283,16 +284,16 @@ def cmd_run(args):
                     progress = True
                 elif outcome.startswith("failed"):
                     raise rb.MotionError(outcome)
-            if not progress and not args.dry:
-                # Every home is taken: park one blocker somewhere free and try again.
-                r_, c = todo[0]
+            if not progress and blocked and not args.dry:
+                # Every remaining home is taken: park one of the waiting objects somewhere free.
+                r_, c = blocked[0]
                 spot = parking_spot(c, objects, homes)
                 if spot is None:
                     log("stuck: no free parking spot")
                     break
                 log(f"parking {c['name']} at ({spot[0]:.3f}, {spot[1]:.3f})")
                 t.pick_and_place(c, spot, [o for o in objects if o["name"] != c["name"]], cur)
-            if args.dry:
+            if args.dry or not progress and not blocked:
                 break
         t.observe()
         final = capture(t.scene, "final")
