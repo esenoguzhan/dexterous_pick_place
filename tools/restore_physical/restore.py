@@ -21,6 +21,7 @@ from pathlib import Path
 import numpy as np
 
 import grasp as gr
+import jetson
 import match as mt
 import motion as mo
 import robot as rb
@@ -32,7 +33,7 @@ REFERENCE = RUN / "reference.json"
 # Arm folded up beside the base: out of the fixed camera's view of the sheet.
 OBSERVE = [-1.0654, -0.4808, 1.4492, 3.3252, 0.1777, -1.6418]
 SHEET = {"min": [0.0, -0.29], "max": [0.47, 0.28]}   # where objects may be put (parking)
-BOX_MARGIN = 0.01       # around other objects, on top of the safety filter's 20 mm minimum distance [m]
+BOX_MARGIN = 0.005      # around other objects, on top of the safety filter's 20 mm minimum distance [m]
 # Wrist D435 + holder keep-out, hand frame (the URDF has no collision shape for them). Measured by
 # where the can touched it on 2026-10-27: the body reaches ~5.5 cm along the fingers.
 CAMERA_BOX = np.array([[x, y, z] for x, y, z in np.array(np.meshgrid(*gr.settings()["camera_box"])).reshape(3, -1).T])
@@ -271,6 +272,11 @@ def cmd_run(args):
                     blocked.append((r_, c))
                     continue
                 others = [o for o in objects if o["name"] != c["name"]]
+                # The reference capture is the clean one (3 shots, object well inside the sheet): an
+                # object shuffled to an edge or behind another reads shorter. Plan with the taller.
+                if r_["size"][2] > c["size"][2]:
+                    c = dict(c, size=c["size"][:2] + [r_["size"][2]],
+                             top_z=c["top_z"] + r_["size"][2] - c["size"][2])
                 log(f"{c['name']} -> home ({home[0]:.3f}, {home[1]:.3f})")
                 try:
                     t.check_robot()
@@ -280,7 +286,9 @@ def cmd_run(args):
                 log(f"{c['name']}: {outcome}")
                 report[r_["name"]] = outcome
                 if outcome == "placed":
-                    c["position"] = [home[0], home[1], c["position"][2]]
+                    for o in objects:
+                        if o["name"] == c["name"]:
+                            o["position"] = [home[0], home[1], o["position"][2]]
                     progress = True
                 elif outcome.startswith("failed"):
                     raise rb.MotionError(outcome)
@@ -328,6 +336,68 @@ def cmd_move(args):
         t.close()
 
 
+def brightness():
+    """Mean grey level, and contrast (std): a covered lens gives a flat image even when the camera's
+    auto-exposure brightens it."""
+    f = jetson.capture(jetson.FIXED, frames=1)
+    g = f.color.mean(axis=2)
+    return float(g.mean()), float(g.std())
+
+
+def keepalive(t):
+    """The arm stops following after a long idle with no fault shown: a 0.1 deg wrist nudge and back,
+    which also checks that it still follows."""
+    q = t.r.arm_joints()
+    q1 = q.copy()
+    q1[5] += 0.002
+    t.r.move_joints(q1, duration=1.0, tol=0.0015)
+    t.r.move_joints(q, duration=1.0, tol=0.0015)
+
+
+def wait_for(t, covered, level, poll=0.5, keep_every=120.0):
+    """Block until the fixed camera is covered (dark) or uncovered and steady again."""
+    last_keep = time.monotonic()
+    steady = 0
+    mean0, std0 = level
+    while True:
+        mean, std = brightness()
+        dark = mean < 0.35 * mean0 or std < 0.35 * std0
+        if covered and dark:
+            return mean, std
+        if not covered:
+            steady = steady + 1 if (mean > 0.7 * mean0 and std > 0.7 * std0) else 0
+            if steady >= 4:
+                return mean, std
+        if time.monotonic() - last_keep > keep_every:
+            keepalive(t)
+            last_keep = time.monotonic()
+        time.sleep(poll)
+
+
+def cmd_demo(args):
+    """Record the order, wait until the camera is covered, then uncovered, then restore everything."""
+    t = Restorer()
+    try:
+        t.check_robot()
+        t.observe()
+        keepalive(t)
+        ref = capture(t.scene, "reference", shots=3)
+        REFERENCE.write_text(json.dumps(ref, indent=1))
+        log(f"reference: {len(ref['objects'])} objects")
+        for o in ref["objects"]:
+            log("  " + describe(o))
+        level = brightness()
+        log(f"COVER THE CAMERA NOW and shuffle the objects (image mean {level[0]:.0f}, contrast {level[1]:.0f})")
+        wait_for(t, True, level)
+        log("camera covered: shuffle the objects, then uncover the camera")
+        wait_for(t, False, level)
+        log("camera uncovered: restoring")
+        time.sleep(2.0)
+    finally:
+        t.close()
+    cmd_run(args)
+
+
 def cmd_observe(args):
     t = Restorer()
     try:
@@ -345,13 +415,18 @@ if __name__ == "__main__":
     run.add_argument("--rounds", type=int, default=3)
     run.add_argument("--tolerance", type=float, default=0.025)
     sub.add_parser("observe")
+    demo = sub.add_parser("demo")
+    demo.add_argument("--rounds", type=int, default=3)
+    demo.add_argument("--tolerance", type=float, default=0.025)
+    demo.add_argument("--dry", action="store_true")
     mv = sub.add_parser("move")
     for k in ("x", "y", "tx", "ty"):
         mv.add_argument(k, type=float)
     mv.add_argument("--dry", action="store_true")
     a = ap.parse_args()
     try:
-        {"reference": cmd_reference, "run": cmd_run, "observe": cmd_observe, "move": cmd_move}[a.cmd](a)
+        {"reference": cmd_reference, "run": cmd_run, "observe": cmd_observe, "move": cmd_move,
+         "demo": cmd_demo}[a.cmd](a)
     except BaseException:
         import traceback
         traceback.print_exc()

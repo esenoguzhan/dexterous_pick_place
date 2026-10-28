@@ -101,7 +101,7 @@ class SideGrasp:
     def flange(self, T_hand):
         return gr.flange_pose(T_hand, self.T_flange_hand)
 
-    def camera_clear(self, T_hand, others, margin=0.015):
+    def camera_clear(self, T_hand, others, margin=0.005):
         """The wrist camera box (grasp.yaml) at this hand pose must stay out of the other objects."""
         box = np.array(np.meshgrid(*gr.settings()["camera_box"])).reshape(3, -1).T
         pts = box @ T_hand[:3, :3].T + T_hand[:3, 3]
