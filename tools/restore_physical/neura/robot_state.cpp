@@ -21,6 +21,12 @@ int main(int argc, char** argv)
             << " collision/b6=" << bit(6) << " real/b7=" << bit(7) << " interface=" << ((s >> 8) & 0xff)
             << " neura_cpp_writer/b16=" << bit(16) << std::endl;
   std::cout << "error_code " << robot.getErrorCode() << " scaling " << robot.getTrajectoryScalingFactor() << std::endl;
+  std::vector<double> jl, cl;
+  std::cout << "joint_limits(" << robot.getCurrentJointLimits(jl) << ")";
+  for (double v : jl) std::cout << " " << v;
+  std::cout << std::endl << "cartesian_limits(" << robot.getCurrentCartesianLimits(cl) << ")";
+  for (double v : cl) std::cout << " " << v;
+  std::cout << std::endl;
   if (reset)
   {
     std::cout << "resetErrors -> " << robot.resetErrors() << std::endl;

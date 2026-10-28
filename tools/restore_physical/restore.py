@@ -33,7 +33,8 @@ REFERENCE = RUN / "reference.json"
 # Arm folded up beside the base: out of the fixed camera's view of the sheet.
 OBSERVE = [-1.0654, -0.4808, 1.4492, 3.3252, 0.1777, -1.6418]
 SHEET = {"min": [0.0, -0.29], "max": [0.47, 0.28]}   # where objects may be put (parking)
-BOX_MARGIN = 0.005      # around other objects, on top of the safety filter's 20 mm minimum distance [m]
+BOX_MARGIN = 0.0        # the square box around a round object is already ~1.7 cm too big diagonally;
+                        # positions are fresh after every place; the safety filter keeps 20 mm
 # Wrist D435 + holder keep-out, hand frame (the URDF has no collision shape for them). Measured by
 # where the can touched it on 2026-10-27: the body reaches ~5.5 cm along the fingers.
 CAMERA_BOX = np.array([[x, y, z] for x, y, z in np.array(np.meshgrid(*gr.settings()["camera_box"])).reshape(3, -1).T])
@@ -100,6 +101,16 @@ def object_box(o, margin=BOX_MARGIN):
     bottom = o["top_z"] - h
     return (o.get("name", o["id"]), [o["position"][0], o["position"][1], bottom + (h + margin) / 2.0],
             [2 * r, 2 * r, h + margin])
+
+
+def table_box(scene_result):
+    """The real tabletop as a thin box: the URDF pedestal's top is ~2 cm below the measured sheet, so
+    a path 20 mm above the model's table could still touch the real one."""
+    lo, hi = sc.settings()["workspace"]["min"], sc.settings()["workspace"]["max"]
+    x0, x1, y0, y1 = lo[0] - 0.12, hi[0] + 0.05, lo[1] - 0.06, hi[1] + 0.06
+    top = max(table_z(scene_result, (x0, y0)), table_z(scene_result, (x1, y1)),
+              table_z(scene_result, (x0, y1)), table_z(scene_result, (x1, y0)))
+    return ("table", [(x0 + x1) / 2, (y0 + y1) / 2, top - 0.015], [x1 - x0, y1 - y0, 0.03])
 
 
 def camera_clear(T_hand, table, others):
@@ -177,7 +188,7 @@ class Restorer:
         table_here = table_z(scene_result, obj["position"])
         table_home = table_z(scene_result, home_xy)
         lift = max(self.side.cfg["lift_m"], max([o["size"][2] for o in others] + [0.0]) + 0.04)
-        self.r.set_scene_boxes([object_box(o) for o in others])
+        self.r.set_scene_boxes([table_box(scene_result)] + [object_box(o) for o in others])
         pick = self.side.plan(obj, table_here, others, log=log)
         if pick is None:
             return "refused: no collision-free side approach"
@@ -290,6 +301,8 @@ def cmd_run(args):
                         if o["name"] == c["name"]:
                             o["position"] = [home[0], home[1], o["position"][2]]
                     progress = True
+                    # Placing is accurate to 5-20 mm: perceive again before planning around it.
+                    break
                 elif outcome.startswith("failed"):
                     raise rb.MotionError(outcome)
             if not progress and blocked and not args.dry:
@@ -412,11 +425,11 @@ if __name__ == "__main__":
     sub.add_parser("reference")
     run = sub.add_parser("run")
     run.add_argument("--dry", action="store_true")
-    run.add_argument("--rounds", type=int, default=3)
+    run.add_argument("--rounds", type=int, default=8)
     run.add_argument("--tolerance", type=float, default=0.025)
     sub.add_parser("observe")
     demo = sub.add_parser("demo")
-    demo.add_argument("--rounds", type=int, default=3)
+    demo.add_argument("--rounds", type=int, default=8)
     demo.add_argument("--tolerance", type=float, default=0.025)
     demo.add_argument("--dry", action="store_true")
     mv = sub.add_parser("move")

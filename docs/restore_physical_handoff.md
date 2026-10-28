@@ -120,6 +120,28 @@ Restart the stack before a run (`stack.sh restart`).
    of the wrist camera). Swap it for a taller matte object, or add a top grasp for short objects.
 4. Planning time: 40 to 60 s per object (finite-difference IK over the FK service).
 
+## Running the demo
+
+On aras PC: `~/restore_main/tools/restore_physical/demo.sh`. It checks the arm, hand, cameras and
+arm state, restarts the controllers, tests that the arm keeps up, then records the order and waits.
+When it prints `COVER THE CAMERA NOW`, cover the fixed camera, shuffle, uncover and step back; it then
+puts everything back and prints the distance of each object from home.
+`demo.sh restore` skips the waiting and restores to the order recorded last time.
+
+Things that went wrong on 28 October, and their cure (the script stops and says which):
+
+- **After a collision the arm crawls at about 3%** (trajectory scaling 0.028), even after a reboot. On
+  the pendant switch to manual mode and back to Automatic (External on).
+- **After a reboot the arm is in internal mode** and ignores our commands. Switch to External mode on
+  the pendant.
+- **The arm stops following after about 12 idle minutes.** The script restarts the controllers
+  first, and the demo nudges the wrist every 2 minutes while it waits.
+- **The Jetson hangs or its USB network does not come up.** Power-cycle it, twice if needed. The wrist
+  camera falls back to USB 2 and then fails to reopen; re-seat its plug.
+- **Short objects (mug 75 mm, tape roll 40 mm) cannot be grasped** by the side grasp (the wrist camera
+  hangs below the hand). They are reported as not restored, and they are obstacles.
+- **The safety filter's table was 2 cm below the real sheet.** The measured tabletop is now a box.
+
 ## Tests
 
 Before the mount became an argument, the description-dependent suites ran on aras PC (373 tests):
