@@ -69,33 +69,38 @@ to external mode.
    corrects the axis: on the can it moved it by 27 mm and measured the radius correctly (38 mm, where the
    fixed camera said 40 to 48 mm).
 
-## Where it stopped
+## Status on 28 October: the restore loop works on the robot
 
-Side grasp attempts on the red can (about 0.26, 0.15):
+`restore.py reference`, then the red can moved 16 cm by hand, then `restore.py run`. The run
+recognised the moved can (the mug and the bottle 1 to 4 mm off, so left alone) and approached it from
+the side. The wrist depth corrected its axis by 11 mm, and the fingers and thumb closed on it (0.62
+to 0.68 rad). The arm lifted it 20 cm, carried it over the others and put it down at home. The final
+check found the can 22 mm from home (tolerance 25 mm) and the others 1 to 2 mm off.
 
-- With the thumb closing too (yaw 1.16, pitch 0.6), all four fingers wrapped the can and stopped at
-  about 0.9 rad. The thumb jammed on the lid, and the arm stopped with a collision flag as soon as the
-  lift started.
-- With the thumb left open, the hand went to the same corrected position and the fingers closed fully
-  without touching the can.
+What made the grasp work, after 27 October:
 
-So the can probably sits a little farther from the palm, or further back along the fingers, than
-planned. The thumb sweep had pushed it into the fingers in the first attempt.
+- The thumb is turned into opposition (yaw 1.16) before the approach (your suggestion). Swinging it
+  in at the grasp jammed it on the lid.
+- The palm gap is 12 mm (22 mm missed); fingers and thumb pitch close together.
+- After the wrist correction the slide-in is checked again, and the approach is re-planned for the
+  corrected position when it is refused (the forearm passed 19 mm from the mug's box).
+- After placing, the hand goes straight up. The old low slide back along the fingers headed for the
+  table and was e-stopped.
 
-## Next steps (in this order)
+If the robot and its table are moved together under the camera, re-pose the camera from the board:
+`board_shift.py before` was saved on 28 October with the board on the table, so move them, then run
+`board_shift.py after`. If only the robot base moves, the table model and the sheet area must shift
+too.
 
-1. Side grasp: reduce `palm_gap_m` (0.022 to about 0.008) in `config/side.yaml` and check that the
-   fingers stop on the can (below 1.2 rad) with the thumb open. If that still misses, close the thumb by
-   pitch only, or by a small yaw (0.4), after the fingers, as a stop rather than a full sweep.
-2. Lift test with the can held: does the robot's collision detection trip from the payload? If it does,
-   lift more slowly.
-3. `restore.py move` end to end (pick, carry above the others, place, slide out), then
-   `restore.py reference`, move one object, then `restore.py run --dry` and `restore.py run`.
-4. Wrist camera: re-seat or flip the USB-C plug, or use another cable or port, until the app shows
-   `usb 3.2`. On USB 2.1 its colour and depth stream fails to reopen ("Couldn't resolve requests").
-5. Objects: the side grasp needs objects at least 10.5 cm tall (the hand origin sits 8.5 cm above the
-   table because the wrist camera hangs below it) and 55 to 80 mm wide. The red can and the yellow
-   bottle (standing) are fine. The steel mug is too short and too shiny.
+## Next steps
+
+1. Place accuracy (22 mm): the object shifts in the hand while gripping. Measure it with the wrist
+   camera after the lift, or with the fixed camera before the release, and correct the place pose.
+2. Several moved objects at once, homes that are taken (the parking spot logic is untested), and the
+   bottle (tall, so it should work like the can).
+3. The mug is too short for the side grasp (85 mm; the hand origin is 8.5 cm above the table because
+   of the wrist camera). Swap it for a taller matte object, or add a top grasp for short objects.
+4. Planning time: 40 to 60 s per object (finite-difference IK over the FK service).
 
 ## Tests
 

@@ -17,6 +17,7 @@ from __future__ import annotations
 
 import argparse
 import math
+import os
 from pathlib import Path
 
 import cv2
@@ -168,6 +169,7 @@ class SideGrasp:
         xy = np.array(obj["position"][:2])
         r.hand(cfg["open"], 1.0)
         r.move_joints(q_high, max_speed=0.3)
+        r.hand(cfg["preshape"], 1.5)
         r.move_pose(self.flange(hand_pose(xy, yaw, oz, radius, cfg, back=cfg["back_m"], off=cfg["side_off_m"])), speed=0.05)
         self.refined = None
         if refine:
@@ -189,9 +191,18 @@ class SideGrasp:
         T_pre = self.flange(hand_pose(xy, yaw, oz, radius, cfg, back=cfg["back_m"], off=cfg["side_off_m"]))
         T_near = self.flange(hand_pose(xy, yaw, oz, radius, cfg, off=cfg["side_off_m"]))
         T_fin = self.flange(hand_pose(xy, yaw, oz, radius, cfg))
-        r.move_pose(T_pre, speed=0.03)
-        r.move_pose(T_near, speed=0.03)
-        r.move_pose(T_fin, speed=0.02)
+        if self.refined is not None:
+            # The correction moved the lines that were checked at planning: check them again from here.
+            q = r.arm_joints()
+            for T in (T_pre, T_near, T_fin):
+                plan = r.plan_pose(T, start=q)
+                if not plan.success:
+                    log(f"corrected approach refused ({plan.message[:90]}); re-planning")
+                    return "replan"
+                q = np.array(plan.trajectory.points[-1].positions)
+        for label, T, v in (("pre-approach", T_pre, 0.03), ("slide in", T_near, 0.03), ("onto the object", T_fin, 0.02)):
+            log(f"{label}")
+            r.move_pose(T, speed=v)
         if not close:
             return "at grasp pose"
         hj = r.hand(cfg["close"], cfg["close_s"])
@@ -199,12 +210,13 @@ class SideGrasp:
         fingers = hj[1:5]
         if np.min(fingers) > cfg["missed_rad"]:
             self.release()
+            r.hand(cfg["preshape"], 1.0)
             r.move_pose(T_near, speed=0.03)
             r.move_pose(T_pre, speed=0.04)
             return "missed: the fingers closed on nothing"
         T_up = T_fin.copy()
         T_up[2, 3] += lift or cfg["lift_m"]
-        r.move_pose(T_up, speed=0.04)
+        r.move_pose(T_up, speed=cfg["lift_speed_m_s"])
         hj = r.hand_joints()
         if np.min(hj[1:5]) > cfg["missed_rad"]:
             return "dropped while lifting"
@@ -238,12 +250,12 @@ class SideGrasp:
                 if not down.success:
                     continue
                 q_fin = np.array(down.trajectory.points[-1].positions)
-                T_out = self.flange(hand_pose(home_xy, yaw, oz, radius, cfg, back=cfg["back_m"], off=cfg["side_off_m"]))
+                T_out = self.flange(hand_pose(home_xy, yaw, oz, radius, cfg, off=cfg["side_off_m"]))
                 out = self.r.plan_pose(T_out, start=q_fin)
                 if not out.success:
                     continue
                 T_out_up = T_out.copy()
-                T_out_up[2, 3] += cfg["high_m"]
+                T_out_up[2, 3] += max(lift, cfg["high_m"])
                 if not self.r.plan_pose(T_out_up, start=np.array(out.trajectory.points[-1].positions)).success:
                     continue
                 return q, yaw, oz, lift
@@ -263,13 +275,13 @@ class SideGrasp:
             r.move_joints(q_high, max_speed=0.25)
         r.move_pose(T_fin, speed=0.03)
         self.release()
+        # Straight up first: the open fingers are beside the object and the open thumb above it, so
+        # nothing catches; a low slide back along the fingers swept the arm towards the table.
         T_near = self.flange(hand_pose(home_xy, yaw, oz, radius, cfg, off=cfg["side_off_m"]))
-        T_out = self.flange(hand_pose(home_xy, yaw, oz, radius, cfg, back=cfg["back_m"], off=cfg["side_off_m"]))
         r.move_pose(T_near, speed=0.02)
-        r.move_pose(T_out, speed=0.04)
-        T_up = T_out.copy()
-        T_up[2, 3] += cfg["high_m"]
-        r.move_pose(T_up, speed=0.06)
+        T_up = T_near.copy()
+        T_up[2, 3] += max(lift, cfg["high_m"])
+        r.move_pose(T_up, speed=0.04)
         return "placed"
 
     def release(self):
@@ -282,15 +294,44 @@ class SideGrasp:
 if __name__ == "__main__":
     import restore as rs
     ap = argparse.ArgumentParser()
-    ap.add_argument("cmd", choices=["test"])
-    ap.add_argument("x", type=float)
-    ap.add_argument("y", type=float)
+    ap.add_argument("cmd", choices=["test", "grip", "putdown"])
+    ap.add_argument("x", type=float, nargs="?", default=0.0)
+    ap.add_argument("y", type=float, nargs="?", default=0.0)
+    ap.add_argument("--lift", type=float, default=0.03)
     ap.add_argument("--go", action="store_true")
     ap.add_argument("--close", action="store_true")
     ap.add_argument("--keep", action="store_true")
     ap.add_argument("--no-refine", action="store_true")
     a = ap.parse_args()
     t = rs.Restorer()
+    if a.cmd in ("grip", "putdown"):
+        # Step by step from where the hand is: grip = close and lift `--lift`; putdown = lower by
+        # `--lift`, release, slide back out along the fingers and away from the palm, go up.
+        sg, r = t.side, t.r
+        try:
+            T = r.frame_pose("lara5_flange", "world")
+            if a.cmd == "grip":
+                hj = r.hand(sg.cfg["close"], sg.cfg["close_s"])
+                print("closed at", np.round(hj, 2).tolist())
+                T[2, 3] += a.lift
+                r.move_pose(T, speed=sg.cfg["lift_speed_m_s"])
+                print("lifted; hand", np.round(r.hand_joints(), 2).tolist())
+            else:
+                T[2, 3] -= a.lift
+                r.move_pose(T, speed=sg.cfg["lift_speed_m_s"])
+                sg.release()
+                H = r.frame_pose("right_hand_base_link", "world")
+                out = H.copy()
+                out[:3, 3] -= sg.cfg["side_off_m"] * H[:3, 1]
+                r.move_pose(sg.flange(out), speed=0.02)
+                out[:3, 3] -= sg.cfg["back_m"] * H[:3, 2]
+                r.move_pose(sg.flange(out), speed=0.04)
+                out[2, 3] += sg.cfg["high_m"]
+                r.move_pose(sg.flange(out), speed=0.06)
+                print("released and clear")
+        finally:
+            t.close()
+        raise SystemExit
     try:
         t.observe()
         cur = rs.capture(t.scene, "side")
@@ -307,5 +348,9 @@ if __name__ == "__main__":
               "origin height above table", round(plan[2] - table, 3))
         if a.go:
             print(sg.execute(obj, table, *plan, close=a.close, keep=a.keep, refine=not a.no_refine))
+    except BaseException:
+        import traceback
+        traceback.print_exc()
     finally:
         t.close()
+        os._exit(0)  # rclpy's executor thread sometimes keeps the process alive

@@ -219,7 +219,7 @@ class Robot(Node):
         goal.target.header.frame_id = frame
         goal.target.pose = matrix_to_pose(T_world_flange)
         goal.duration = duration
-        result = self._run_action(self.pose_client, goal, 120.0 + duration, "cartesian move")
+        result = self._run_action(self.pose_client, goal, 30.0 + 3.0 * duration, "cartesian move")
         if not result.result.success:
             raise MotionError(f"cartesian move: {result.result.message}")
         time.sleep(0.3)

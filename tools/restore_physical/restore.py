@@ -13,6 +13,8 @@ from __future__ import annotations
 import argparse
 import json
 import math
+import os
+import sys
 import time
 from pathlib import Path
 
@@ -186,6 +188,15 @@ class Restorer:
         if self.dry:
             return "dry run"
         outcome = self.side.execute(obj, table_here, *pick, close=True, keep=True, log=log, lift=lift)
+        if outcome == "replan":
+            xy, radius = self.side.refined
+            obj = dict(obj, position=[float(xy[0]), float(xy[1]), obj["position"][2]], top_radius=float(radius))
+            pick = self.side.plan(obj, table_here, others, log=log)
+            if pick is None:
+                return "refused: no collision-free side approach to the corrected position"
+            log(f"{name}: new approach heading {math.degrees(pick[1] - gr.radial_yaw(obj['position'])):+.0f}")
+            outcome = self.side.execute(obj, table_here, *pick, close=True, keep=True, log=log, lift=lift,
+                                        refine=False)
         if outcome != "holding":
             return outcome
         return self.side.place(home_xy, obj, *place, log=log)
@@ -338,4 +349,12 @@ if __name__ == "__main__":
         mv.add_argument(k, type=float)
     mv.add_argument("--dry", action="store_true")
     a = ap.parse_args()
-    {"reference": cmd_reference, "run": cmd_run, "observe": cmd_observe, "move": cmd_move}[a.cmd](a)
+    try:
+        {"reference": cmd_reference, "run": cmd_run, "observe": cmd_observe, "move": cmd_move}[a.cmd](a)
+    except BaseException:
+        import traceback
+        traceback.print_exc()
+    finally:
+        # rclpy's executor thread sometimes keeps the process alive after shutdown.
+        sys.stdout.flush()
+        os._exit(0)
