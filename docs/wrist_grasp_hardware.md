@@ -217,7 +217,7 @@ clearance.
 1. Stop jogging and hand guiding, release any enabling or guiding button, and
    leave the manual motion mode.
 2. Make sure no UI program is running or paused.
-3. Confirm the section 5.2 GUI settings in [`src/README.md`](../src/README.md)
+3. Confirm the section 5.2 GUI settings in `src/README.md`
    still apply. Re-apply them after any e-stop release.
 4. Announce the handoff. Nobody touches the robot UI until ROS reports a terminal
    state. One operator stays at the e-stop.

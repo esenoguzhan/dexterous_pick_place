@@ -17,3 +17,6 @@ log/
 # Local perception test bench: virtualenv and downloaded model weights (the Stagefile fetches them)
 wendy/perception_test/.venv/
 wendy/perception_test/models/
+
+# Upstream RealSense ROS driver, cloned locally at its pinned commit (see docs/camera_workspace.md)
+ws/src/realsense-ros/

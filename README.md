@@ -1,368 +1,159 @@
-# Neurahackathon
+# Dexterous Pick & Place: a robot arm that puts things back
 
-This repository contains the LARA5 robot stack and a two-camera RealSense workspace:
+[![tests](https://github.com/esenoguzhan/dexterous_pick_place/actions/workflows/tests.yml/badge.svg)](https://github.com/esenoguzhan/dexterous_pick_place/actions/workflows/tests.yml)
 
-- [`src/`](src/README.md): LARA5 arm, Inspire hand, robot descriptions, and MuJoCo
-  simulation. Follow its README for the supported **Ubuntu 22.04 / ROS 2 Humble**
-  environment and robot build instructions.
-- [`ws/`](ws/src/neurahackathon_cameras): two D435 cameras with color, depth, and
-  left/right infrared streams, built for **ROS 2 Humble** in the Docker setup below.
-- [Single-command grasp simulation](docs/grasp_bringup_simulation.md):
-  one launch starts MuJoCo, cameras, controllers, approach, grasp, verified lift and RViz.
-- [Manual approach → grasp → lift workflow](docs/grasp_bringup_simulation.md):
-  ordered terminal commands for positioning, contact-limited closure and a verified vertical test lift.
-- [Object-pose approach task](src/robot/lara5_object_approach/README.md):
-  independent `/arm/approach/target` command, manually supplied pose, two-phase
-  positioning with 30 cm pregrasp clearance and measured completion checks.
-- [Grasp frame and simulation UI test](docs/grasp_frame_simulation.md):
-  static open-hand preview, calculated flange target and ordered Docker/ROS commands.
-- [Two-phase trajectory planning UI test](docs/trajectory_planning_simulation.md):
-  30 cm aligned pregrasp, native planning/checks and RViz paths; planning only.
-- [Open-hand positioning execution UI test](docs/positioning_execution_simulation.md):
-  ordered Docker/ROS commands for actual MuJoCo movement and measured phase verification.
-- [Independent grabbing motion](src/robot/lara5_grasp/README.md):
-  `/arm/grasp/target` performs measured, contact-limited closure with separate
-  completion/contact evidence and no arm motion.
-- [Independent verified object lift](src/robot/lara5_object_lift/README.md):
-  explicit `/arm/lift/target`, a 4 cm test lift, and a verified total 10 cm raise.
-- [Contact-limited closure UI test](docs/contact_closure_simulation.md):
-  staged finger motion, simulated normal-force feedback and ordered Docker/ROS commands.
-- [Camera-guided trajectory simulation](src/robot/lara5_sim_approach/README.md):
-  simulated external RGB-D feedback, NEURA IK waypoint routing and final
-  approach, with execution through the current arm safety filter.
-- [Simulated external and wrist D435 cameras](src/robot/lara5_mujoco_sim/README.md):
-  CAD holder, nominal photo-based wrist mount, RGB-D topics, optical TF and EGL camera rendering.
-- [Camera holder CAD and mounting photo](docs/wrist_camera_holder.md):
-  left/right screw pair, mechanical datums, nominal optical pose and current depth-range limit.
-- [Perception accuracy in simulation](docs/perception_simulation_eval.md):
-  perception on the MuJoCo cameras, scored against the simulator's true object poses.
-- [Next steps for better grasping](docs/grasping_next_steps.md):
-  positioning, contact-limited closure and verified lifting are implemented;
-  repeatability across manual poses is the next review step.
-- [Real robot wrist-only approach and grasp](docs/wrist_grasp_hardware.md):
-  manually position the open hand, preview wrist RGB-D corrections, execute final
-  approach and separately trigger physical force-limited closure. Includes Humble
-  Docker commands, required calibration and hardware validation limits.
-- [Camera-only close-range depth check](docs/wrist_depth_check.md):
-  visual ROI, separate start/grasp recordings, raw depth stability and comparison
-  with the approach cutoff; no robot backend or motion commands.
-- [Wrist object selection and grasp reference](docs/wrist_object_selection.md):
-  color-independent depth selection, adjustable hand exclusions, optional table
-  removal and a measured surface-to-grasp offset in a camera-only preview.
-- [Wrist camera alignment](docs/wrist_camera_alignment.md):
-  shared CAD/URDF mounting chain, driver depth-to-color geometry, and a read-only
-  overlay of the grasp reference and proposed correction.
-- [Tracked wrist approach](docs/wrist_approach_tracking.md):
-  fixed surface/reference association across bounded corrections and completion
-  evidence from several distinct camera measurements.
-- [Exclusive approach-to-grasp handoff](docs/wrist_closure_handoff.md):
-  one closure consumes each verified approach and blocks arm commands until it
-  ends. Includes the explicit robot-UI-to-ROS handoff procedure.
-- [Physical closure validation](docs/hand_force_check.md):
-  read-only force recordings (open, free-air motion, loaded fingertips) to choose
-  raw thresholds and limits; stability from distinct new hand measurements.
-- [Simulation pick and place](src/robot/lara5_sim_approach/PICK_AND_PLACE.md):
-  obstacle-free scene, wrist refinement, contact-verified grasp, transfer and release.
+![The LARA5 arm side-grasps a displaced bottle, carries it over the can and puts it back down (4x speed)](docs/media/bottle_restore_fixed_camera.webp)
 
-Use the Docker setup below to run both workspaces in **Ubuntu 22.04 / ROS 2
-Humble**. The host needs Linux Docker Engine and Docker Compose; **neither ROS 2
-nor Jazzy needs to be installed on the host**. Optional native Jazzy instructions
-are provided later for running only the cameras outside Docker.
+Someone shuffles the objects on a table while the robot's camera is covered. When the camera is
+uncovered, the robot compares the table with a reference snapshot, works out which objects moved,
+and puts each one back: it approaches from the side with a five-finger Inspire hand, corrects
+its approach with a wrist depth camera, lifts the object over the others, places it and checks the
+result.
 
-Robot meshes and the NEURA dependency archive use Git LFS. Install Git LFS on a
-new machine, run `git lfs install`, and run `git lfs pull` after cloning this branch
-to download those assets. The vendored RealSense models remain ordinary Git files.
+We built it as a team of four during a robotics hackathon in October 2026, on a NEURA Robotics
+LARA5 arm with an Inspire RH56 dexterous hand, two Intel RealSense D435 cameras and an NVIDIA Jetson.
 
-## Manual approach, grasp and lift in simulation
+## Results on the real robot
 
-Use the [complete two-terminal Docker/UI commands](docs/grasp_bringup_simulation.md).
-The updated image is `lara5_hackathon:grasp-lift`. Inside its sourced Humble shell,
-start every developed task with one command:
+| Run | Result |
+|---|---|
+| One can moved 16 cm by hand | Recognised, side-grasped, carried over the other objects, placed **22 mm** from its home (tolerance 25 mm). The objects that had not moved were left alone. |
+| Can and bottle moved together | Both put back in one run, **5 mm** and **8 mm** from home. |
+| Planning time | **5–10 s** per object after replacing finite-difference IK through a ROS service with IK on the URDF chain (40–60 s before). |
+
+## Videos
+
+Real runs on the robot. The previews are sped up; each is one uncut camera shot.
+
+**The shuffle** (2× speed). A teammate moves the bottle, the can and the mug from where they
+started.
+
+<img src="docs/media/shuffle.webp" width="560" alt="A hand moves the bottle, the can and the mug to new places on the table (2x speed)">
+
+**Bottle, the whole restore** (4× speed, at the top of this page). The same run, right after the
+shuffle: approach, side grasp, lift, carry over the other objects, place and release. The
+recording stops after the bottle, and the mug is too short for the side grasp (see [Limits](#limits)).
+
+<!-- Full video: in GitHub's editor, drag web_videos/bottle_restore_fixed_camera_720p.mp4 onto this line. -->
+
+**Red can** (4× speed). The arm reaches past the calibration board, grasps the can from the side,
+carries it and puts it down at its place.
+
+<img src="docs/media/can_restore.webp" width="360" alt="The arm grasps a red can from the side, carries it over the calibration board and puts it down (4x speed)">
+
+<!-- Full video: drag web_videos/can_restore_portrait_720p.mp4 onto this line. -->
+
+A close-up of the grasp is under [How it works](#how-it-works).
+
+## Limits
+
+What did not work, or only partly:
+
+- **Short objects** (a 75 mm mug, a 40 mm tape roll) cannot be side-grasped, because the wrist camera
+  hangs below the hand. They are reported as not restored and treated as obstacles.
+- **Robustness of the setup**: three computers on a phone hotspot, a Jetson whose USB network
+  sometimes did not come up, and an arm that stops following after about 12 idle minutes. The demo
+  script checks for each of these and says what to do.
+- **The SAM 2.1 + DINOv2 perception** ran on the Jetson test bench and in simulation. The real-robot
+  loop used a simpler, more reliable pipeline (white sheet, table refit, cylinder-axis fit).
+
+## How it works
+
+```mermaid
+flowchart LR
+    FC["Fixed D435"] --> J["Jetson capture app (HTTP)"]
+    WC["Wrist D435"] --> J
+    J --> P["Scene perception: table plane, object segmentation, cylinder fit"]
+    P --> M["Match to the reference snapshot"]
+    M --> T["Restore planner: order, homes, side-grasp poses, IK"]
+    T --> S["Safety filter with scene boxes"]
+    S --> A["LARA5 arm + Inspire hand"]
+    J -. "wrist depth correction" .-> T
+```
+
+1. **Reference.** The fixed camera sees the table and every object on it (pose, size, colour) and
+   stores that as the reference.
+2. **Change detection.** After the scene is shuffled, a new snapshot is matched to the reference
+   by colour histogram, height and radius. Objects that moved more than the tolerance are queued.
+3. **Grasp planning.** For each moved object, a side grasp is planned: the hand heading, a pregrasp
+   clear of the other objects (which are boxes in the safety filter), and numeric IK.
+4. **Wrist correction.** Near the object, the wrist camera measures the object's axis. The approach
+   is corrected and re-checked, and re-planned if the corrected approach is refused.
+5. **Grasp, carry, place.** The thumb is turned into opposition first. Then the fingers and thumb
+   close together, the object is lifted 20 cm, carried and placed. The place pose is corrected for
+   the object's measured shift in the hand. The scene is perceived again after every place.
+
+Step 5 up close (2× speed): the open hand reaches the bottle from the side with the thumb already
+in opposition, the fingers and thumb close around it, and the arm lifts it.
+
+![Close-up: the Inspire hand closes around the bottle and the arm lifts it (2x speed)](docs/media/bottle_grasp_closeup.webp)
+
+<!-- Full video: drag web_videos/bottle_restore_720p.mp4 onto this line. -->
+
+The same task also exists as a full ROS 2 stack (`src/restore`): a scene-perception node with a
+`CaptureScene` service and a `Restore` action server that diffs snapshots, orders the moves and
+drives the arm. That stack has been tested in MuJoCo and against a fake robot.
+
+## Repository layout
+
+| Path | What it is |
+|---|---|
+| [`tools/restore_physical`](tools/restore_physical) | The code that ran on the real arm in the video: perception client, object matching, side grasp, IK, `restore.py` and the one-command `demo.sh` |
+| [`src/restore/restore_perception`](src/restore/restore_perception) | Multi-camera RGB-D scene perception without ROS in `core/` (segmentation, fusion, geometry, gallery labels with DINOv2), plus a ROS 2 node and offline and simulation evaluations |
+| [`src/restore/restore_task`](src/restore/restore_task) | The `Restore` action: snapshot diff, move ordering, grasp poses and hand checks, plus the ROS 2 orchestrator node |
+| [`src/restore/restore_interfaces`](src/restore/restore_interfaces) | `SceneSnapshot`, `ObjectState`, `CaptureScene`, `RegisterObject`, `Restore` |
+| [`src/robot/lara5_object_approach`](src/robot/lara5_object_approach) | Two-phase approach to an object pose, with a 30 cm aligned pregrasp and measured completion checks |
+| [`src/robot/lara5_grasp`](src/robot/lara5_grasp) | Contact-limited hand closure with force evidence |
+| [`src/robot/lara5_object_lift`](src/robot/lara5_object_lift) | Verified lift: a 4 cm test, then 10 cm if the object follows |
+| [`src/robot/lara5_wrist_grasp`](src/robot/lara5_wrist_grasp) | Wrist-camera object selection, tracked approach and an exclusive approach-to-closure handoff |
+| [`src/robot/lara5_sim_approach`](src/robot/lara5_sim_approach) | Camera-guided approach and pick-and-place in MuJoCo |
+| [`src/robot/lara5_grasp_bringup`](src/robot/lara5_grasp_bringup) | One launch for simulated approach, grasp and lift |
+| `src/robot/lara5_mujoco_sim`, `lara5_inspire_hand_description`, `lara5_safety_msgs`, … | Our additions to NEURA's packages: simulated D435s, a CAD wrist-camera holder, grasp feedback, ground truth and services. The base packages are not included. |
+| [`wendy/perception_test`](wendy/perception_test) | Jetson test bench: SAM 2.1 segmentation, DINOv2 embeddings, camera-to-robot calibration, served over HTTP |
+| [`ws/src/neurahackathon_cameras`](ws/src/neurahackathon_cameras) | Dual-D435 ROS 2 launch and stream settings |
+| [`docs/`](docs) | The design notes and test reports we wrote during the hackathon |
+
+Good starting points in `docs/`:
+[perception architecture](docs/perception_architecture.md),
+[task architecture](docs/task_architecture.md),
+[deployment across arm, PC and Jetson](docs/deployment.md),
+[where the real-robot work ended](docs/restore_physical_handoff.md),
+[perception scored against MuJoCo ground truth](docs/perception_simulation_eval.md) and
+[the CAD wrist-camera holder](docs/wrist_camera_holder.md).
+
+## What is not in this repository
+
+NEURA Robotics' source code is not included in this repository. Our ROS 2 packages build on
+NEURA's LARA5 workspace, so they do not build from this repository alone, and many commands in
+`docs/` use an image (`lara5_hackathon`) built from it.
+
+The RealSense ROS driver is fetched from upstream at a pinned commit instead of being vendored
+(see [`docs/camera_workspace.md`](docs/camera_workspace.md)).
+
+## Running the tests
+
+The perception, task and calibration logic is plain Python and is tested without ROS or hardware:
 
 ```bash
-ros2 launch lara5_grasp_bringup simulation.launch.py
+pip install numpy scipy pyyaml "opencv-python-headless==4.10.0.84" pillow pytest
+pytest src/restore/restore_perception/test
+pytest src/restore/restore_task/test        # the fake-robot node test needs rclpy and is skipped without it
+pytest wendy/perception_test/tests
 ```
 
-In the second terminal, command the stages in order:
+## What we would do differently
 
-1. Supply the green-cylinder centre pose to `/arm/approach/target`; wait for
-   `/arm/approach/status` to report verified positioning.
-2. Trigger `/arm/grasp/target`; wait for successful contact-limited closure.
-3. Trigger the new lift and monitor its measured result:
+- **Test on the real robot from day one.** Our simulation had a joint offset, the replacement hand
+  mounted differently and no camera table. Each of these cost time once on the real arm.
+- **Keep one source of truth.** Configuration and code changes made directly on the robot PC were
+  hard to track. Masks left over from earlier runs hid objects.
+- **Make the infrastructure boring.** Fewer computers, wired links and a health check before every
+  run. Our `demo.sh` ended up doing exactly that.
 
-```bash
-ros2 topic pub --once --wait-matching-subscriptions 1 /arm/lift/target std_msgs/msg/Empty '{}'
-ros2 topic echo /arm/lift/status --qos-reliability reliable --qos-durability transient_local --full-length
-```
+## Acknowledgements
 
-The lift first tests 4 cm, then completes a total 10 cm only if the object follows
-and leaves table support. It keeps the hand closed and verifies actual object
-rise; no MuJoCo weld, teleportation, transfer or automatic reopening is used.
-Startup never triggers motion, and all three command topics stay independently
-testable. Restart a fresh simulation for repeatable trials after lifting.
+Thanks to NEURA Robotics for the LARA5 arm, the Inspire hand and the base workspace.
 
-## Robot and cameras in the Humble Docker container
+## License
 
-Use this option to run the camera workspace alongside the robot stack, even on
-an Ubuntu 24.04 host. Both workspaces are built from source **inside Ubuntu 22.04 /
-ROS 2 Humble**; any host ROS installation and `ws/build`, `ws/install`, and
-`ws/log` are not used. The existing native Jazzy instructions below still apply
-when running cameras outside Docker.
-
-The extension in [`src/docker/Dockerfile.realsense`](src/docker/Dockerfile.realsense)
-adds librealsense **2.58.4**, the vendored ROS driver **4.58.4**, our dual-camera
-launch package, `rs-enumerate-devices`, and `rqt_image_view` to the existing robot
-image. It builds the SDK with its userspace RSUSB backend, so there is no SDK
-DKMS/kernel installation inside the container. Linux Docker Engine and Docker
-Compose are required for the USB passthrough configuration below.
-
-### Build both images
-
-Run from the repository root, after downloading any Git LFS assets:
-
-```bash
-docker build -f src/docker/Dockerfile -t lara5_hackathon src
-docker compose -f compose.realsense.yaml build
-```
-
-The first build uses `src/` as context; the camera extension uses the repository
-root so it can copy `ws/src/`. The first SDK build can take several minutes.
-Build parallelism defaults to two jobs. If necessary, set `BUILD_JOBS=1` before
-the Compose build to reduce memory usage.
-
-### Open the workspace container
-
-If you previously started the camera auto-launch service, stop that old service
-once before switching to the interactive workflow:
-
-```bash
-docker compose -f compose.realsense.yaml down
-```
-
-Set your team's ROS domain, then open an interactive shell, just like the
-original robot container:
-
-```bash
-export ROS_DOMAIN_ID=42
-docker compose -f compose.realsense.yaml run --rm --name lara5_workspace cameras
-```
-
-This starts **Bash only**. Cameras and robot nodes start when you launch them.
-Both workspaces are already sourced inside the shell.
-
-The supplied serials (`263522073705` and `262722075125`) and stream settings are
-preserved. To select different cameras, set these variables before opening the
-container:
-
-```bash
-export CAMERA_1_SERIAL=FIRST_SERIAL
-export CAMERA_2_SERIAL=SECOND_SERIAL
-```
-
-Compose shares the host network and IPC namespace and mounts `/dev/bus/usb` with
-a USB device cgroup rule; it does not require `--privileged`. This grants access
-to the host USB bus, including cameras that disconnect and reconnect. Run this
-on the Linux machine physically connected to the cameras. The USB bus must exist
-on that host; Docker Desktop/VM USB forwarding requires separate setup.
-
-### Launch cameras manually
-
-When ready, connect both D435 cameras to USB 3 ports and stop any host camera
-launches or RealSense applications already using them. Inside the container:
-
-```bash
-rs-enumerate-devices -s
-ros2 launch neurahackathon_cameras camera.launch.py
-```
-
-`camera.launch.py` includes the existing dual-camera launch. It reads the mounted
-stream settings and camera serial defaults from the container environment. You
-can still override them explicitly:
-
-```bash
-ros2 launch neurahackathon_cameras camera.launch.py \
-  camera_1_serial:=FIRST_SERIAL camera_2_serial:=SECOND_SERIAL
-```
-
-The original `dual_realsense.launch.py` command also remains available. Press
-Ctrl+C to stop the camera launch and return to the workspace shell.
-
-### Run robot simulation in the same container
-
-Open a second terminal in the repository root and launch the robot simulation:
-
-```bash
-docker exec -it lara5_workspace bash
-# Inside the container, both workspaces are already sourced:
-ros2 launch lara5_controller_manager controller_manager.launch.py \
-  deployment_mode:=simulation sim_headless:=true
-```
-
-Robot sources/builds live under `/ws`; camera sources/builds live under
-`/camera_ws`. Both use Humble and the same ROS domain. Real hardware setup and
-the additional container runtime permissions are documented in
-[`src/README.md`, section 3.6](src/README.md#36-alternative-docker).
-
-The workspace shell runs without a graphical display. For image viewing on a
-Linux X11/XWayland desktop, open a Bash shell in a separate container with display
-access, then start the viewer manually:
-
-```bash
-xhost +local:root
-docker run --rm -it --net=host --ipc=host \
-  -e ROS_DOMAIN_ID="${ROS_DOMAIN_ID:-42}" -e DISPLAY="$DISPLAY" \
-  -v /tmp/.X11-unix:/tmp/.X11-unix \
-  lara5_hackathon:realsense bash
-# Inside that container:
-ros2 run rqt_image_view rqt_image_view
-# After closing the viewer, exit the container, then on the host:
-xhost -local:root
-```
-
-### Change settings and stop
-
-`ws/src/neurahackathon_cameras/config/streams.yaml` is mounted read-only into
-the container. Edit it on the host, stop the camera launch with Ctrl+C, and run
-`ros2 launch neurahackathon_cameras camera.launch.py` again to apply it.
-
-For camera source/launch changes, exit the container, rebuild the extension, and
-open a new workspace shell:
-
-```bash
-docker compose -f compose.realsense.yaml build
-docker compose -f compose.realsense.yaml run --rm --name lara5_workspace cameras
-```
-
-For robot source changes, rebuild the base image first. Container filesystem
-changes are discarded when the `--rm` container exits; save code and recordings
-to the host before doing so. Stop launches with Ctrl+C, then use `exit` in the
-original workspace shell to close/remove the container.
-
-Alternatively, keep the workspace shell running in the background:
-
-```bash
-docker compose -f compose.realsense.yaml up -d
-docker compose -f compose.realsense.yaml exec cameras bash
-# Stop/remove the background workspace when finished:
-docker compose -f compose.realsense.yaml down
-```
-
-If the SDK reports `RS2_USB_STATUS_BUSY`, `failed to claim usb interface`, or
-`uvc_get_ctrl` errors, check for a native Jazzy/Humble camera driver or RealSense
-viewer still using the device and stop that launch before retrying. A different
-`ROS_DOMAIN_ID` does not allow two drivers to share the same physical camera.
-If a serial is not detected, check cables/USB ports and run
-`rs-enumerate-devices -s` inside the container. The missing camera's node keeps
-waiting/retrying; it does not select the other camera instead.
-
-## Multi-camera workspace
-
-The camera workspace runs on **ROS 2 Humble inside Docker**. Each USB RealSense
-D435 publishes color, depth, left infrared (`infra1`), and right infrared
-(`infra2`) images. The optional native setup below uses ROS 2 Jazzy.
-
-## Source layout
-
-```text
-ws/src/
-  realsense-ros/            # Upstream driver 4.58.4, copied into this repository
-  neurahackathon_cameras/   # Shared stream parameters and dual-camera launch
-    config/streams.yaml
-    launch/camera.launch.py
-    launch/dual_realsense.launch.py
-```
-
-The driver is pinned to commit `9a11121700cb4780e273e34141f6402fe184321d`, matching
-the ROS driver version installed on the original machine. See
-[`UPSTREAM.md`](ws/src/realsense-ros/UPSTREAM.md) for provenance and SDK requirements.
-
-## Optional native camera setup (Ubuntu 24.04 / ROS 2 Jazzy)
-
-Skip this section when using Docker: the Dockerfiles install dependencies and
-build both workspaces with Humble. This native alternative is for the camera
-workspace only; it does not build or validate the robot stack on Jazzy.
-
-For native camera use, install Ubuntu 24.04 with ROS 2 Jazzy and source its
-environment. Install the Jazzy RealSense SDK package and development tools if needed:
-
-```bash
-sudo apt update
-sudo apt install ros-jazzy-librealsense2 python3-colcon-common-extensions python3-rosdep ros-jazzy-rqt-image-view
-```
-
-Clone this branch and install the workspace dependencies. If rosdep has never
-been initialized on your machine, run `sudo rosdep init` once before `rosdep update`.
-
-```bash
-git clone --branch main git@github.com:arasf/neurahackathon.git
-cd neurahackathon/ws
-source /opt/ros/jazzy/setup.bash
-rosdep update
-rosdep install --from-paths src --ignore-src --rosdistro jazzy -r -y
-colcon build --symlink-install --packages-up-to neurahackathon_cameras \
-  --parallel-workers 2 --allow-overriding realsense2_camera realsense2_camera_msgs \
-  --cmake-args -DBUILD_TESTING=OFF -DCMAKE_BUILD_TYPE=Release
-source install/setup.bash
-```
-
-The SDK must provide librealsense **2.58.0 or newer**; this machine uses 2.58.4.
-The build command builds the copied driver, its messages, and our launch package.
-Build/install/log directories and recordings are excluded from Git.
-For zsh, use the corresponding `setup.zsh` files instead of `setup.bash`.
-
-## Run both cameras
-
-Close other RealSense driver launches or applications using these cameras first.
-Connect each camera to a suitable USB 3 port and check serial numbers:
-
-```bash
-rs-enumerate-devices -s
-ros2 launch neurahackathon_cameras dual_realsense.launch.py
-```
-
-Default assignments:
-
-| ROS node | Camera serial |
-| --- | --- |
-| `/cameras/camera_1` | `263522073705` |
-| `/cameras/camera_2` | `262722075125` |
-
-Friends using different hardware can override the serials without editing code:
-
-```bash
-ros2 launch neurahackathon_cameras dual_realsense.launch.py \
-  camera_1_serial:=FIRST_SERIAL camera_2_serial:=SECOND_SERIAL
-```
-
-Use the numeric serials as shown by enumeration; the launch file explicitly
-passes them as strings. Each serial must identify a different camera.
-
-Edit `ws/src/neurahackathon_cameras/config/streams.yaml` (relative to the repository
-root) to change stream settings. Alternatively, pass `config_file:=/absolute/path/to/streams.yaml`
-with the same ROS parameter YAML structure. Rebuild after editing files if your
-installation does not reflect source changes.
-
-## View images
-
-```bash
-ros2 run rqt_image_view rqt_image_view
-```
-
-Choose a topic in the dropdown. Open additional viewer instances to compare images.
-
-| Stream | Camera 1 topic | Camera 2 topic |
-| --- | --- | --- |
-| Color | `/cameras/camera_1/color/image_raw` | `/cameras/camera_2/color/image_raw` |
-| Depth | `/cameras/camera_1/depth/image_rect_raw` | `/cameras/camera_2/depth/image_rect_raw` |
-| Left infrared | `/cameras/camera_1/infra1/image_rect_raw` | `/cameras/camera_2/infra1/image_rect_raw` |
-| Right infrared | `/cameras/camera_1/infra2/image_rect_raw` | `/cameras/camera_2/infra2/image_rect_raw` |
-
-Defaults are RGB 640x480 at 30 FPS and depth/infrared 848x480 at 30 FPS.
-Unique camera names keep topics and camera TF frame names separate.
-The configuration does not calibrate the two cameras relative to one another
-or synchronize their exposures. `infra1` and `infra2` refer to the stereo
-sensors inside each D435, rather than the physical placement of the two D435s.
-
-If a camera disappears, check `rs-enumerate-devices -s`, its USB cable/port, and
-that another process is not using it. The driver waits and retries when the
-selected serial is unavailable.
+[Apache-2.0](LICENSE) for the code in this repository.

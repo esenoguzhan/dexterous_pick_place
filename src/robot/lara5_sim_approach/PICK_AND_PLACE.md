@@ -304,7 +304,7 @@ If finger closure fails, inspect the wrist view and loaded contacts, then adjust
 the grasp offset or the six closing angles. Do not mask a failure by loosening
 the grip test or reducing unrelated collision clearance. If the wrist cannot see
 the selected object at pre-grasp, adjust the provisional camera position/target
-in [mujoco_sim.yaml](../lara5_mujoco_sim/config/mujoco_sim.yaml).
+in mujoco_sim.yaml.
 
 ## Validation boundaries
 

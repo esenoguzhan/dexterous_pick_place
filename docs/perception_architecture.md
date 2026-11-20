@@ -227,7 +227,7 @@ flowchart TD
   At 1 m that is still a point every 2 mm, finer than the 4 mm clustering voxels, and four times
   fewer points for the Jetson's CPU. Masks stay at full resolution.
 - **Workspace box (simulation):** x from -0.6 to 0.6, y from -0.4 to 0.4, z from 0.88 to 1.30 m
-  (see [`mujoco_sim.yaml`](../src/robot/lara5_mujoco_sim/config/mujoco_sim.yaml)). Measure the real
+  (see `mujoco_sim.yaml`). Measure the real
   table and set the same parameters for the robot.
 
 ### 5.3 Remove the table

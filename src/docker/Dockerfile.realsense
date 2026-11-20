@@ -28,6 +28,12 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 
 # Copy sources only; never reuse Ubuntu 24.04/Jazzy build/install artifacts.
 COPY ws/src/ /camera_ws/src/
+# The upstream RealSense ROS driver (4.58.4, Apache-2.0) is fetched at its pinned commit
+# instead of being vendored in this repository.
+ARG REALSENSE_ROS_COMMIT=9a11121700cb4780e273e34141f6402fe184321d
+RUN git clone https://github.com/realsenseai/realsense-ros.git /camera_ws/src/realsense-ros \
+    && git -C /camera_ws/src/realsense-ros checkout "${REALSENSE_ROS_COMMIT}" \
+    && rm -rf /camera_ws/src/realsense-ros/.git
 RUN apt-get update \
     && rosdep update --rosdistro humble \
     && rosdep install --from-paths \

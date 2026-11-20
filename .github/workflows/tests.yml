@@ -1,0 +1,23 @@
+name: tests
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  pytest:
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.10"
+      - name: Install dependencies
+        # OpenCV and NumPy as on the Jetson bench (wendy/perception_test/requirements-laptop.txt)
+        run: pip install "numpy<2" "opencv-python-headless==4.10.0.84" scipy pyyaml pillow pytest
+      - name: Scene perception
+        run: pytest -q src/restore/restore_perception/test
+      - name: Restore task
+        run: pytest -q src/restore/restore_task/test
+      - name: Jetson calibration bench
+        run: pytest -q wendy/perception_test/tests

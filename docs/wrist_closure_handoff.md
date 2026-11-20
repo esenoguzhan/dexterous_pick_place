@@ -82,7 +82,7 @@ over explicitly, with one operator at the e-stop throughout.
 2. Stop jogging and hand guiding. Release any enabling or guiding button, and
    leave the manual motion mode.
 3. Make sure no UI program is running or paused.
-4. Confirm the robot GUI settings from section 5.2 of [`src/README.md`](../src/README.md)
+4. Confirm the robot GUI settings from section 5.2 of `src/README.md`
    still apply, including the enabled C++ interface. Re-apply them after any
    e-stop release.
 5. Announce the handoff. Nobody touches the robot UI until ROS reports a

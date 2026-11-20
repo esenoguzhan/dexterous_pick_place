@@ -31,7 +31,7 @@ These views were rendered without stepping physics or commanding the robot.
 
 ## Configuration and coordinate frames
 
-Edit [config/mujoco_sim.yaml](config/mujoco_sim.yaml). The two independent sections
+Edit config/mujoco_sim.yaml. The two independent sections
 are `external_camera` and `wrist_camera`:
 
 | Setting | Meaning |

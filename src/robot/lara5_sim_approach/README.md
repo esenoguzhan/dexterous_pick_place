@@ -269,7 +269,7 @@ cancel on Ctrl+C; wait for these short movements to finish.
 ## Camera feedback
 
 The ideal external RGB-D camera (hardware target: RealSense D435) is configured in
-[mujoco_sim.yaml](../lara5_mujoco_sim/config/mujoco_sim.yaml). It is fixed at
+mujoco_sim.yaml. It is fixed at
 `[-1.25, 1.50, 2.10]`, looking at `[-0.25, 0.10, 1.15]`, with 640×480 resolution,
 60-degree vertical field of view and a requested 10 Hz rate.
 
